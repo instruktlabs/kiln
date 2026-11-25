@@ -1,0 +1,420 @@
+{
+  "version": "kiln.asset.v1",
+  "assetId": "a_3940e4eb752c4e208fc2cc05309afc0e",
+  "revisionId": "r_f26da827407341cabe8e2f9294f62369",
+  "name": "foliage-vine-long",
+  "tags": [
+    "lagoon-sanctuary",
+    "foliage",
+    "vines"
+  ],
+  "createdAt": "2026-11-25T04:10:30.417Z",
+  "description": "Lagoon Sanctuary hero tall cenote rim hanging vine curtain (13.5 m drop, pivot Y=0 at top). Nine sweeping asymmetrical curtain strands plus seven upper rim mantle strands transitioning from deep cliff-rim emerald to glowing backlit golden-chartreuse streamers via world-space aspect-compensated 1024x1024 3-column V3 RGBA textureAtlas (mask-rgb-dilate) + derived normal map with continuous UV.y 0->1 wind gradient.",
+  "attribution": {
+    "model": "gemini-4-neon-xhigh",
+    "harness": "agy"
+  },
+  "editable": true,
+  "files": {
+    "asset.glb": {
+      "sha256": "sha256:d678363ee8a8bab34acb6f554ee8f9653628565f93bbed4cc5e34c4155377ec2",
+      "bytes": 352120
+    },
+    "source.kiln.js": {
+      "sha256": "sha256:959f0ddc595d21c6f85ee57bf0b3a71bc1725407e7d7ba5c4a92f1663efac852",
+      "bytes": 22430
+    },
+    "preview.png": {
+      "sha256": "sha256:c884adf7ac142f999090fa8d7f4076a8b7c811db7d227f616f2dcac987c5773e",
+      "bytes": 174548
+    }
+  },
+  "build": {
+    "engine": "sha256:bf1cf88d889439cdbf0274b57fdd029174c02f209d9b495c3397effa9fc9d0bf",
+    "options": {
+      "gltfExporter": "legacy",
+      "optimize": "off",
+      "instance": "auto",
+      "geometryPolicy": "warn",
+      "indexPolicy": "indexed",
+      "qaMode": "enforce",
+      "evaluatorMode": "subprocess",
+      "requirements": {
+        "kind": "kiln.requirements-context.v1",
+        "requirements": {
+          "kind": "kiln.asset-requirements",
+          "schemaVersion": 1,
+          "labels": [],
+          "frame": {
+            "units": "m",
+            "forward": "+X",
+            "up": "+Y",
+            "right": "+Z",
+            "groundY": 0
+          },
+          "requirements": {}
+        },
+        "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+        "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268"
+      }
+    },
+    "warnings": [],
+    "integration": {
+      "schemaVersion": "kiln.integration-manifest.v1",
+      "analyzerVersion": 1,
+      "artifactSha256": "d678363ee8a8bab34acb6f554ee8f9653628565f93bbed4cc5e34c4155377ec2",
+      "units": "m",
+      "axes": {
+        "forward": "+X",
+        "up": "+Y",
+        "right": "+Z"
+      },
+      "bounds": {
+        "min": [
+          -0.6032207608222961,
+          -13.5095853805542,
+          -1.7708770036697388
+        ],
+        "max": [
+          0.6960390210151672,
+          0.0007957398192957044,
+          1.7863610982894897
+        ],
+        "size": [
+          1.2992597818374634,
+          13.510381120373495,
+          3.5572381019592285
+        ],
+        "center": [
+          0.04640913009643555,
+          -6.754394820367452,
+          0.007742047309875488
+        ]
+      },
+      "pivot": {
+        "convention": "author-origin",
+        "position": [
+          0,
+          0,
+          0
+        ]
+      },
+      "ground": {
+        "groundY": 0,
+        "contactTolerance": 0.02,
+        "minY": -13.5095853805542,
+        "offsetToGround": 13.5095853805542,
+        "grounded": false
+      },
+      "defaultScene": {
+        "index": 0,
+        "name": "foliage-vine-long"
+      },
+      "requestedRole": "fill",
+      "renderMetrics": {
+        "triangles": 3950,
+        "drawCalls": 2,
+        "uniqueGeometries": 2,
+        "uniqueMaterials": 2,
+        "textureCount": 4,
+        "transparentMaterials": 0,
+        "skinned": false
+      },
+      "structuralQa": {
+        "hasDefaultScene": true,
+        "finiteBounds": true,
+        "validatorErrors": 0,
+        "validatorWarnings": 0
+      },
+      "visualQa": "not_assessed"
+    },
+    "qa": {
+      "kind": "kiln.asset-qa-report",
+      "schemaVersion": 2,
+      "qaProfile": "asset.requirements.v1",
+      "policyHash": "sha256:9efcec929bf8a510c7dd0e18b687381e3824ff3d26cc20307f601d17535e5f34",
+      "adviceHash": "sha256:ca1f59b45e82e712e06149909000e2bc37b8cf159af70e32847088cecf153268",
+      "acceptance": "accepted",
+      "disposition": "pass",
+      "dimensions": {
+        "exportIntegrity": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "gltfErrors": 0,
+            "gltfWarnings": 0
+          }
+        },
+        "requirementReadiness": {
+          "status": "pass",
+          "findings": []
+        },
+        "promptAlignment": {
+          "status": "notEvaluated",
+          "findings": []
+        },
+        "visualQuality": {
+          "status": "notEvaluated",
+          "findings": [
+            {
+              "code": "GEO_PART_SELF_INTERSECTION_ACKNOWLEDGED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.selfIntersection",
+              "message": "1 part marked intentionally open (markOpenShell) was not measured as a closed solid. 1 marked \"Double-sided alpha-cutout tall cenote vine curtain ribbons\", because a valid closed solid could not be measured (Not manifold): \"Mesh_VineLeaves\". 1 overlapping part pair was not measured because of this part alone; overlap there is not ruled out.",
+              "measurement": {
+                "name": "acknowledgedOpenShells",
+                "actual": 1,
+                "breakdown": {
+                  "pairsUnmeasurable": 1
+                }
+              }
+            },
+            {
+              "code": "GEO_OPEN_SURFACE_PENETRATION_TRUNCATED",
+              "disposition": "observe",
+              "dimension": "visualQuality",
+              "profile": "geometry.openSurfacePenetration",
+              "message": "Sampled 0 of 1 overlapping open-surface and solid pairs; 1 were beyond the 250000-test analysis budget. Unsampled pairs were not examined; the most overlapping bounding boxes were sampled first.",
+              "measurement": {
+                "name": "openSurfacePairsSampled",
+                "actual": 0,
+                "expected": 1,
+                "breakdown": {
+                  "pairsNotReached": 1,
+                  "verticesUnresolved": 0
+                }
+              }
+            }
+          ],
+          "metrics": {
+            "partVolumeCoverage": "partial",
+            "partVolumeScope": "Visible static closed mesh pairs, except alternates on different LOD levels; excludes intra-mesh intersections, motion, open surfaces and usable passage space. Positive overlap may be intentional.",
+            "partVolumeEligibleParts": 2,
+            "partVolumeCandidatePairs": 1,
+            "partVolumeCandidatesLowerBound": false,
+            "partVolumePairsTested": 0,
+            "partVolumeUnmeasurablePairs": 1,
+            "partVolumePairsNotReached": 0,
+            "partVolumeLodAlternatePairs": 0,
+            "partVolumeSkipped": 0,
+            "partVolumeAcknowledgedParts": 1,
+            "partVolumeAcknowledgedPairs": 1,
+            "openSurfaceCoverage": "partial",
+            "openSurfaceScope": "Visible static open surfaces sampled at their vertices against visible static closed solids, except alternates on different LOD levels; excludes open-vs-open pairs, motion, and any solid thinner than the sampled surface's facet spacing. Penetration within the contact tolerance is treated as intended contact, and penetration beyond it may still be intentional, as a fitting socketed into a shell is.",
+            "openSurfaceContactTolerance": 0.005,
+            "openSurfaceOpenParts": 1,
+            "openSurfaceClosedParts": 1,
+            "openSurfaceCandidatePairs": 1,
+            "openSurfacePairsSampled": 0,
+            "openSurfacePairsNotReached": 1,
+            "openSurfaceVerticesUnresolved": 0,
+            "openSurfaceLodAlternatePairs": 0,
+            "openSurfaceSkipped": 0
+          }
+        },
+        "runtimeCost": {
+          "status": "pass",
+          "findings": [],
+          "metrics": {
+            "instanceabilityGrade": "B",
+            "instanceabilitySummary": "B (informational, not a QA verdict), set by 2 distinct materials (B at 2-3). Also: 2 geometries; 2 draw calls.",
+            "uniqueGeometries": 2,
+            "uniqueMaterials": 2,
+            "meshNodes": 2,
+            "meshInstances": 2,
+            "drawCalls": 2,
+            "textureCount": 4,
+            "skinned": false,
+            "transparentMaterials": 0,
+            "triangles": 3950,
+            "materialCount": 2,
+            "opaqueMaterials": 1,
+            "maskedMaterials": 1,
+            "blendedMaterials": 0,
+            "singleSidedMaterials": 1,
+            "doubleSidedMaterials": 1,
+            "texturedMaterials": 2,
+            "materialExtensionCount": 0,
+            "materialExtensionsUsed": "",
+            "imageCount": 4,
+            "maxImageDimension": 1024,
+            "decodedImageBytesRgba8": 8912896,
+            "estimatedGpuBytesWithMipmaps": 11883864,
+            "blendedSurfaceAreaRatio": 0
+          }
+        }
+      },
+      "rules": [
+        {
+          "id": "UNIVERSAL_SCENE_CONTENT_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_FINITE_DATA_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_INDEX_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ZERO_SCALE_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_NODE_NAME_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "UNIVERSAL_ANIMATION_TARGET_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "MATERIAL_PORTABLE_PBR_RULE",
+          "mode": "enforce",
+          "status": "evaluated"
+        },
+        {
+          "id": "ARCHITECTURE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ARCHITECTURE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "CHARACTER_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEHICLE_W6_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_CONTACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VEGETATION_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_CAPABILITY_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "PROP_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ENVIRONMENT_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_EXACT_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "VFX_ADVISORY_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "MODULAR_JOIN_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        },
+        {
+          "id": "ASSET_SCOPE_PROFILE",
+          "mode": "observe",
+          "status": "notRequested"
+        },
+        {
+          "id": "GEO_PART_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "notEvaluated"
+        },
+        {
+          "id": "GEO_PART_CONNECTIVITY",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "GEO_OPEN_SURFACE_PENETRATION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "REF_COMPARISON",
+          "mode": "observe",
+          "status": "notEvaluated",
+          "reason": "Neutral measurement adapter remains to be qualified; no category fallback is used."
+        },
+        {
+          "id": "SWEEP_SELF_INTERSECTION",
+          "mode": "observe",
+          "status": "evaluated"
+        },
+        {
+          "id": "HOST_VALIDATION_PROFILE",
+          "mode": "enforce",
+          "status": "notRequested"
+        }
+      ],
+      "unevaluatedRequirements": []
+    },
+    "dependencies": [],
+    "rebuild": "engine-required"
+  },
+  "preview": {
+    "fidelity": {
+      "version": "kiln.view-fidelity.v1",
+      "requested": "full-preferred",
+      "delivered": "full-material",
+      "materialFaithful": true,
+      "exactArtifact": true,
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "inputGlbSha256": "sha256:d678363ee8a8bab34acb6f554ee8f9653628565f93bbed4cc5e34c4155377ec2",
+      "degraded": false,
+      "reasonCodes": []
+    },
+    "backdrop": "neutral"
+  }
+}

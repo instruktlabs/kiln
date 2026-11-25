@@ -8275,6 +8275,646 @@
       "path": "media/rig/review-neutral-v1/cathedral-square/cs4/stall-green.png",
       "bytes": 2057883,
       "sha256": "d5e0847a29bd7fc8c2f75abd035dc043e6ba4caf9ac0cb371afe3d1f1dfd7f4a"
+    },
+    {
+      "path": "packs/holodeck/objects/b2fcc25c33657becf1725fce6e22aabbea5b35932870e817565fcba0b0b9ee13/lagoon-sanctuary-portal.glb",
+      "bytes": 7070712,
+      "sha256": "b2fcc25c33657becf1725fce6e22aabbea5b35932870e817565fcba0b0b9ee13"
+    },
+    {
+      "path": "packs/holodeck/objects/08015a3799cb77d66457d9fcee9e555bf48e1690069ff75b839adbc878c2ba62/lagoon-sanctuary-portal-runtime.zip",
+      "bytes": 3413297,
+      "sha256": "08015a3799cb77d66457d9fcee9e555bf48e1690069ff75b839adbc878c2ba62"
+    },
+    {
+      "path": "packs/holodeck/objects/5aa0756f1e7578f6fb4f1df4711a68eb1a6617e92ab832b4706b259fa575c1a6/lagoon-sanctuary-portal-editable.zip",
+      "bytes": 4218767,
+      "sha256": "5aa0756f1e7578f6fb4f1df4711a68eb1a6617e92ab832b4706b259fa575c1a6"
+    },
+    {
+      "path": "packs/holodeck/objects/671ddd32d97a3ba2a514f9d3746a5f493d2a9793146f58615be3923394a9d675/lagoon-sanctuary-wing.glb",
+      "bytes": 3773696,
+      "sha256": "671ddd32d97a3ba2a514f9d3746a5f493d2a9793146f58615be3923394a9d675"
+    },
+    {
+      "path": "packs/holodeck/objects/3c84960e140dfdc9854bcc55998b4a74273b1be523a2413ae9950d50bf045b5a/lagoon-sanctuary-wing-runtime.zip",
+      "bytes": 2617043,
+      "sha256": "3c84960e140dfdc9854bcc55998b4a74273b1be523a2413ae9950d50bf045b5a"
+    },
+    {
+      "path": "packs/holodeck/objects/e88fa5af6de92bb9380c07c2fd003ea361c99b63a58e4cd42b099345acfd868c/lagoon-sanctuary-wing-editable.zip",
+      "bytes": 3349415,
+      "sha256": "e88fa5af6de92bb9380c07c2fd003ea361c99b63a58e4cd42b099345acfd868c"
+    },
+    {
+      "path": "packs/holodeck/objects/92e2ac29067ed1a68dc2d39626af84255fd754249f2191bde51fe3c331d19ab6/lagoon-sanctuary-grand-stairs.glb",
+      "bytes": 3542808,
+      "sha256": "92e2ac29067ed1a68dc2d39626af84255fd754249f2191bde51fe3c331d19ab6"
+    },
+    {
+      "path": "packs/holodeck/objects/dc834d3f0ab9dafefde8027c6f61f1e4e4b2c9e7098513bd5155c5248a7d2f85/lagoon-sanctuary-grand-stairs-runtime.zip",
+      "bytes": 2547773,
+      "sha256": "dc834d3f0ab9dafefde8027c6f61f1e4e4b2c9e7098513bd5155c5248a7d2f85"
+    },
+    {
+      "path": "packs/holodeck/objects/8466eb8d68409dded97609384b5913cd7c7d05b6acd4c035433c5690c52a4bf7/lagoon-sanctuary-grand-stairs-editable.zip",
+      "bytes": 3310516,
+      "sha256": "8466eb8d68409dded97609384b5913cd7c7d05b6acd4c035433c5690c52a4bf7"
+    },
+    {
+      "path": "packs/holodeck/objects/a64efc7aafe271110cde0b7189d372f0d7fb97ce3412be7ec4465040dbfaf41f/lagoon-sun-stele-pillar.glb",
+      "bytes": 3990716,
+      "sha256": "a64efc7aafe271110cde0b7189d372f0d7fb97ce3412be7ec4465040dbfaf41f"
+    },
+    {
+      "path": "packs/holodeck/objects/aee06c4793d5dc95f2f50ae385a7f28561e74d49ec834f05c84a820258271762/lagoon-sun-stele-pillar-runtime.zip",
+      "bytes": 2382520,
+      "sha256": "aee06c4793d5dc95f2f50ae385a7f28561e74d49ec834f05c84a820258271762"
+    },
+    {
+      "path": "packs/holodeck/objects/aa4204cb7c0e5df6f5b9ed55d08d66c15a141b9ca6a07a6048c0059b9c72e20e/lagoon-sun-stele-pillar-editable.zip",
+      "bytes": 2952438,
+      "sha256": "aa4204cb7c0e5df6f5b9ed55d08d66c15a141b9ca6a07a6048c0059b9c72e20e"
+    },
+    {
+      "path": "packs/holodeck/objects/14358273c8b36c2e723e80a6cef2c4dbd0becf16d3afa05e53641863f0a8a976/lagoon-arrival-stair-terrace.glb",
+      "bytes": 3642392,
+      "sha256": "14358273c8b36c2e723e80a6cef2c4dbd0becf16d3afa05e53641863f0a8a976"
+    },
+    {
+      "path": "packs/holodeck/objects/2e6e792005231614410f62a646358f3e7f6604b15f02fc067f8d957fff54d87a/lagoon-arrival-stair-terrace-runtime.zip",
+      "bytes": 2218090,
+      "sha256": "2e6e792005231614410f62a646358f3e7f6604b15f02fc067f8d957fff54d87a"
+    },
+    {
+      "path": "packs/holodeck/objects/08f49a2c1fd5d4a64b978b3bb94a85f6fea35f027fa026d36a5df6423090493e/lagoon-arrival-stair-terrace-editable.zip",
+      "bytes": 2728465,
+      "sha256": "08f49a2c1fd5d4a64b978b3bb94a85f6fea35f027fa026d36a5df6423090493e"
+    },
+    {
+      "path": "packs/holodeck/objects/e766d847c8b2873dc284f0521bfb18a8fbef93e344093a7d55d944f12ece0feb/lagoon-waterside-stone-dock.glb",
+      "bytes": 2685672,
+      "sha256": "e766d847c8b2873dc284f0521bfb18a8fbef93e344093a7d55d944f12ece0feb"
+    },
+    {
+      "path": "packs/holodeck/objects/d08455b136a09ee33f370285137b1f6efb0be4074971c045f47850a5f2529d77/lagoon-waterside-stone-dock-runtime.zip",
+      "bytes": 1863471,
+      "sha256": "d08455b136a09ee33f370285137b1f6efb0be4074971c045f47850a5f2529d77"
+    },
+    {
+      "path": "packs/holodeck/objects/09166a8f89b7183662c7d321c09a7f96df4eb96667e98d0cb6a4e2b2b519e199/lagoon-waterside-stone-dock-editable.zip",
+      "bytes": 2550629,
+      "sha256": "09166a8f89b7183662c7d321c09a7f96df4eb96667e98d0cb6a4e2b2b519e199"
+    },
+    {
+      "path": "packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
+      "bytes": 5626216,
+      "sha256": "e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252"
+    },
+    {
+      "path": "packs/holodeck/objects/27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390/lagoon-curved-viaduct-runtime.zip",
+      "bytes": 3111285,
+      "sha256": "27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390"
+    },
+    {
+      "path": "packs/holodeck/objects/268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db/lagoon-curved-viaduct-editable.zip",
+      "bytes": 3489217,
+      "sha256": "268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db"
+    },
+    {
+      "path": "packs/holodeck/objects/ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd/lagoon-stone-brazier.glb",
+      "bytes": 2020752,
+      "sha256": "ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd"
+    },
+    {
+      "path": "packs/holodeck/objects/9320aca7b3d7f6f5ea2b0a6681695fef44aafca54dc3ce20e80ba630c1e04c25/lagoon-stone-brazier-runtime.zip",
+      "bytes": 1542263,
+      "sha256": "9320aca7b3d7f6f5ea2b0a6681695fef44aafca54dc3ce20e80ba630c1e04c25"
+    },
+    {
+      "path": "packs/holodeck/objects/a6215171c3d458113c4e8ffe2c3fad4a12cc2796db6910057b66076479783b43/lagoon-stone-brazier-editable.zip",
+      "bytes": 2203754,
+      "sha256": "a6215171c3d458113c4e8ffe2c3fad4a12cc2796db6910057b66076479783b43"
+    },
+    {
+      "path": "packs/holodeck/objects/cd93d3300972d274d8be9be921a01d38bee0357d8e0cfcb44c3a400868f5b60a/lagoon-karst-overhang-ledge.glb",
+      "bytes": 1691752,
+      "sha256": "cd93d3300972d274d8be9be921a01d38bee0357d8e0cfcb44c3a400868f5b60a"
+    },
+    {
+      "path": "packs/holodeck/objects/92343190c21af21320cdc770695448c173ac5b20e2dac95d62c2a82cf4109566/lagoon-karst-overhang-ledge-runtime.zip",
+      "bytes": 1463579,
+      "sha256": "92343190c21af21320cdc770695448c173ac5b20e2dac95d62c2a82cf4109566"
+    },
+    {
+      "path": "packs/holodeck/objects/b1fc9d8da9b99ac3bf21856a31c5a8cf14735984cd9ba7fb1ac8e43bfed70bc6/lagoon-karst-overhang-ledge-editable.zip",
+      "bytes": 2190746,
+      "sha256": "b1fc9d8da9b99ac3bf21856a31c5a8cf14735984cd9ba7fb1ac8e43bfed70bc6"
+    },
+    {
+      "path": "packs/holodeck/objects/e188dd328cc091340ff14d34580958b0ea15ea743e1c3c4fecb58647cc3730b9/lagoon-stalactite-cluster.glb",
+      "bytes": 1186300,
+      "sha256": "e188dd328cc091340ff14d34580958b0ea15ea743e1c3c4fecb58647cc3730b9"
+    },
+    {
+      "path": "packs/holodeck/objects/464556a214452c6cebf7e2c27645390c972c7af774d0cae2c8d917537f905365/lagoon-stalactite-cluster-runtime.zip",
+      "bytes": 1062533,
+      "sha256": "464556a214452c6cebf7e2c27645390c972c7af774d0cae2c8d917537f905365"
+    },
+    {
+      "path": "packs/holodeck/objects/52eac7f1bed38dc12817a2d64e5ba0b555285024d2265ca12f2e7916339263b1/lagoon-stalactite-cluster-editable.zip",
+      "bytes": 1415554,
+      "sha256": "52eac7f1bed38dc12817a2d64e5ba0b555285024d2265ca12f2e7916339263b1"
+    },
+    {
+      "path": "packs/holodeck/objects/ef6a0a3241d4855feed4cee0c4239696aca788528279c6b832288400b1998b27/lagoon-mossy-boulder-hero.glb",
+      "bytes": 1436216,
+      "sha256": "ef6a0a3241d4855feed4cee0c4239696aca788528279c6b832288400b1998b27"
+    },
+    {
+      "path": "packs/holodeck/objects/7ad83da0b6e0dcf99901277ac6f9996c0e32ea106d7ac42c699de485e40d001e/lagoon-mossy-boulder-hero-runtime.zip",
+      "bytes": 1305733,
+      "sha256": "7ad83da0b6e0dcf99901277ac6f9996c0e32ea106d7ac42c699de485e40d001e"
+    },
+    {
+      "path": "packs/holodeck/objects/fadf4e094c6688fd3bbdd5482f4de442e9615c52f85a9891a6738107d840ab40/lagoon-mossy-boulder-hero-editable.zip",
+      "bytes": 1915634,
+      "sha256": "fadf4e094c6688fd3bbdd5482f4de442e9615c52f85a9891a6738107d840ab40"
+    },
+    {
+      "path": "packs/holodeck/objects/2beeeaa6a924c842af99097bde4af426847d9191719f00aad8dd669b6975ab97/lagoon-mossy-boulder-cluster.glb",
+      "bytes": 1423104,
+      "sha256": "2beeeaa6a924c842af99097bde4af426847d9191719f00aad8dd669b6975ab97"
+    },
+    {
+      "path": "packs/holodeck/objects/0d79bc13fa979783d3b4bf9b164eac674144965a6f6b141b7985713f8b22cdd2/lagoon-mossy-boulder-cluster-runtime.zip",
+      "bytes": 1283867,
+      "sha256": "0d79bc13fa979783d3b4bf9b164eac674144965a6f6b141b7985713f8b22cdd2"
+    },
+    {
+      "path": "packs/holodeck/objects/01137805bebdf0bec0c0268f13418520bbac34f68451308b043471a637858688/lagoon-mossy-boulder-cluster-editable.zip",
+      "bytes": 1887169,
+      "sha256": "01137805bebdf0bec0c0268f13418520bbac34f68451308b043471a637858688"
+    },
+    {
+      "path": "packs/holodeck/objects/849569c3211e850053e9c8f4fa9ff758615f75752e0da3379ec0ecb5da8e13dc/lagoon-gnarled-canopy-bough.glb",
+      "bytes": 2504256,
+      "sha256": "849569c3211e850053e9c8f4fa9ff758615f75752e0da3379ec0ecb5da8e13dc"
+    },
+    {
+      "path": "packs/holodeck/objects/9d01fca2beb99c38adacb547d01a07d350623cda5843337345c926418b71cae8/lagoon-gnarled-canopy-bough-runtime.zip",
+      "bytes": 1993057,
+      "sha256": "9d01fca2beb99c38adacb547d01a07d350623cda5843337345c926418b71cae8"
+    },
+    {
+      "path": "packs/holodeck/objects/fa4578eaa529cc41016c017c0f54a431f59e7bde5b4df9fbcd38dbe5831ada40/lagoon-gnarled-canopy-bough-editable.zip",
+      "bytes": 2475007,
+      "sha256": "fa4578eaa529cc41016c017c0f54a431f59e7bde5b4df9fbcd38dbe5831ada40"
+    },
+    {
+      "path": "packs/holodeck/objects/42bc21750da3b4e7c7ec189b42b1261a20784e7164fadbdb827aa975e8c79658/lagoon-foliage-monstera-a.glb",
+      "bytes": 482792,
+      "sha256": "42bc21750da3b4e7c7ec189b42b1261a20784e7164fadbdb827aa975e8c79658"
+    },
+    {
+      "path": "packs/holodeck/objects/74c812c6b375db15a3c45e0f57cff689e828ca61b039f333667bd9b99647c50b/lagoon-foliage-monstera-a-runtime.zip",
+      "bytes": 394796,
+      "sha256": "74c812c6b375db15a3c45e0f57cff689e828ca61b039f333667bd9b99647c50b"
+    },
+    {
+      "path": "packs/holodeck/objects/b23da388b5091aea2d922fc2242faac771d587d453a24506f71773e8b75c7c5c/lagoon-foliage-monstera-a-editable.zip",
+      "bytes": 803888,
+      "sha256": "b23da388b5091aea2d922fc2242faac771d587d453a24506f71773e8b75c7c5c"
+    },
+    {
+      "path": "packs/holodeck/objects/dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8/lagoon-foliage-monstera-b.glb",
+      "bytes": 408812,
+      "sha256": "dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8"
+    },
+    {
+      "path": "packs/holodeck/objects/b1b0d200b319c92c73f0c4f637c8cceeb4b5c722ae7a2bb4ad6b64d065d82ec2/lagoon-foliage-monstera-b-runtime.zip",
+      "bytes": 336388,
+      "sha256": "b1b0d200b319c92c73f0c4f637c8cceeb4b5c722ae7a2bb4ad6b64d065d82ec2"
+    },
+    {
+      "path": "packs/holodeck/objects/31b1850e487163125f0571b6cea96c15886a5175ffde81829467bfc85098e3fb/lagoon-foliage-monstera-b-editable.zip",
+      "bytes": 700057,
+      "sha256": "31b1850e487163125f0571b6cea96c15886a5175ffde81829467bfc85098e3fb"
+    },
+    {
+      "path": "packs/holodeck/objects/7b0c075d329cf8c184b9e5300e0bbaaa90ddb26f3fa0b42397293556f35fd87b/lagoon-foliage-bromeliad.glb",
+      "bytes": 270064,
+      "sha256": "7b0c075d329cf8c184b9e5300e0bbaaa90ddb26f3fa0b42397293556f35fd87b"
+    },
+    {
+      "path": "packs/holodeck/objects/ef979a438468231bf9f50aff1a3d551dd72fdb49a56a644642a2c924ca455614/lagoon-foliage-bromeliad-runtime.zip",
+      "bytes": 195364,
+      "sha256": "ef979a438468231bf9f50aff1a3d551dd72fdb49a56a644642a2c924ca455614"
+    },
+    {
+      "path": "packs/holodeck/objects/c3cdaaf67a3773752de7a9dc271917b5f55d1c75787e3037e542db82cb3ff865/lagoon-foliage-bromeliad-editable.zip",
+      "bytes": 561705,
+      "sha256": "c3cdaaf67a3773752de7a9dc271917b5f55d1c75787e3037e542db82cb3ff865"
+    },
+    {
+      "path": "packs/holodeck/objects/2be52f38c22feecf3634fd268f32393a4f9e9c1b11b84bd4eac574c699176fd2/lagoon-foliage-fern-fountain.glb",
+      "bytes": 686892,
+      "sha256": "2be52f38c22feecf3634fd268f32393a4f9e9c1b11b84bd4eac574c699176fd2"
+    },
+    {
+      "path": "packs/holodeck/objects/6f93004fbbbb866b0a7fd383dfdb783acb8dc9adca8755191669725cf54521a7/lagoon-foliage-fern-fountain-runtime.zip",
+      "bytes": 537890,
+      "sha256": "6f93004fbbbb866b0a7fd383dfdb783acb8dc9adca8755191669725cf54521a7"
+    },
+    {
+      "path": "packs/holodeck/objects/1c6db000dc338f1c7ca077ce82afd6747039dd66c227e6b12f4c150c9515bbed/lagoon-foliage-fern-fountain-editable.zip",
+      "bytes": 963666,
+      "sha256": "1c6db000dc338f1c7ca077ce82afd6747039dd66c227e6b12f4c150c9515bbed"
+    },
+    {
+      "path": "packs/holodeck/objects/5ff9f003d8a6cf802634be12f235fa8b5d10ac991a531e4b1fd854ed1a44354e/lagoon-foliage-fern-low.glb",
+      "bytes": 120924,
+      "sha256": "5ff9f003d8a6cf802634be12f235fa8b5d10ac991a531e4b1fd854ed1a44354e"
+    },
+    {
+      "path": "packs/holodeck/objects/9d8038e97c53a02e7a918efdd8130258656590a95a6158d86f85f5554db356d2/lagoon-foliage-fern-low-runtime.zip",
+      "bytes": 89175,
+      "sha256": "9d8038e97c53a02e7a918efdd8130258656590a95a6158d86f85f5554db356d2"
+    },
+    {
+      "path": "packs/holodeck/objects/9a64377b675393769ae1266f03f1108313b0fd412d6a173181f74f5b3e0b0c56/lagoon-foliage-fern-low-editable.zip",
+      "bytes": 349420,
+      "sha256": "9a64377b675393769ae1266f03f1108313b0fd412d6a173181f74f5b3e0b0c56"
+    },
+    {
+      "path": "packs/holodeck/objects/e03d2b942df3b02a4f85fd400be9b2cd3d3d8af4c0a8297d20fbcba39e756004/lagoon-foliage-waterlily.glb",
+      "bytes": 448364,
+      "sha256": "e03d2b942df3b02a4f85fd400be9b2cd3d3d8af4c0a8297d20fbcba39e756004"
+    },
+    {
+      "path": "packs/holodeck/objects/33a3dba335bd2871cccec48673ef980f952ce1436ab304217f07553bde033114/lagoon-foliage-waterlily-runtime.zip",
+      "bytes": 304000,
+      "sha256": "33a3dba335bd2871cccec48673ef980f952ce1436ab304217f07553bde033114"
+    },
+    {
+      "path": "packs/holodeck/objects/923ee6db8665fe20616d5cce738cef7bfce0d5e5c2da93d3962ee5181a6ddf2b/lagoon-foliage-waterlily-editable.zip",
+      "bytes": 482484,
+      "sha256": "923ee6db8665fe20616d5cce738cef7bfce0d5e5c2da93d3962ee5181a6ddf2b"
+    },
+    {
+      "path": "packs/holodeck/objects/ccd329e7b100753c74f6fd362e3b31f4b4903b7c5d04245190148a9e918ac5e9/lagoon-foliage-palm-island.glb",
+      "bytes": 758520,
+      "sha256": "ccd329e7b100753c74f6fd362e3b31f4b4903b7c5d04245190148a9e918ac5e9"
+    },
+    {
+      "path": "packs/holodeck/objects/6f0e523d4d0b5746fb5b6afc693e8e853845db14dca2d9934ecfdbf1bbe3e0bd/lagoon-foliage-palm-island-runtime.zip",
+      "bytes": 637136,
+      "sha256": "6f0e523d4d0b5746fb5b6afc693e8e853845db14dca2d9934ecfdbf1bbe3e0bd"
+    },
+    {
+      "path": "packs/holodeck/objects/d1ac2914278b330503ac0eb010911198d1c78c5d8a29a326827841a2bd452a18/lagoon-foliage-palm-island-editable.zip",
+      "bytes": 1028304,
+      "sha256": "d1ac2914278b330503ac0eb010911198d1c78c5d8a29a326827841a2bd452a18"
+    },
+    {
+      "path": "packs/holodeck/objects/c108dbf2f70c58a0b79adca1b946235dd39b220d34723ca34d01f2127971334b/lagoon-foliage-palm-lean.glb",
+      "bytes": 657200,
+      "sha256": "c108dbf2f70c58a0b79adca1b946235dd39b220d34723ca34d01f2127971334b"
+    },
+    {
+      "path": "packs/holodeck/objects/5be999c1543f6bae95c021f05efea09b2c11c09ba70d7b15b15ff3b29cf3429d/lagoon-foliage-palm-lean-runtime.zip",
+      "bytes": 545345,
+      "sha256": "5be999c1543f6bae95c021f05efea09b2c11c09ba70d7b15b15ff3b29cf3429d"
+    },
+    {
+      "path": "packs/holodeck/objects/0c59a7f95594c69a39fc09ce9a2ca6bffd59b26abf2c0fe545c5519ba08d97b5/lagoon-foliage-palm-lean-editable.zip",
+      "bytes": 872294,
+      "sha256": "0c59a7f95594c69a39fc09ce9a2ca6bffd59b26abf2c0fe545c5519ba08d97b5"
+    },
+    {
+      "path": "packs/holodeck/objects/a3a95ed02517583061e5cedcfa4a7624aff1362f70e35d912c2dbf77dd5c0e5d/lagoon-foliage-alocasia.glb",
+      "bytes": 304572,
+      "sha256": "a3a95ed02517583061e5cedcfa4a7624aff1362f70e35d912c2dbf77dd5c0e5d"
+    },
+    {
+      "path": "packs/holodeck/objects/d7f321b8d7ec4dd3109e94c5f3e48c19037f20f05787817bdc548b52d5ae1188/lagoon-foliage-alocasia-runtime.zip",
+      "bytes": 247504,
+      "sha256": "d7f321b8d7ec4dd3109e94c5f3e48c19037f20f05787817bdc548b52d5ae1188"
+    },
+    {
+      "path": "packs/holodeck/objects/94dcb663d9c9bdccb7c159187b6e4032d39610568b2bbcc1dcbef53026186930/lagoon-foliage-alocasia-editable.zip",
+      "bytes": 778074,
+      "sha256": "94dcb663d9c9bdccb7c159187b6e4032d39610568b2bbcc1dcbef53026186930"
+    },
+    {
+      "path": "packs/holodeck/objects/b6c9db077cb43be9dc92be1693b727b1d8c6d0646895a41a01a91b7f08683418/lagoon-foliage-vine-short.glb",
+      "bytes": 304452,
+      "sha256": "b6c9db077cb43be9dc92be1693b727b1d8c6d0646895a41a01a91b7f08683418"
+    },
+    {
+      "path": "packs/holodeck/objects/a97beadfec1aa5c58fb8da4f968d165fb1080cf8cce3698bf0941d22f2a89570/lagoon-foliage-vine-short-runtime.zip",
+      "bytes": 243974,
+      "sha256": "a97beadfec1aa5c58fb8da4f968d165fb1080cf8cce3698bf0941d22f2a89570"
+    },
+    {
+      "path": "packs/holodeck/objects/2d3a5365377c5f1ef77c2cdb10be4943dd594878b5d75aed59ba85cfbb34b52c/lagoon-foliage-vine-short-editable.zip",
+      "bytes": 522386,
+      "sha256": "2d3a5365377c5f1ef77c2cdb10be4943dd594878b5d75aed59ba85cfbb34b52c"
+    },
+    {
+      "path": "packs/holodeck/objects/2923e15d4311596a8aff58a26af584b3a824ac97d23a25bc4d43034306f94df9/lagoon-foliage-vine-medium.glb",
+      "bytes": 334480,
+      "sha256": "2923e15d4311596a8aff58a26af584b3a824ac97d23a25bc4d43034306f94df9"
+    },
+    {
+      "path": "packs/holodeck/objects/45c5aefe7e373adbb057c2c372e39a5709e7eb3069c2bc18a816729c24a1af0b/lagoon-foliage-vine-medium-runtime.zip",
+      "bytes": 264931,
+      "sha256": "45c5aefe7e373adbb057c2c372e39a5709e7eb3069c2bc18a816729c24a1af0b"
+    },
+    {
+      "path": "packs/holodeck/objects/7d3ed9589f20d6c2b187716a97527ce6e9b66dd171cb5b850e56e13f8b52710b/lagoon-foliage-vine-medium-editable.zip",
+      "bytes": 486101,
+      "sha256": "7d3ed9589f20d6c2b187716a97527ce6e9b66dd171cb5b850e56e13f8b52710b"
+    },
+    {
+      "path": "packs/holodeck/objects/cf122eec41d5151926f48d13017fca4a7727ed814bb6f86e2bd5f64ef54a8b30/lagoon-foliage-vine-long.glb",
+      "bytes": 352348,
+      "sha256": "cf122eec41d5151926f48d13017fca4a7727ed814bb6f86e2bd5f64ef54a8b30"
+    },
+    {
+      "path": "packs/holodeck/objects/fb47c7d327347ae8ca65a2f72b7866ee2c9c0bd4afdf1b3f4197a9450bf9c473/lagoon-foliage-vine-long-runtime.zip",
+      "bytes": 279684,
+      "sha256": "fb47c7d327347ae8ca65a2f72b7866ee2c9c0bd4afdf1b3f4197a9450bf9c473"
+    },
+    {
+      "path": "packs/holodeck/objects/c16d5180669c0fbe716bd8c48c2e50cd2782aa59249de495a2e9fd1a7e274746/lagoon-foliage-vine-long-editable.zip",
+      "bytes": 457072,
+      "sha256": "c16d5180669c0fbe716bd8c48c2e50cd2782aa59249de495a2e9fd1a7e274746"
+    },
+    {
+      "path": "packs/holodeck/objects/428567869d553c7cc05a54f681d039ae5c85baa9626f83d65354cf11f03ca314/lagoon-foliage-canopy-umbrella.glb",
+      "bytes": 1027468,
+      "sha256": "428567869d553c7cc05a54f681d039ae5c85baa9626f83d65354cf11f03ca314"
+    },
+    {
+      "path": "packs/holodeck/objects/08e460f5ceca5e8cac880c3ac9f0855a97297ae885ccc59e512cf234650f3fa6/lagoon-foliage-canopy-umbrella-runtime.zip",
+      "bytes": 915337,
+      "sha256": "08e460f5ceca5e8cac880c3ac9f0855a97297ae885ccc59e512cf234650f3fa6"
+    },
+    {
+      "path": "packs/holodeck/objects/f271138964680cba38f2bf1d6e1142725c8460b0289a70719d3c56fce3ffadfd/lagoon-foliage-canopy-umbrella-editable.zip",
+      "bytes": 1432457,
+      "sha256": "f271138964680cba38f2bf1d6e1142725c8460b0289a70719d3c56fce3ffadfd"
+    },
+    {
+      "path": "packs/holodeck/objects/e7e5b0b21c2153ce3b65f1c40f83b97d8eebddd6baf7600619d4bf71aac9727e/lagoon-foliage-canopy-emergent.glb",
+      "bytes": 1037300,
+      "sha256": "e7e5b0b21c2153ce3b65f1c40f83b97d8eebddd6baf7600619d4bf71aac9727e"
+    },
+    {
+      "path": "packs/holodeck/objects/3ebc2caaf76980161ca3925a0c2fb16b8aacc4d045439007b68d3d0f3a02444f/lagoon-foliage-canopy-emergent-runtime.zip",
+      "bytes": 924103,
+      "sha256": "3ebc2caaf76980161ca3925a0c2fb16b8aacc4d045439007b68d3d0f3a02444f"
+    },
+    {
+      "path": "packs/holodeck/objects/2c0a2e49ed1a5751b9beb4a9d23419c00b5ade9990bf6a6d954eef298e526344/lagoon-foliage-canopy-emergent-editable.zip",
+      "bytes": 1323550,
+      "sha256": "2c0a2e49ed1a5751b9beb4a9d23419c00b5ade9990bf6a6d954eef298e526344"
+    },
+    {
+      "path": "packs/holodeck/objects/e8edd8636063576f0e87305bbbf89e7cf55aa5b33aa71cce099c71c94a50e79d/lagoon-foliage-cliff-drape.glb",
+      "bytes": 782264,
+      "sha256": "e8edd8636063576f0e87305bbbf89e7cf55aa5b33aa71cce099c71c94a50e79d"
+    },
+    {
+      "path": "packs/holodeck/objects/8883db50f35dc86d9ec75715ffdf600f41af74c8b965abd6d2a75d7cc1238056/lagoon-foliage-cliff-drape-runtime.zip",
+      "bytes": 719683,
+      "sha256": "8883db50f35dc86d9ec75715ffdf600f41af74c8b965abd6d2a75d7cc1238056"
+    },
+    {
+      "path": "packs/holodeck/objects/c0db61c0e8f1d14c616459b34872558457338bbddb54e1fdd53628bb9ea2266f/lagoon-foliage-cliff-drape-editable.zip",
+      "bytes": 1199692,
+      "sha256": "c0db61c0e8f1d14c616459b34872558457338bbddb54e1fdd53628bb9ea2266f"
+    },
+    {
+      "path": "packs/holodeck/objects/dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4/lagoon-wildlife-swallow.glb",
+      "bytes": 91924,
+      "sha256": "dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4"
+    },
+    {
+      "path": "packs/holodeck/objects/abbf4119c569d16764e951183b2c0f1e4bf61cb934e8e40a5a9273833fce639b/lagoon-wildlife-swallow-runtime.zip",
+      "bytes": 74065,
+      "sha256": "abbf4119c569d16764e951183b2c0f1e4bf61cb934e8e40a5a9273833fce639b"
+    },
+    {
+      "path": "packs/holodeck/objects/f6b5da3698e71373c632c155a3df248975e1219d4cc90dc42152f31e9131271a/lagoon-wildlife-swallow-editable.zip",
+      "bytes": 157404,
+      "sha256": "f6b5da3698e71373c632c155a3df248975e1219d4cc90dc42152f31e9131271a"
+    },
+    {
+      "path": "packs/holodeck/objects/5788b3f697cac28c216a8fb33e81c12c33b214888e8a21b1a3e8d7dd6bf10a6a/lagoon-wildlife-fish-gold.glb",
+      "bytes": 153128,
+      "sha256": "5788b3f697cac28c216a8fb33e81c12c33b214888e8a21b1a3e8d7dd6bf10a6a"
+    },
+    {
+      "path": "packs/holodeck/objects/f7b69fa8495cb27d9f2af3dfc6e6038f1a16d8081230351d922e8f8ca0a65f38/lagoon-wildlife-fish-gold-runtime.zip",
+      "bytes": 137872,
+      "sha256": "f7b69fa8495cb27d9f2af3dfc6e6038f1a16d8081230351d922e8f8ca0a65f38"
+    },
+    {
+      "path": "packs/holodeck/objects/1baaa8e49187b0f1984e995f6d936c027d3eb05b415f2b598dbe485beb7cf800/lagoon-wildlife-fish-gold-editable.zip",
+      "bytes": 471237,
+      "sha256": "1baaa8e49187b0f1984e995f6d936c027d3eb05b415f2b598dbe485beb7cf800"
+    },
+    {
+      "path": "packs/holodeck/objects/b0c75284e7a67a157df5d6b919e371b1637acd41261c11449ad0d6455e834f72/lagoon-wildlife-fish-silver.glb",
+      "bytes": 84080,
+      "sha256": "b0c75284e7a67a157df5d6b919e371b1637acd41261c11449ad0d6455e834f72"
+    },
+    {
+      "path": "packs/holodeck/objects/0d6aa4660e34c9c3bdf4b46fcb011cd211eed8a83bc86b6ce7411cbcc43ec74b/lagoon-wildlife-fish-silver-runtime.zip",
+      "bytes": 68061,
+      "sha256": "0d6aa4660e34c9c3bdf4b46fcb011cd211eed8a83bc86b6ce7411cbcc43ec74b"
+    },
+    {
+      "path": "packs/holodeck/objects/36d895118c05104984912ce9bfcbfaadb201b28cba863bfa2aef740ccb4d4112/lagoon-wildlife-fish-silver-editable.zip",
+      "bytes": 302364,
+      "sha256": "36d895118c05104984912ce9bfcbfaadb201b28cba863bfa2aef740ccb4d4112"
+    },
+    {
+      "path": "packs/holodeck/objects/97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913/holodeck-lagoon-sanctuary-runtime.zip",
+      "bytes": 38806600,
+      "sha256": "97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913"
+    },
+    {
+      "path": "packs/holodeck/objects/52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef/holodeck-lagoon-sanctuary-editable.zip",
+      "bytes": 54131970,
+      "sha256": "52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal.png",
+      "bytes": 1984759,
+      "sha256": "1e31a1ed90d0756a3d25baddb6c61243e88baa5e377411a6445b7588c5ff41a6"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing.png",
+      "bytes": 2307741,
+      "sha256": "e8b7a8e76c7c41e934ac4c738b631279013583f41ce31befa0655d514b46f5b1"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs.png",
+      "bytes": 2150789,
+      "sha256": "2074aa39332b75f17c757d1cca0ae8c0c08252e59c81bdbffc2da8bcd46f2bdf"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar.png",
+      "bytes": 1776701,
+      "sha256": "07d55eaaf33522962d45e3ee8068c73e73e3737ca12d8189fc74f0c968190bb8"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace.png",
+      "bytes": 1892487,
+      "sha256": "036499a355393298e784a93ae029d7a6537ceb972c0132ccf7532d4d351c9063"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock.png",
+      "bytes": 2112942,
+      "sha256": "b4fa530807c9eaed0d68ba33a58b1e14f7765f2f41a63f6906f90e5f4dea2b21"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct.png",
+      "bytes": 1498349,
+      "sha256": "dac10ec86a204b2116b0c26f5dd3cd13dee2c0acd9c881fd73a71fee7567f5f0"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier.png",
+      "bytes": 1913617,
+      "sha256": "bc759d1f8b52eebb7264c97958006f2b49175a51f0fd560cec78ef966c630fba"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge.png",
+      "bytes": 1817292,
+      "sha256": "cf2384ffad9c7e1d04b4481b4abd8aa589981878574932e298f8cfd94bf0f32e"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster.png",
+      "bytes": 1490994,
+      "sha256": "81bea2cf6d2095f498192fb65a8cef203f17fb757ccc440e4da460b16773bee5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero.png",
+      "bytes": 1675308,
+      "sha256": "433d0965483075c32934e09d653f40436eebfea2850573dfc7377f07b6a54315"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster.png",
+      "bytes": 1704109,
+      "sha256": "da01b392e5ca840a9ff356b2af52e235c3a1ea69a10669f422d30ecf03e3b690"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough.png",
+      "bytes": 1520425,
+      "sha256": "b98515a81629c0b33ae26258d2a9c1d7e981afb5342e834347926d49ae9381fb"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a.png",
+      "bytes": 1464833,
+      "sha256": "0247e476ee099acd145ff6e4f4d2246f9fe074795972bdd3786142edfadfe60f"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b.png",
+      "bytes": 1442045,
+      "sha256": "ce63aa9460bc8f1b807a50f111a3999bce5886bb583d1866a137e0bb9c702124"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad.png",
+      "bytes": 1407361,
+      "sha256": "cd91918c8dbef00eed94644df274b3dd1eee3ea4e48e5f9c6aeace9bbe28faf9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain.png",
+      "bytes": 1462063,
+      "sha256": "e67d230313eed5dd3ffca6bc046de851e4aac707136a2a642e73c7477a9b0e54"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low.png",
+      "bytes": 1330637,
+      "sha256": "ca0cd878b0acd06437b21a8571a048ee39b0faadd36ec487e7fb62a73eac11d4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily.png",
+      "bytes": 1355484,
+      "sha256": "8a3f9b5a636afc7899ee120a2b152fe38d5cf3f0ff9e5796f81f399fde40480b"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island.png",
+      "bytes": 1398509,
+      "sha256": "75b7766ed7e17847fd8bb29df2361aae40c922f157a48d4dc0ab44064a6e24d4"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean.png",
+      "bytes": 1354205,
+      "sha256": "9af908538de07c8a87af1fe6db5039a8a8a322f9e538ab79043b704e8011b388"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia.png",
+      "bytes": 1506030,
+      "sha256": "45b68818a6add41fd2796fa73f29b78dc4a55226c5e5453d9dbecba2bf16d1a5"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short.png",
+      "bytes": 1371469,
+      "sha256": "01966f3d7b489385083d029966daa549ba9bbe635ca91a94b0a40ff5fda6bf99"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium.png",
+      "bytes": 1388175,
+      "sha256": "ea1148ab8ffd275e785f34baf9e7d08df2a47f348b7e47e4f6b71d23e76eca2c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long.png",
+      "bytes": 1371313,
+      "sha256": "41f6e4405ca4f7d86ff16fff56defc24c709f6dbd2011282c5e29cd349aa7650"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella.png",
+      "bytes": 1520111,
+      "sha256": "98beec32d2e8ece1509acb9f7bbbdfd6d0c13df4d99ed553e73138025c89128d"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent.png",
+      "bytes": 1462945,
+      "sha256": "3f47047dcf3f0c95cafcf6a1ed62efb071f8b44003f21fd9145b1ab8b1e9cf32"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape.png",
+      "bytes": 1716878,
+      "sha256": "f9e5ec11c8b1587583e7007c20b39093c4ae4591b3c1c1e3a83086ede0d6fd3a"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow.png",
+      "bytes": 1282674,
+      "sha256": "5d65e30a19da1bb310113d6f421f91a20e7087753830944c28feea969b2106de"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold.png",
+      "bytes": 1563934,
+      "sha256": "e54b68599249fee930660d36133b768216a95f08cbee502adf6dd1f3df1156c9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver.png",
+      "bytes": 1479765,
+      "sha256": "97c7e0d80b6fb9493baed82ee0f28e52e5de44d3b4214dc8fd2c174d2101ae90"
+    },
+    {
+      "path": "media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview.png",
+      "bytes": 2884512,
+      "sha256": "186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3"
+    },
+    {
+      "path": "media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival.png",
+      "bytes": 2979020,
+      "sha256": "e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
-  "featuredWorlds": ["holodeck-meridian-sanctuary", "holodeck-crescent-cove", "holodeck-winter-mountainside-cabin"],
-  "otherWorlds": ["holodeck-tidemark", "holodeck-courtyard", "holodeck-cove"],
+  "featuredWorlds": ["holodeck-lagoon-sanctuary", "holodeck-meridian-sanctuary", "holodeck-crescent-cove"],
+  "otherWorlds": ["holodeck-winter-mountainside-cabin", "holodeck-tidemark", "holodeck-courtyard", "holodeck-cove"],
   "featuredAssets": [
     "/gallery/holodeck/crescent-shelter/",
     "/gallery/text-to-3d/mech/",

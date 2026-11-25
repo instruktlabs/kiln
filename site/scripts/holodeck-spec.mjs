@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261113-01';
+export const HOLODECK_RELEASE = 'holodeck-20261125-01';
 /**
  * The oldest Kiln that imports the packs' revision bundles, named in each pack README. Raise it only when the bundle
  * format needs a newer Kiln: a value that followed every Kiln release would change every pack ZIP and its key.
@@ -55,6 +55,13 @@ export const HOLODECK_PACKS = [
     description: 'A marble sanctuary above a sea of cloud: a causeway between mirror pools, terraces up to a colossal gate tower with a mirror orb, floating statues of a figure and a whale, arcades, cypresses and a bridge path to a pavilion, built in Holodeck around the Cove.',
     expectedAssets: 53,
   },
+  {
+    id: 'holodeck-lagoon-sanctuary',
+    scene: 'lagoon-sanctuary',
+    name: 'Lagoon Sanctuary',
+    description: 'A sunlit rainforest cenote around a turquoise lagoon: carved limestone arrival steps beside a sun stele, a curved stone viaduct with a brazier alcove, a stepped temple pavilion, layered tropical foliage, schooling fish and circling swallows, built in Holodeck around the Cove.',
+    expectedAssets: 39,
+  },
 ];
 
 /**
@@ -89,6 +96,10 @@ export const HOLODECK_SHOTS = {
     shot('meridian-sanctuary-overview', [14, 62, 34], [14, 2, -78], 55, true, 'Meridian Sanctuary from above: a marble causeway between mirror pools and terraces climbing to the gate tower, over a sea of cloud.'),
     shot('meridian-sanctuary-arrival', [14, 1.72, -9], [14, 13, -124], 63, true, 'Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.'),
   ],
+  'holodeck-lagoon-sanctuary': [
+    shot('lagoon-sanctuary-overview', [6, 32, 22], [4.5, -1, -32], 55, true, 'Lagoon Sanctuary from above: the circular rainforest cenote, rim canopy, curved stone viaduct, temple island and waterfall feeding the turquoise basin.'),
+    shot('lagoon-sanctuary-arrival', [-1.8, 1.72, -4.6], [4.98, -0.98, -39.85], 63, true, 'Arriving at Lagoon Sanctuary: shaded limestone steps beside a carved sun stele opening onto a turquoise cenote lagoon, curved stone viaduct, sunlit temple doorway and tall waterfall.'),
+  ],
 };
 /** Every scene shot is a full-HD capture, so a half-width pair stays sharp on large and high-density screens. */
 export const HOLODECK_SHOT_SIZE = { width: 1920, height: 1080 };
@@ -103,7 +114,7 @@ export const HOLODECK_PLANNED = [];
  * when every asset it lists is approved.
  */
 export const HOLODECK_APPROVAL = {
-  recordedAt: '2026-11-13',
+  recordedAt: '2026-11-25',
   revisions: {
     'cove-structure': 'r_1b8338546f534885a1529037bc207e94',
     'cove-canopy': 'r_df0485467228414780cfa44c0f2e32ad',
@@ -293,6 +304,37 @@ export const HOLODECK_APPROVAL = {
     'meridian-cube-mirror-far': 'r_1b9bef4f0c2d46ae8bdd1261f64b4c71',
     'meridian-statue-figure': 'r_c3c6c0cd796b43c88dabbb09061e3ef3',
     'meridian-statue-whale': 'r_94ec333e46d84cc7a9c4e79455b1c572',
+    'lagoon-sanctuary-portal': 'r_d324dd03b0734a30be89d2e6dd747e44',
+    'lagoon-sanctuary-wing': 'r_c0b62048da724ce3864fccc7c7db58cd',
+    'lagoon-sanctuary-grand-stairs': 'r_bcfda59cdd174b2b85ad798c9b6c68d4',
+    'lagoon-sun-stele-pillar': 'r_302870e794fd496f9cc618278ec58363',
+    'lagoon-arrival-stair-terrace': 'r_63bdf21046b54dd883f9433efd00a878',
+    'lagoon-waterside-stone-dock': 'r_b31b6967a9054632982ddcd92b37f7fc',
+    'lagoon-curved-viaduct': 'r_cb9fd874ba0f4ec89a4e41d927cd5d9d',
+    'lagoon-stone-brazier': 'r_a6120530e7c94a52a6e9d8ba4632ae3f',
+    'lagoon-karst-overhang-ledge': 'r_efa7fcc050604f69863d3d702c0e1452',
+    'lagoon-stalactite-cluster': 'r_ccdf7a4f562e41b4bad871966b957814',
+    'lagoon-mossy-boulder-hero': 'r_e529e1183560444aa9e7ffcd3d5f8d53',
+    'lagoon-mossy-boulder-cluster': 'r_b576523c71a64734843883fbefdfa87a',
+    'lagoon-gnarled-canopy-bough': 'r_cde37c2b08a14de9be5901cd556d0e5c',
+    'lagoon-foliage-monstera-a': 'r_f0542e8bca254d22864d0b772bd3f4ed',
+    'lagoon-foliage-monstera-b': 'r_e2bad590438d4bfebd5a3fbd5df3ae97',
+    'lagoon-foliage-bromeliad': 'r_ad23f16a18674e3388c302f73f66854d',
+    'lagoon-foliage-fern-fountain': 'r_e2c7472898ca4254bb93276370797058',
+    'lagoon-foliage-fern-low': 'r_5f55dff76aef4facb096c685df65f76c',
+    'lagoon-foliage-waterlily': 'r_c4101c3657444cf1a79bcec56da788da',
+    'lagoon-foliage-palm-island': 'r_a5890f3919de4a878f9bdca036bda349',
+    'lagoon-foliage-palm-lean': 'r_5c176f96f0b84715adeb3135c6d0b3ba',
+    'lagoon-foliage-alocasia': 'r_6587f547da92481db9ee496d8ffc7ec8',
+    'lagoon-foliage-vine-short': 'r_47618fec249f40508a8cb7856acb2838',
+    'lagoon-foliage-vine-medium': 'r_f959721ce3054d1f9dddacb563f3b4d2',
+    'lagoon-foliage-vine-long': 'r_f26da827407341cabe8e2f9294f62369',
+    'lagoon-foliage-canopy-umbrella': 'r_40d7fef763864ecdb6b1905965aaca56',
+    'lagoon-foliage-canopy-emergent': 'r_25c09eedc53341b69d7b41b83e31e2d7',
+    'lagoon-foliage-cliff-drape': 'r_42ef74caef384c5ab7c4104fb675c555',
+    'lagoon-wildlife-swallow': 'r_8839e3eea15b433fb2c544d2c5388b71',
+    'lagoon-wildlife-fish-gold': 'r_4441ce77af2648d3ae4ea5190fad2277',
+    'lagoon-wildlife-fish-silver': 'r_9583d38840844de4ad8bba0f85e75366',
   },
 };
 /** Whether the owner approved this exact revision of a card. */
@@ -320,6 +362,11 @@ const MERIDIAN_ARCHITECTURE = 'Meridian Sanctuary arcades and towers';
 const MERIDIAN_WATER = 'Meridian Sanctuary water';
 const MERIDIAN_PLANTING = 'Meridian Sanctuary planting';
 const MERIDIAN_SCULPTURE = 'Meridian Sanctuary mirrors and statues';
+const LAGOON_ARCH = 'Lagoon Sanctuary architecture';
+const LAGOON_KARST = 'Lagoon Sanctuary karst and boulders';
+const LAGOON_UNDERSTORY = 'Lagoon Sanctuary understory foliage';
+const LAGOON_CANOPY = 'Lagoon Sanctuary canopy and vines';
+const LAGOON_WILDLIFE = 'Lagoon Sanctuary wildlife';
 
 const coveModules = {
   structure: ['Cove platform and seating shell', 'The circular platform and curved seating shell that hold the rest of the Cove.'],
@@ -518,14 +565,46 @@ export const HOLODECK_ASSETS = {
   'meridian-cube-mirror-far': { name: 'Sky mirror cube', category: MERIDIAN_SCULPTURE, description: 'The mirror cube for the far cubes and slabs over the cloud sea, which reflect the sky, with a pale-gold bevel.' },
   'meridian-statue-figure': { name: 'Floating robed figure', category: MERIDIAN_SCULPTURE, description: 'A robed marble figure lifting a sphere on a 0.9 m plinth, floating as a sky sculpture.' },
   'meridian-statue-whale': { name: 'Floating marble whale', category: MERIDIAN_SCULPTURE, description: 'A carved 12 m marble humpback whale, floating as a sky sculpture.' },
+  'lagoon-sanctuary-portal': { name: 'Sunburst sanctuary pavilion', category: LAGOON_ARCH, description: 'A carved weathered limestone temple pavilion with a sunburst medallion pediment, stepped cornice, open interior sanctum, altar plinth and mossy eaves.' },
+  'lagoon-sanctuary-wing': { name: 'Colonnaded sanctuary wing', category: LAGOON_ARCH, description: 'A flanking weathered limestone colonnade wing with carved piers, recessed frieze panels and moss-dressed cornices.' },
+  'lagoon-sanctuary-grand-stairs': { name: 'Sanctuary grand staircase', category: LAGOON_ARCH, description: 'A broad 14-step carved limestone staircase with mossy cheek walls and relief pedestals rising from the lagoon shallows to the temple portal.' },
+  'lagoon-sun-stele-pillar': { name: 'Carved sun stele pillar', category: LAGOON_ARCH, description: 'A tall carved limestone stele featuring a deep sunburst medallion, geometric fretwork bands and damp moss weathering.' },
+  'lagoon-arrival-stair-terrace': { name: 'Arrival stair terrace', category: LAGOON_ARCH, description: 'A carved limestone arrival landing with descending steps, an open side mouth for the dock stairs and an L-return corner parapet meeting the viaduct.' },
+  'lagoon-waterside-stone-dock': { name: 'Waterside stone dock', category: LAGOON_ARCH, description: 'Stepped limestone jetty stairs and a low waterside landing with carved bollards overlooking the turquoise shallows.' },
+  'lagoon-curved-viaduct': { name: 'Curved stone viaduct', category: LAGOON_ARCH, description: 'A continuous curved masonry arch bridge with fretwork parapets, a cantilevered semicircular brazier alcove and twin entrance pilasters.' },
+  'lagoon-stone-brazier': { name: 'Carved stone brazier', category: LAGOON_ARCH, description: 'A carved limestone pedestal brazier holding glowing warm embers for lighting viaduct alcoves and sanctuary thresholds.' },
+  'lagoon-karst-overhang-ledge': { name: 'Karst overhang ledge', category: LAGOON_KARST, description: 'A stratified limestone cenote rim ledge with damp mossy upper shoulders and fractured overhanging rock faces.' },
+  'lagoon-stalactite-cluster': { name: 'Limestone stalactite cluster', category: LAGOON_KARST, description: 'Tapered hanging karst stalactites and damp mineral formations for dressing cenote overhangs and cliff lips.' },
+  'lagoon-mossy-boulder-hero': { name: 'Mossy lagoon boulder', category: LAGOON_KARST, description: 'A layered limestone boulder with wet dark waterline stone and a thick velvety moss cap for cenote islands and banks.' },
+  'lagoon-mossy-boulder-cluster': { name: 'Mossy shoreline boulder cluster', category: LAGOON_KARST, description: 'A grouped cluster of weathered moss-capped limestone rocks for dressing lagoon banks and shallow outcrops.' },
+  'lagoon-gnarled-canopy-bough': { name: 'Gnarled orchid canopy bough', category: LAGOON_CANOPY, description: 'A plank-buttress overhanging rainforest bough dressed with mossy bark, drooping canopy foliage and seven racemes of sculpted 3D magenta orchids.' },
+  'lagoon-foliage-monstera-a': { name: 'Fenestrated Monstera clump', category: LAGOON_UNDERSTORY, description: 'Fifteen curved 3D fenestrated Monstera deliciosa leaves with oval perforations, glossy veined surfaces and arched underside petioles. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-monstera-b': { name: 'Young Monstera cluster', category: LAGOON_UNDERSTORY, description: 'A compact tropical Monstera undergrowth cluster of glossy heart and split leaves for shaded banks. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-bromeliad': { name: 'Scarlet bromeliad rosette', category: LAGOON_UNDERSTORY, description: 'Channeled 3D strap rosettes transitioning from waxy green outer leaves to scarlet floral bracts and a warm gold centre. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-fern-fountain': { name: 'Fountain sword fern', category: LAGOON_UNDERSTORY, description: 'Eighteen arching tropical sword-fern fronds built from shingled 3D V-trough pinnae around a mossy crown with fiddleheads. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-fern-low': { name: 'Low woodland fern clump', category: LAGOON_UNDERSTORY, description: 'A low spreading tropical fern rosette for mossy stone ledges, stair corners and shaded banks. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-waterlily': { name: 'White-lotus water lily cluster', category: LAGOON_UNDERSTORY, description: 'Nine upturned V-notched lily pads, three multi-petal creamy-white lotus blooms with golden stamen crowns and bowed underwater petioles.' },
+  'lagoon-foliage-alocasia': { name: 'Cupped elephant-ear alocasia', category: LAGOON_UNDERSTORY, description: 'Sixteen sculptural cupped elephant-ear blades with pale curved ribs, scalloped margins and fleshy arched stems. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-palm-island': { name: 'Twin island cenote palms', category: LAGOON_CANOPY, description: 'Twin S-curved ringed cenote palms with seventeen arched pinnate fronds shaped for backlit lagoon views. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-palm-lean': { name: 'Leaning shoreline palm', category: LAGOON_CANOPY, description: 'A J-curved shoreline palm with mossy flared roots, glossy green coconuts under the crownshaft and arched pinnate fronds. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-vine-short': { name: 'Short orchid vine cluster', category: LAGOON_CANOPY, description: 'Close-up 3D heart-leaf hanging vines accented with small magenta orchid sprigs for overhanging branches and ledges. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-vine-medium': { name: 'Medium hanging vine curtain', category: LAGOON_CANOPY, description: 'Mid-length cascading rainforest vine tendrils for dressing karst overhangs and stone viaduct arches. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-vine-long': { name: 'Long cliffside vine curtain', category: LAGOON_CANOPY, description: 'Tall hanging vine curtains that drop down cenote walls and frame waterfalls. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-canopy-umbrella': { name: 'Umbrella rainforest canopy tree', category: LAGOON_CANOPY, description: 'A fluted plank-buttress umbrella rainforest tree authored for low-angle underside views from inside a cenote. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-canopy-emergent': { name: 'Emergent rainforest canopy tree', category: LAGOON_CANOPY, description: 'A tall emergent rainforest tree with buttressed roots and layered crown pads for framing cenote rims against the sky. Moves in Holodeck’s wind.' },
+  'lagoon-foliage-cliff-drape': { name: 'Mossy cliff-lip foliage drape', category: LAGOON_CANOPY, description: 'A modular mossy cliff-lip cushion crowned with ferns and cascading vine curtains for dressing karst ledges. Moves in Holodeck’s wind.' },
+  'lagoon-wildlife-swallow': { name: 'Cenote swallow', category: LAGOON_WILDLIFE, description: 'A streamlined forked-tail swallow with named wing joints for Holodeck’s boids and procedural gait modules.' },
+  'lagoon-wildlife-fish-gold': { name: 'Golden lagoon fish', category: LAGOON_WILDLIFE, description: 'A warm golden-orange lagoon fish with a named tail joint for Holodeck’s underwater schooling boids and gait modules.' },
+  'lagoon-wildlife-fish-silver': { name: 'Silver lagoon fish', category: LAGOON_WILDLIFE, description: 'A sleek silver-teal lagoon fish with a named tail joint for Holodeck’s underwater schooling boids and gait modules.' },
 };
 
-/** A world placement id to its gallery slug. Every scene's Cove module shares the Cove pack's slug; Crescent Cove's, the winter cabin's and Meridian Sanctuary's own assets are prefixed. */
+/** A world placement id to its gallery slug. Every scene's Cove module shares the Cove pack's slug; Crescent Cove's, the winter cabin's, Meridian Sanctuary's and Lagoon Sanctuary's own assets are prefixed. */
 export function holodeckSlug(pack, worldAssetId) {
   const cove = Object.hasOwn(coveModules, worldAssetId);
   if (pack === 'holodeck-cove' && !cove) throw new Error(`Unknown Cove module ${worldAssetId}`);
   if (cove) return `cove-${worldAssetId}`;
   if (pack === 'holodeck-winter-mountainside-cabin') return `winter-${worldAssetId}`;
   if (pack === 'holodeck-meridian-sanctuary') return `meridian-${worldAssetId}`;
+  if (pack === 'holodeck-lagoon-sanctuary') return worldAssetId.startsWith('lagoon-') ? worldAssetId : `lagoon-${worldAssetId}`;
   return pack === 'holodeck-crescent-cove' ? `crescent-${worldAssetId}` : worldAssetId;
 }
