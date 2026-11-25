@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261125-01",
+  "release": "holodeck-20261125-02",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -305,11 +305,11 @@
       "scene": "lagoon-sanctuary",
       "source": {
         "kind": "holodeck-example",
-        "ref": "be745454d194780b5208f547f6367fecf4396f1c",
-        "commit": "be745454d194780b5208f547f6367fecf4396f1c",
+        "ref": "9d59aede5c7d2accde09e5198b8a9b858dccb249",
+        "commit": "9d59aede5c7d2accde09e5198b8a9b858dccb249",
         "path": "examples/lagoon-sanctuary",
-        "sourceRevision": 19,
-        "worldSha256": "9c10d5a401c3f850abc164cf20a0b27fd4cb6ba4e8ac328655adf63731bfb615"
+        "sourceRevision": 23,
+        "worldSha256": "27b8ab8b38c080d617c21faa81e52778a5515ec8f03d32ed21c37a1a83c0fd81"
       },
       "assets": [
         "cove-structure",
@@ -6150,22 +6150,23 @@
       "store": "lagoon-sanctuary",
       "collection": "project",
       "assetId": "a_a89316f416f64cb2a88d7b76df334ba1",
-      "revisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
+      "revisionId": "r_b74384ca5ac242eaa18b9b4c7586e9f2",
+      "parentRevision": "r_b1117e857673469daba2a085368246ce",
       "manifest": {
-        "bytes": 15052,
-        "sha256": "5f2bac3e20d0e3397db21627241bdd72d0280652de37d994b4c327c0c9819a06"
+        "bytes": 14800,
+        "sha256": "f65f36647bc0784d0be12a98042432a086d0220403b93b4b86bae7d8239e92df"
       },
       "source": {
-        "bytes": 64162,
-        "sha256": "a6087693ad3c960994b5fd1f8eb71ad40c2b523ee353ce9e50e347a69c6c9738"
+        "bytes": 66142,
+        "sha256": "2a666905fd6b2606388bf1433e433e0e32734dccf9c9a9ceb66f765ff8db6ad5"
       },
       "canonical": {
-        "bytes": 5625988,
-        "sha256": "1b8a43590d31198641c12897bb2873103d1b59462a5733d9f1694ab6531edea8"
+        "bytes": 5666460,
+        "sha256": "680049ee4c12dee9eb3563ecc94e484c9e43a77245d8bdcd445b7b5766258c17"
       },
       "preview": {
-        "bytes": 365259,
-        "sha256": "3047f9140d7c4355638226688773f51540084b8d8903b6b783e833685fa45758"
+        "bytes": 365320,
+        "sha256": "962a4de09bfa8ecbd21205ad7a9e15f3241d4fe215758fc7cb33a988d7a2483e"
       },
       "placements": [
         {

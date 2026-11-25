@@ -2,6 +2,11 @@
   "schemaVersion": 1,
   "objects": [
     {
+      "path": "media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival.png",
+      "bytes": 3012073,
+      "sha256": "13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893"
+    },
+    {
       "path": "media/holodeck/scenes/1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473/crescent-cove-aerial-southwest.png",
       "bytes": 1302111,
       "sha256": "1829631fea7ba9d1df68edc055abbdd6f84fa5d1981a1e19b24341a5a73e0473"
@@ -45,6 +50,11 @@
       "path": "media/holodeck/scenes/652763f51ff7b8eef1bec832b3e289682b9f7c6f5bf5a559c58a7c3af4e77295/tidemark-overview.png",
       "bytes": 1217355,
       "sha256": "652763f51ff7b8eef1bec832b3e289682b9f7c6f5bf5a559c58a7c3af4e77295"
+    },
+    {
+      "path": "media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview.png",
+      "bytes": 3033783,
+      "sha256": "880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c"
     },
     {
       "path": "media/holodeck/scenes/9e90aab4202763d940e434353ae46c52c2b047bed5e5cbff45807a5b8a2f5428/meridian-sanctuary-overview.png",
@@ -1402,6 +1412,11 @@
       "sha256": "5d65e30a19da1bb310113d6f421f91a20e7087753830944c28feea969b2106de"
     },
     {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct.png",
+      "bytes": 1498394,
+      "sha256": "27f9c5f50cb95291f98c4db7a40c70e1d723be46421f05e431677a20375c8d5a"
+    },
+    {
       "path": "packs/holodeck/objects/0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f/winter-wmc-deck-tile-runtime.zip",
       "bytes": 57577,
       "sha256": "0067d55bd04efe6252de61784ee2be8907ccfbab3e799bbc7915fde4c7556b5f"
@@ -2285,6 +2300,11 @@
       "path": "packs/holodeck/objects/381e04538970d5bfbc82d3d39903e94e197831e14e9e4d671aacf6ea00db151b/holodeck-cove-runtime.zip",
       "bytes": 5209029,
       "sha256": "381e04538970d5bfbc82d3d39903e94e197831e14e9e4d671aacf6ea00db151b"
+    },
+    {
+      "path": "packs/holodeck/objects/3863be9e3248edea3839e3064afb816b49837ac08df2c8d75e29f72e0a24de8c/lagoon-curved-viaduct-editable.zip",
+      "bytes": 3507324,
+      "sha256": "3863be9e3248edea3839e3064afb816b49837ac08df2c8d75e29f72e0a24de8c"
     },
     {
       "path": "packs/holodeck/objects/386b27b688e885c71ac132ecd77d00e8ca26e19444fc84d6e5c63b1c1cd82f59/winter-wmc-trail-marker.glb",
@@ -3537,6 +3557,11 @@
       "sha256": "84fc8be80ab9e9501dc2a4970b97c2ef3ddec3c48c5368b837648c3c5743beab"
     },
     {
+      "path": "packs/holodeck/objects/8571429d43166a19a0874cbae61604d7b17ae5e4b08e8e756e3c72d46c54e97d/holodeck-lagoon-sanctuary-runtime.zip",
+      "bytes": 38824184,
+      "sha256": "8571429d43166a19a0874cbae61604d7b17ae5e4b08e8e756e3c72d46c54e97d"
+    },
+    {
       "path": "packs/holodeck/objects/85cd72bce19068aa52834537f9c63f3b74f829a607c3aabbea9a92c958291b80/cove-structure.glb",
       "bytes": 1398488,
       "sha256": "85cd72bce19068aa52834537f9c63f3b74f829a607c3aabbea9a92c958291b80"
@@ -4222,6 +4247,11 @@
       "sha256": "aee06c4793d5dc95f2f50ae385a7f28561e74d49ec834f05c84a820258271762"
     },
     {
+      "path": "packs/holodeck/objects/aef61fe6f9acb5895e1b8f4826e21cd7f508d9397e88a05f4326e7c5b7dc9994/holodeck-lagoon-sanctuary-editable.zip",
+      "bytes": 54149362,
+      "sha256": "aef61fe6f9acb5895e1b8f4826e21cd7f508d9397e88a05f4326e7c5b7dc9994"
+    },
+    {
       "path": "packs/holodeck/objects/af246aa25e4b9ea9d807d5bd1f6f80858ebf303b881d3d366edb881c1ca117a7/holodeck-meridian-sanctuary-editable.zip",
       "bytes": 28501735,
       "sha256": "af246aa25e4b9ea9d807d5bd1f6f80858ebf303b881d3d366edb881c1ca117a7"
@@ -4862,6 +4892,11 @@
       "sha256": "d8fae47079e34ecd76e0582422b13f55859e40f6cd3323ebc179db4f2f24037f"
     },
     {
+      "path": "packs/holodeck/objects/d92f5127c7112225237de4f3b7b4574c766f9a3a8372cf1b2b29fc5854b3e699/lagoon-curved-viaduct-runtime.zip",
+      "bytes": 3128903,
+      "sha256": "d92f5127c7112225237de4f3b7b4574c766f9a3a8372cf1b2b29fc5854b3e699"
+    },
+    {
       "path": "packs/holodeck/objects/d940c64a05da8c1ae0c19ba3c824efe7fef84dd126e301bd6b9d09bff17f21c9/crescent-jetty-platform.glb",
       "bytes": 259020,
       "sha256": "d940c64a05da8c1ae0c19ba3c824efe7fef84dd126e301bd6b9d09bff17f21c9"
@@ -4935,6 +4970,11 @@
       "path": "packs/holodeck/objects/dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4/lagoon-wildlife-swallow.glb",
       "bytes": 91924,
       "sha256": "dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4"
+    },
+    {
+      "path": "packs/holodeck/objects/dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1/lagoon-curved-viaduct.glb",
+      "bytes": 5666688,
+      "sha256": "dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1"
     },
     {
       "path": "packs/holodeck/objects/dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8/lagoon-foliage-monstera-b.glb",

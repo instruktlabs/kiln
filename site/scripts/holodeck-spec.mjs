@@ -5,7 +5,7 @@
  */
 
 export const HOLODECK_ID = 'holodeck';
-export const HOLODECK_RELEASE = 'holodeck-20261125-01';
+export const HOLODECK_RELEASE = 'holodeck-20261125-02';
 /**
  * The oldest Kiln that imports the packs' revision bundles, named in each pack README. Raise it only when the bundle
  * format needs a newer Kiln: a value that followed every Kiln release would change every pack ZIP and its key.
@@ -59,7 +59,7 @@ export const HOLODECK_PACKS = [
     id: 'holodeck-lagoon-sanctuary',
     scene: 'lagoon-sanctuary',
     name: 'Lagoon Sanctuary',
-    description: 'A sunlit rainforest cenote around a turquoise lagoon: carved limestone arrival steps beside a sun stele, a curved stone viaduct with a brazier alcove, a stepped temple pavilion, layered tropical foliage, schooling fish and circling swallows, built in Holodeck around the Cove.',
+    description: 'A sunlit rainforest cenote around a turquoise lagoon: carved limestone arrival steps beside a sun stele, a curved stone viaduct with a brazier alcove, a stepped temple pavilion, layered tropical foliage, schooling fish and circling swallows, built in Holodeck around the Cove. Original scene and assets by Gemini 4 Neon (XHigh) in Antigravity.',
     expectedAssets: 39,
   },
 ];
@@ -97,7 +97,7 @@ export const HOLODECK_SHOTS = {
     shot('meridian-sanctuary-arrival', [14, 1.72, -9], [14, 13, -124], 63, true, 'Arriving at Meridian Sanctuary: the causeway runs between mirror pools and cypresses toward the gate tower and its mirror orb.'),
   ],
   'holodeck-lagoon-sanctuary': [
-    shot('lagoon-sanctuary-overview', [6, 32, 22], [4.5, -1, -32], 55, true, 'Lagoon Sanctuary from above: the circular rainforest cenote, rim canopy, curved stone viaduct, temple island and waterfall feeding the turquoise basin.'),
+    shot('lagoon-sanctuary-overview', [2.5, 19.5, -4], [4.5, 1, -32], 59, true, 'Lagoon Sanctuary from above: the circular rainforest cenote, rim canopy, curved stone viaduct, temple island and waterfall feeding the turquoise basin.'),
     shot('lagoon-sanctuary-arrival', [-1.8, 1.72, -4.6], [4.98, -0.98, -39.85], 63, true, 'Arriving at Lagoon Sanctuary: shaded limestone steps beside a carved sun stele opening onto a turquoise cenote lagoon, curved stone viaduct, sunlit temple doorway and tall waterfall.'),
   ],
 };
@@ -310,7 +310,7 @@ export const HOLODECK_APPROVAL = {
     'lagoon-sun-stele-pillar': 'r_302870e794fd496f9cc618278ec58363',
     'lagoon-arrival-stair-terrace': 'r_63bdf21046b54dd883f9433efd00a878',
     'lagoon-waterside-stone-dock': 'r_b31b6967a9054632982ddcd92b37f7fc',
-    'lagoon-curved-viaduct': 'r_cb9fd874ba0f4ec89a4e41d927cd5d9d',
+    'lagoon-curved-viaduct': 'r_b74384ca5ac242eaa18b9b4c7586e9f2',
     'lagoon-stone-brazier': 'r_a6120530e7c94a52a6e9d8ba4632ae3f',
     'lagoon-karst-overhang-ledge': 'r_efa7fcc050604f69863d3d702c0e1452',
     'lagoon-stalactite-cluster': 'r_ccdf7a4f562e41b4bad871966b957814',

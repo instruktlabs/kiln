@@ -428,53 +428,53 @@
     "holodeck-lagoon-sanctuary": [
       {
         "view": "lagoon-sanctuary-overview",
-        "src": "/media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview.webp",
+        "src": "/media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview.webp",
         "width": 1920,
         "height": 1080,
         "alt": "Lagoon Sanctuary from above: the circular rainforest cenote, rim canopy, curved stone viaduct, temple island and waterfall feeding the turquoise basin.",
-        "srcsetWebp": "/media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-320.webp 320w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-480.webp 480w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-672.webp 672w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-768.webp 768w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-1024.webp 1024w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-1440.webp 1440w",
-        "srcsetAvif": "/media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-320.avif 320w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-480.avif 480w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-672.avif 672w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-768.avif 768w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-1024.avif 1024w, /media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview-1440.avif 1440w",
-        "inputPath": "media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview.png",
-        "bytes": 2884512,
-        "sha256": "186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3",
+        "srcsetWebp": "/media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-320.webp 320w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-480.webp 480w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-672.webp 672w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-768.webp 768w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-1024.webp 1024w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-1440.webp 1440w",
+        "srcsetAvif": "/media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-320.avif 320w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-480.avif 480w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-672.avif 672w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-768.avif 768w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-1024.avif 1024w, /media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview-1440.avif 1440w",
+        "inputPath": "media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview.png",
+        "bytes": 3033783,
+        "sha256": "880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c",
         "capture": {
           "tool": "scripts/capture-holodeck-shots.mjs",
           "world": "https://holodeck.kilnstudio.tools/worlds/lagoon-sanctuary/",
-          "manifestSha256": "160c1a214fe41e3da6c7165e9a3f2f8de52a28a5b0c050f252341eb94812fc08",
+          "manifestSha256": "fb6f2e2af8c8fcec907a588b17f4e1d8fd8186f3fea44b899228c4c901d862c1",
           "camera": {
             "position": [
-              6,
-              32,
-              22
+              2.5,
+              19.5,
+              -4
             ],
             "target": [
               4.5,
-              -1,
+              1,
               -32
             ],
-            "fov": 55,
+            "fov": 59,
             "cove": true
           },
           "backend": "WebGPU",
-          "browser": "Chrome/156.0.8078.4",
-          "capturedAt": "2026-11-25T16:05:10.954Z"
+          "browser": "Chrome/158.0.8127.38",
+          "capturedAt": "2026-11-25T19:45:48.205Z"
         }
       },
       {
         "view": "lagoon-sanctuary-arrival",
-        "src": "/media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival.webp",
+        "src": "/media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival.webp",
         "width": 1920,
         "height": 1080,
         "alt": "Arriving at Lagoon Sanctuary: shaded limestone steps beside a carved sun stele opening onto a turquoise cenote lagoon, curved stone viaduct, sunlit temple doorway and tall waterfall.",
-        "srcsetWebp": "/media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-1440.webp 1440w",
-        "srcsetAvif": "/media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival-1440.avif 1440w",
-        "inputPath": "media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival.png",
-        "bytes": 2979020,
-        "sha256": "e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5",
+        "srcsetWebp": "/media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1440.webp 1440w",
+        "srcsetAvif": "/media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1440.avif 1440w",
+        "inputPath": "media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival.png",
+        "bytes": 3012073,
+        "sha256": "13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893",
         "capture": {
           "tool": "scripts/capture-holodeck-shots.mjs",
           "world": "https://holodeck.kilnstudio.tools/worlds/lagoon-sanctuary/",
-          "manifestSha256": "160c1a214fe41e3da6c7165e9a3f2f8de52a28a5b0c050f252341eb94812fc08",
+          "manifestSha256": "fb6f2e2af8c8fcec907a588b17f4e1d8fd8186f3fea44b899228c4c901d862c1",
           "camera": {
             "position": [
               -1.8,
@@ -490,8 +490,8 @@
             "cove": true
           },
           "backend": "WebGPU",
-          "browser": "Chrome/156.0.8078.4",
-          "capturedAt": "2026-11-25T16:05:35.992Z"
+          "browser": "Chrome/158.0.8127.38",
+          "capturedAt": "2026-11-25T19:46:15.953Z"
         }
       }
     ]

@@ -49,7 +49,7 @@ test('scenes list the Cove modules at their final revision, and say when the wal
   expect(tidemark).toMatchObject({ kind: 'holodeck-example', path: 'examples/tidemark', commit: cove.commit });
   expect(selection.packs['holodeck-crescent-cove'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/crescent-cove', sourceRevision: 17 });
   expect(selection.packs['holodeck-meridian-sanctuary'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/meridian-sanctuary', sourceRevision: 27 });
-  expect(selection.packs['holodeck-lagoon-sanctuary'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/lagoon-sanctuary', sourceRevision: 19 });
+  expect(selection.packs['holodeck-lagoon-sanctuary'].source).toMatchObject({ kind: 'holodeck-example', path: 'examples/lagoon-sanctuary', sourceRevision: 23 });
   for (const slug of selection.packs['holodeck-cove'].assets) {
     const record = selection.assets[slug as keyof typeof selection.assets];
     expect(record.placements.map((placement) => placement.pack)).toEqual(['holodeck-cove', 'holodeck-tidemark', 'holodeck-courtyard', 'holodeck-crescent-cove', ...(slug === 'cove-moodboard' ? ['holodeck-winter-mountainside-cabin'] : []), 'holodeck-meridian-sanctuary', 'holodeck-lagoon-sanctuary']);
