@@ -73,7 +73,7 @@ test('Seed Town is in the scene map with its copy, and both build modes fall bac
   expect(seedTownScene.available).toBe(false);
   expect(seedTownScene.name).toBe('Seed Town');
   expect(seedTownScene.href).toBe('/scenes/seed-town/');
-  expect(seedTownScene.description).toBe('A small old town built in your browser from nine kit models: type a seed for a different town, then walk its streets by day or at dusk.');
+  expect(seedTownScene.description).toBe('Nine configurable assets make this old town. Enter a seed to build another layout, then walk its streets by day or at dusk.');
   expect(seedTownScene.copy.available).toBe('Explore Seed Town in your browser.');
   expect(seedTownScene.copy.preview).toBe('Explore opens the Seed Town scene preview.');
   expect(seedTownScene.copy.devices).toBe('Desktop and touch controls. Loads only when you choose Explore.');
