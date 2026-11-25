@@ -1,15 +1,15 @@
 {
   "asset": {
     "id": "facade-bay",
-    "revision": "r_0f8da88093fc4d498cb45c7b9b704214",
+    "revision": "r_26b01198a78f4b8489154dbeae12c0b8",
     "placement": "aW1-floor1-0",
     "instances": 790
   },
   "modules": [
     {
       "id": "facade-bay",
-      "revision": "r_0f8da88093fc4d498cb45c7b9b704214",
-      "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2"
+      "revision": "r_26b01198a78f4b8489154dbeae12c0b8",
+      "sha256": "731ac2a2454e9793928aa88cb1b81c3ea1a37808101fc13ca05ab504ac312a51"
     },
     {
       "id": "ground-bay",
@@ -56,11 +56,11 @@
     "id": "seed-town",
     "seed": "2026",
     "hour": "day",
-    "release": "st1",
+    "release": "st2",
     "buildings": 58,
     "townPlacements": 1632,
     "plantedTrees": 405,
-    "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59"
+    "packJsonSha256": "86f2a6d18b6acb3d3fe63aea68896c1b4098e87b6d48d5f88138086eb4b3c8c9"
   },
   "capture": {
     "backend": "WebGPU",
@@ -109,41 +109,41 @@
     ]
   },
   "media": {
-    "mp4": "/workflow/seed-town/99edc2b2a3990192/workflow.mp4",
-    "gif": "/workflow/seed-town/99edc2b2a3990192/workflow.gif",
-    "poster": "/workflow/seed-town/99edc2b2a3990192/poster.webp",
+    "mp4": "/workflow/seed-town/fe546e72b9031ec1/workflow.mp4",
+    "gif": "/workflow/seed-town/fe546e72b9031ec1/workflow.gif",
+    "poster": "/workflow/seed-town/fe546e72b9031ec1/poster.webp",
     "width": 1280,
     "height": 720,
     "fps": 24,
     "duration": 28
   },
   "source": {
-    "href": "/workflow/seed-town/99edc2b2a3990192/facade-bay.kiln.js",
-    "sha256": "ce84728604d11718849dfbf0d907afde2b1310095f98a2cd06ffc950e862aaed",
+    "href": "/workflow/seed-town/fe546e72b9031ec1/facade-bay.kiln.js",
+    "sha256": "c8adf1ca1af5bd931af1d147af96d024b2551a82f83d468b5822d5ad9eb12e5b",
     "label": "Seed Town window bay presets",
     "caption": "The same bay can have a shuttered window, an iron balcony or a half-timbered wall.",
     "excerpt": "  dusk: { lit: true },\n  shuttered: { shutters: true, window: 'casement', head: 'plain' },\n  townhouse: { window: 'arched', balcony: true, head: 'pediment', cornice: true, wall: '#c9b08a' },\n  brickwork: { finish: 'brick', wall: '#9a5a44', trim: '#e6dcc6', joinery: '#f1ece0' },\n  halfTimbered: { finish: 'timber', window: 'casement', head: 'plain', wall: '#e9dfc8', joinery: '#4a3528' },"
   },
   "files": [
     {
-      "path": "public/workflow/seed-town/99edc2b2a3990192/workflow.mp4",
-      "bytes": 5845473,
-      "sha256": "6f0662af03534d7df4c644477687fc312351200734837707affaa65c9d9b769a"
+      "path": "public/workflow/seed-town/fe546e72b9031ec1/workflow.mp4",
+      "bytes": 5838085,
+      "sha256": "44c1e2900c29117621d45b37a3ed36ca207340cf307c9e56f699dfe7178fc6cc"
     },
     {
-      "path": "public/workflow/seed-town/99edc2b2a3990192/workflow.gif",
-      "bytes": 8626846,
-      "sha256": "b9f5f4229f58865eaf051422fdc3eb3277857e211b57efcf94f806ded8fe14fe"
+      "path": "public/workflow/seed-town/fe546e72b9031ec1/workflow.gif",
+      "bytes": 8621325,
+      "sha256": "e71cafa38e52513cbc50e4e9984b4f880ac84e3956ed6b347218617af05ca64a"
     },
     {
-      "path": "public/workflow/seed-town/99edc2b2a3990192/poster.webp",
-      "bytes": 130632,
-      "sha256": "a38ab4487e0c6314d76733f4c72c4fb854b7013cae3a38f0a7dda83497578740"
+      "path": "public/workflow/seed-town/fe546e72b9031ec1/poster.webp",
+      "bytes": 130336,
+      "sha256": "5ff461e8ad1de610bde348a51813827e96ed5effb9fd69734590774b5ed8f15c"
     },
     {
-      "path": "public/workflow/seed-town/99edc2b2a3990192/facade-bay.kiln.js",
-      "bytes": 23202,
-      "sha256": "ce84728604d11718849dfbf0d907afde2b1310095f98a2cd06ffc950e862aaed"
+      "path": "public/workflow/seed-town/fe546e72b9031ec1/facade-bay.kiln.js",
+      "bytes": 23862,
+      "sha256": "c8adf1ca1af5bd931af1d147af96d024b2551a82f83d468b5822d5ad9eb12e5b"
     }
   ]
 }

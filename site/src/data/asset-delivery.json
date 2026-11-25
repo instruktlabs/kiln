@@ -3615,17 +3615,17 @@
       "downloads": [
         {
           "profile": "runtime",
-          "path": "packs/seed-town/st1/seed-town-runtime.zip",
-          "bytes": 727864,
-          "sha256": "8bb1dbed985abc5d3184ff54e2eedef6bc09ae297a1e921db212b1ea34a17ed8",
-          "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/seed-town-runtime.zip"
+          "path": "packs/seed-town/st2/seed-town-runtime.zip",
+          "bytes": 728114,
+          "sha256": "7859b5a02adcbe3a978cae39fe0994cfa1fe78a4accc5ddf5b3f399b0b217aea",
+          "url": "https://assets.kilnstudio.tools/packs/seed-town/st2/seed-town-runtime.zip"
         },
         {
           "profile": "editable",
-          "path": "packs/seed-town/st1/seed-town-editable.zip",
-          "bytes": 1999445,
-          "sha256": "b2a04230a80d810842f12bea69dd673b6133389748c7574f2395d6a11eada12b",
-          "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/seed-town-editable.zip"
+          "path": "packs/seed-town/st2/seed-town-editable.zip",
+          "bytes": 1999769,
+          "sha256": "fa8e428202f737dad90750c00ccf0cdb83b85ae0baee32b808c8edf1438a55c2",
+          "url": "https://assets.kilnstudio.tools/packs/seed-town/st2/seed-town-editable.zip"
         }
       ],
       "assets": [
@@ -3633,29 +3633,31 @@
           "slug": "facade-bay",
           "collection": "project",
           "assetId": "a_3558cdf5c628436981d043613749306d",
-          "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+          "revisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
           "includedRevisions": [
-            "r_0f8da88093fc4d498cb45c7b9b704214"
+            "r_26b01198a78f4b8489154dbeae12c0b8"
           ],
           "missingParents": [],
-          "omittedParents": [],
+          "omittedParents": [
+            "r_0f8da88093fc4d498cb45c7b9b704214"
+          ],
           "runtimeDownload": {
-            "path": "packs/seed-town/st1/models/facade-bay.glb",
-            "bytes": 231864,
-            "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2",
-            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/facade-bay.glb"
+            "path": "packs/seed-town/st2/models/facade-bay.glb",
+            "bytes": 233284,
+            "sha256": "731ac2a2454e9793928aa88cb1b81c3ea1a37808101fc13ca05ab504ac312a51",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st2/models/facade-bay.glb"
           },
           "runtimeMetadataDownload": {
-            "path": "packs/seed-town/st1/models/facade-bay.kiln-metadata.json",
+            "path": "packs/seed-town/st2/models/facade-bay.kiln-metadata.json",
             "bytes": 2968,
-            "sha256": "bb258a2a4164856389f42913b6f0bfe1a511b660de3dc49d96d93db4dbac37e5",
-            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/models/facade-bay.kiln-metadata.json"
+            "sha256": "d66820a7f95bc10c79bf3f4e20175d6f55d48ede05f8234f1c1d127156f7efbb",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st2/models/facade-bay.kiln-metadata.json"
           },
           "editableDownload": {
-            "path": "packs/seed-town/st1/editable/facade-bay.zip",
-            "bytes": 221267,
-            "sha256": "fa534ae55c4a25743eb8e245230a66b9ba6a52737e458b6147b3b5b984a525e6",
-            "url": "https://assets.kilnstudio.tools/packs/seed-town/st1/editable/facade-bay.zip"
+            "path": "packs/seed-town/st2/editable/facade-bay.zip",
+            "bytes": 221588,
+            "sha256": "fd1f267b1ceb1564dfd64511f94b67b78c942853505c5e55342852bcab429bff",
+            "url": "https://assets.kilnstudio.tools/packs/seed-town/st2/editable/facade-bay.zip"
           }
         },
         {

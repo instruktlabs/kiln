@@ -11,11 +11,11 @@
     {
       "id": "facade-bay",
       "assetId": "a_3558cdf5c628436981d043613749306d",
-      "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
-      "sha256": "2d61e31939097873090d394ba99a1a818532953fceee5e1899d46ada73c4f4f6",
+      "revisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
+      "sha256": "2600a87879c8e2057de4309a404a23894f80d39d4992ef19fb9a60fdd86a0b6e",
       "source": {
-        "sha256": "sha256:ce84728604d11718849dfbf0d907afde2b1310095f98a2cd06ffc950e862aaed",
-        "bytes": 23202
+        "sha256": "sha256:c8adf1ca1af5bd931af1d147af96d024b2551a82f83d468b5822d5ad9eb12e5b",
+        "bytes": 23862
       }
     },
     {

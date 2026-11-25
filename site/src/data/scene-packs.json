@@ -132,15 +132,15 @@
     "source": ".cache/site-inputs/seed-town/standalone",
     "schema": "kiln.scene-pack/1",
     "id": "seed-town",
-    "release": "st1",
+    "release": "st2",
     "three": "0.187.0",
-    "base": "/scene-packs/seed-town/st1/",
+    "base": "/scene-packs/seed-town/st2/",
     "sealedFiles": 10,
-    "sealedBytes": 2027438,
+    "sealedBytes": 2028858,
     "totalFiles": 13,
-    "totalBytes": 2031247,
-    "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59",
-    "sha256sumsSha256": "9f4fa57698ccbe26cf2eb3eda2741a5844a1be5a1b88eeb3a1ff269f693e1fb5",
+    "totalBytes": 2032667,
+    "packJsonSha256": "86f2a6d18b6acb3d3fe63aea68896c1b4098e87b6d48d5f88138086eb4b3c8c9",
+    "sha256sumsSha256": "8b552c86277324c9cec5e46249cff74d593380938cba41c23dfc3af0114ba8dc",
     "noticesSha256": "ae79478c783bd08c2028f27ef1cac0b0104e1f29b04feb528b9f58369164cb4b"
   }
 }

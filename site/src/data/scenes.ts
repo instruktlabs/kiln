@@ -283,7 +283,7 @@ const seedTownMedia = (sceneMedia as Record<string, { poster: CatalogImage } | u
 ];
 
 /**
- * Seed Town: nine kit models laid out from a seed in the browser. The seed and the hour live in the page
+ * Seed Town: nine configurable assets laid out from a seed in the browser. The seed and the hour live in the page
  * address (src/scenes/seed-town-address.ts). Its links go to the static Seed Town pack page, as Cathedral Square's do.
  */
 export const seedTownScene = {
@@ -300,7 +300,7 @@ export const seedTownScene = {
   posterHeight: seedTownMedia?.poster.height ?? 0,
   posterAlt: seedTownMedia?.poster.alt ?? '',
   description:
-    'A small old town built in your browser from nine kit models: type a seed for a different town, then walk its streets by day or at dusk.',
+    'Nine configurable assets make this old town. Enter a seed to build another layout, then walk its streets by day or at dusk.',
   links: [{ label: 'Credits and notices', path: 'THIRD-PARTY-NOTICES.txt' }] satisfies SceneLink[],
   copy: {
     available: 'Explore Seed Town in your browser.',

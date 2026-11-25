@@ -5939,6 +5939,27 @@
       "srcsetWebp": "/media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-320.webp 320w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-480.webp 480w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-672.webp 672w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-768.webp 768w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1024.webp 1024w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1440.webp 1440w",
       "srcsetAvif": "/media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-320.avif 320w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-480.avif 480w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-672.avif 672w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-768.avif 768w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1024.avif 1024w, /media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival-1440.avif 1440w",
       "inputPath": "media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival.png"
+    },
+    {
+      "src": "/media/scenes/seed-town/st2/seed-town-scene-town.webp",
+      "width": 2560,
+      "height": 1440,
+      "alt": "A small old town of brick and plaster houses round a market square, seen from above, with autumn trees and paved roads leading out across open country.",
+      "srcsetWebp": "/media/scenes/seed-town/st2/seed-town-scene-town-320.webp 320w, /media/scenes/seed-town/st2/seed-town-scene-town-480.webp 480w, /media/scenes/seed-town/st2/seed-town-scene-town-672.webp 672w, /media/scenes/seed-town/st2/seed-town-scene-town-768.webp 768w, /media/scenes/seed-town/st2/seed-town-scene-town-1024.webp 1024w, /media/scenes/seed-town/st2/seed-town-scene-town-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/seed-town/st2/seed-town-scene-town-320.avif 320w, /media/scenes/seed-town/st2/seed-town-scene-town-480.avif 480w, /media/scenes/seed-town/st2/seed-town-scene-town-672.avif 672w, /media/scenes/seed-town/st2/seed-town-scene-town-768.avif 768w, /media/scenes/seed-town/st2/seed-town-scene-town-1024.avif 1024w, /media/scenes/seed-town/st2/seed-town-scene-town-1440.avif 1440w",
+      "inputPath": "media/scenes/seed-town/st2/seed-town-scene-town.png"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st2/facade-bay.png",
+      "sourceRevisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     }
   ],
   "archives": [

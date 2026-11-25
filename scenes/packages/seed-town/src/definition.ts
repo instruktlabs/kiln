@@ -9,7 +9,7 @@ const hex = (rgb: readonly [number, number, number]) => `#${rgb.map(value => Mat
 export const townDefinition: SceneDefinition = {
   id: 'seed-town',
   label: 'Seed town',
-  description: `A small town built from nine kit models, with the roads and trees round it. Type a seed to build a different town. Drag orbits and the wheel zooms. Enter, or Walk the town, starts on the road south of the town with the camera at ${EYE_HEIGHT} metres. Click the view to look, W A S D walks, Shift runs, and Escape returns to the orbit.`,
+  description: `Nine configurable assets supply the buildings, streets and trees. Type a seed to build a different town. Drag orbits and the wheel zooms. Enter, or Walk the town, starts on the road south of the town with the camera at ${EYE_HEIGHT} metres. Click the view to look, W A S D walks, Shift runs, and Escape returns to the orbit.`,
   camera: { position: [-70, 64, -80], fov: 46, near: 0.15, far: 900 },
   tiers: townTiers,
   look: {

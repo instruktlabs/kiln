@@ -2,6 +2,7 @@ import { afterEach, expect, test } from 'bun:test';
 import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import scenePacks from '../src/data/scene-packs.json';
 import { BUILT_RUNTIMES, CEILINGS } from './scene-runtime.mjs';
 import { RUNTIME_ENTRIES } from './typecheck-scenes.mjs';
 import { SCENE_INPUT_IDS } from './scene-inputs.mjs';
@@ -72,13 +73,13 @@ test('Seed Town is in the scene map with its copy, and both build modes fall bac
   expect(seedTownScene.available).toBe(false);
   expect(seedTownScene.name).toBe('Seed Town');
   expect(seedTownScene.href).toBe('/scenes/seed-town/');
-  expect(seedTownScene.description).toBe('A small old town built in your browser from nine kit models: type a seed for a different town, then walk its streets by day or at dusk.');
+  expect(seedTownScene.description).toBe('Nine configurable assets make this old town. Enter a seed to build another layout, then walk its streets by day or at dusk.');
   expect(seedTownScene.copy.available).toBe('Explore Seed Town in your browser.');
   expect(seedTownScene.copy.preview).toBe('Explore opens the Seed Town scene preview.');
   expect(seedTownScene.copy.devices).toBe('Desktop and touch controls. Loads only when you choose Explore.');
   expect(seedTownScene.links).toEqual([{ label: 'Credits and notices', path: 'THIRD-PARTY-NOTICES.txt' }]);
   // The poster is the recorded capture of the scene itself, with a description of what it shows.
-  expect(seedTownScene.poster).toBe('/media/scenes/seed-town/st1/seed-town-scene-town.webp');
+  expect(seedTownScene.poster).toBe(`/media/scenes/seed-town/${scenePacks['seed-town'].release}/seed-town-scene-town.webp`);
   expect([seedTownScene.posterWidth, seedTownScene.posterHeight]).toEqual([2560, 1440]);
   expect(seedTownScene.posterAlt).toContain('market square');
   // The pack overview is a static page, so both build modes fall back to it, as Cathedral Square does.

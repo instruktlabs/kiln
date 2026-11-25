@@ -939,6 +939,42 @@
             "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
           ]
         }
+      },
+      {
+        "id": "seed-town-2026-11-25-0f7b701b",
+        "pack": "seed-town",
+        "renderedOn": "2026-11-25",
+        "engine": {
+          "packageName": "@instruktlabs/kiln",
+          "packageVersion": "1.8.0",
+          "packageJsonSha256": "1934bc168eac2805271984dacb9c290b9f750d4079ce9f2bd7a065fffd2a90bf"
+        },
+        "service": {
+          "url": "http://127.0.0.1:8000",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "88f012e7-3936-4503-b954-e0f11abe3088",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -10494,18 +10530,18 @@
       "run": "cathedral-square-2026-11-10-044ca1e8"
     },
     "seed-town:facade-bay": {
-      "path": "media/rig/review-neutral-v1/seed-town/st1/facade-bay.png",
+      "path": "media/rig/review-neutral-v1/seed-town/st2/facade-bay.png",
       "width": 1024,
       "height": 1024,
       "bytes": 1708946,
       "sha256": "e2fee9801831ffc0c1f690d7ad485cc43dde4cde31d3e16e466ed883d73f4f83",
       "assetId": "a_3558cdf5c628436981d043613749306d",
-      "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+      "revisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
       "glb": {
         "member": "models/facade-bay.glb",
-        "bytes": 231864,
-        "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2",
-        "triangles": 917
+        "bytes": 233284,
+        "sha256": "731ac2a2454e9793928aa88cb1b81c3ea1a37808101fc13ca05ab504ac312a51",
+        "triangles": 929
       },
       "view": {
         "direction": [
@@ -10518,7 +10554,7 @@
         "halfHeight": 1.969315066488987
       },
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
-      "run": "seed-town-2026-11-14-894875cf"
+      "run": "seed-town-2026-11-25-0f7b701b"
     },
     "seed-town:ground-bay": {
       "path": "media/rig/review-neutral-v1/seed-town/st1/ground-bay.png",

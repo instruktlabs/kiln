@@ -2,7 +2,7 @@
   "schema": "kiln.seed-town-manifest/1",
   "collectionId": "project",
   "note": "Exact pins of the town kits. sha256 and bytes are those of the runtime file the saved revision exports with carried sizes; savedGlbSha256 is the saved revision itself. Collection project is workspace storage.",
-  "release": "st1",
+  "release": "st2",
   "assets": [
     {
       "id": "facade-bay",
@@ -10,11 +10,11 @@
       "collectionId": "project",
       "collectionQualifiedId": "project/a_3558cdf5c628436981d043613749306d",
       "assetId": "a_3558cdf5c628436981d043613749306d",
-      "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
-      "savedGlbSha256": "2d61e31939097873090d394ba99a1a818532953fceee5e1899d46ada73c4f4f6",
-      "sourceSha256": "ce84728604d11718849dfbf0d907afde2b1310095f98a2cd06ffc950e862aaed",
-      "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2",
-      "bytes": 231864
+      "revisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
+      "savedGlbSha256": "2600a87879c8e2057de4309a404a23894f80d39d4992ef19fb9a60fdd86a0b6e",
+      "sourceSha256": "c8adf1ca1af5bd931af1d147af96d024b2551a82f83d468b5822d5ad9eb12e5b",
+      "sha256": "731ac2a2454e9793928aa88cb1b81c3ea1a37808101fc13ca05ab504ac312a51",
+      "bytes": 233284
     },
     {
       "id": "ground-bay",

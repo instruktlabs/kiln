@@ -26,20 +26,20 @@
       "packJsonSha256": "5cd13fdc406b7e842836a17bdf0709bc874de7bb4961cf0f313c08a3d412296d"
     },
     {
-      "id": "seed-town",
-      "release": "st1",
-      "path": "scene-inputs/seed-town/st1/seed-town.zip",
-      "bytes": 718968,
-      "sha256": "cf18cd22d21fdad1f3e8cc1cf0bba9bbe31bc6eac8c4156f8ea76768d6968b22",
-      "packJsonSha256": "980195cb7cdbbdc36cd94943bc7d72f6d7e2e3dbcf71bdfd1a5fa3bdbaed4f59"
-    },
-    {
       "id": "cathedral-square",
       "release": "cs4",
       "path": "scene-inputs/cathedral-square/cs4/cathedral-square.zip",
       "bytes": 14190276,
       "sha256": "a4e05111a691b7358f40b9f1b287fab1ce00c9969ec5020c2df9506a7cfb2cef",
       "packJsonSha256": "f6300e14559de4a317681c0904064dedab1a3436d5f5c01432bb9632e1308bd3"
+    },
+    {
+      "id": "seed-town",
+      "release": "st2",
+      "path": "scene-inputs/seed-town/st2/seed-town.zip",
+      "bytes": 719194,
+      "sha256": "38dca9f4a57cf3476d5e1dddb9c3c7af5df2eb4fd2a1c7da549988fc6e53b3c5",
+      "packJsonSha256": "86f2a6d18b6acb3d3fe63aea68896c1b4098e87b6d48d5f88138086eb4b3c8c9"
     }
   ]
 }
