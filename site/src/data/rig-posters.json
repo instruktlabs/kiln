@@ -903,6 +903,42 @@
             "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
           ]
         }
+      },
+      {
+        "id": "holodeck-2026-11-25-2931206b",
+        "pack": "holodeck",
+        "renderedOn": "2026-11-25",
+        "engine": {
+          "packageName": "@instruktlabs/kiln",
+          "packageVersion": "1.9.0",
+          "packageJsonSha256": "9ecaf9a71bf823e7c7ca7dbdce9c5f784c9567431f5f40576778b2548eb5f875"
+        },
+        "service": {
+          "url": "http://127.0.0.1:8134",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "a1ff84b2-d604-44dd-9ab6-abfdbf7b4693",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -11052,18 +11088,18 @@
       "run": "holodeck-2026-11-25-c43246f9"
     },
     "holodeck:lagoon-curved-viaduct": {
-      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct.png",
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct.png",
       "width": 1024,
       "height": 1024,
-      "bytes": 1498349,
-      "sha256": "dac10ec86a204b2116b0c26f5dd3cd13dee2c0acd9c881fd73a71fee7567f5f0",
+      "bytes": 1498394,
+      "sha256": "27f9c5f50cb95291f98c4db7a40c70e1d723be46421f05e431677a20375c8d5a",
       "assetId": "a_a89316f416f64cb2a88d7b76df334ba1",
-      "revisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
+      "revisionId": "r_b74384ca5ac242eaa18b9b4c7586e9f2",
       "glb": {
-        "member": "packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
-        "bytes": 5626216,
-        "sha256": "e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252",
-        "triangles": 23550
+        "member": "packs/holodeck/objects/dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1/lagoon-curved-viaduct.glb",
+        "bytes": 5666688,
+        "sha256": "dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1",
+        "triangles": 23726
       },
       "view": {
         "direction": [
@@ -11076,7 +11112,7 @@
         "halfHeight": 17.932720818154674
       },
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
-      "run": "holodeck-2026-11-25-c43246f9"
+      "run": "holodeck-2026-11-25-2931206b"
     },
     "holodeck:lagoon-stone-brazier": {
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier.png",

@@ -46,6 +46,13 @@
         "bytes": 222296,
         "sha256": "1c6fccafaac098bb04f9ebd40d35cf959d6d8cb70f7d1510d927981b9eaef4f0"
       }
+    },
+    {
+      "release": "holodeck-20261125-02",
+      "selection": {
+        "bytes": 222358,
+        "sha256": "de2107b0407989c46408d5239866f21043995059e549d2a583f1b8682d655c4e"
+      }
     }
   ]
 }

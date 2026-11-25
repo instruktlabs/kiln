@@ -8367,21 +8367,6 @@
       "sha256": "09166a8f89b7183662c7d321c09a7f96df4eb96667e98d0cb6a4e2b2b519e199"
     },
     {
-      "path": "packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
-      "bytes": 5626216,
-      "sha256": "e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252"
-    },
-    {
-      "path": "packs/holodeck/objects/27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390/lagoon-curved-viaduct-runtime.zip",
-      "bytes": 3111285,
-      "sha256": "27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390"
-    },
-    {
-      "path": "packs/holodeck/objects/268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db/lagoon-curved-viaduct-editable.zip",
-      "bytes": 3489217,
-      "sha256": "268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db"
-    },
-    {
       "path": "packs/holodeck/objects/ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd/lagoon-stone-brazier.glb",
       "bytes": 2020752,
       "sha256": "ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd"
@@ -8742,16 +8727,6 @@
       "sha256": "36d895118c05104984912ce9bfcbfaadb201b28cba863bfa2aef740ccb4d4112"
     },
     {
-      "path": "packs/holodeck/objects/97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913/holodeck-lagoon-sanctuary-runtime.zip",
-      "bytes": 38806600,
-      "sha256": "97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913"
-    },
-    {
-      "path": "packs/holodeck/objects/52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef/holodeck-lagoon-sanctuary-editable.zip",
-      "bytes": 54131970,
-      "sha256": "52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef"
-    },
-    {
       "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal.png",
       "bytes": 1984759,
       "sha256": "1e31a1ed90d0756a3d25baddb6c61243e88baa5e377411a6445b7588c5ff41a6"
@@ -8907,14 +8882,44 @@
       "sha256": "97c7e0d80b6fb9493baed82ee0f28e52e5de44d3b4214dc8fd2c174d2101ae90"
     },
     {
-      "path": "media/holodeck/scenes/186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3/lagoon-sanctuary-overview.png",
-      "bytes": 2884512,
-      "sha256": "186828d2de154b49dfe7a55c16f825d6ea6ff227a30b9684e7f5c9bd9ff98df3"
+      "path": "packs/holodeck/objects/dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1/lagoon-curved-viaduct.glb",
+      "bytes": 5666688,
+      "sha256": "dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1"
     },
     {
-      "path": "media/holodeck/scenes/e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5/lagoon-sanctuary-arrival.png",
-      "bytes": 2979020,
-      "sha256": "e3fb58f011137ba29aab27b4806518343ef53cf314416f629b61e1a391f3c5f5"
+      "path": "packs/holodeck/objects/d92f5127c7112225237de4f3b7b4574c766f9a3a8372cf1b2b29fc5854b3e699/lagoon-curved-viaduct-runtime.zip",
+      "bytes": 3128903,
+      "sha256": "d92f5127c7112225237de4f3b7b4574c766f9a3a8372cf1b2b29fc5854b3e699"
+    },
+    {
+      "path": "packs/holodeck/objects/3863be9e3248edea3839e3064afb816b49837ac08df2c8d75e29f72e0a24de8c/lagoon-curved-viaduct-editable.zip",
+      "bytes": 3507324,
+      "sha256": "3863be9e3248edea3839e3064afb816b49837ac08df2c8d75e29f72e0a24de8c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct.png",
+      "bytes": 1498394,
+      "sha256": "27f9c5f50cb95291f98c4db7a40c70e1d723be46421f05e431677a20375c8d5a"
+    },
+    {
+      "path": "packs/holodeck/objects/8571429d43166a19a0874cbae61604d7b17ae5e4b08e8e756e3c72d46c54e97d/holodeck-lagoon-sanctuary-runtime.zip",
+      "bytes": 38824184,
+      "sha256": "8571429d43166a19a0874cbae61604d7b17ae5e4b08e8e756e3c72d46c54e97d"
+    },
+    {
+      "path": "packs/holodeck/objects/aef61fe6f9acb5895e1b8f4826e21cd7f508d9397e88a05f4326e7c5b7dc9994/holodeck-lagoon-sanctuary-editable.zip",
+      "bytes": 54149362,
+      "sha256": "aef61fe6f9acb5895e1b8f4826e21cd7f508d9397e88a05f4326e7c5b7dc9994"
+    },
+    {
+      "path": "media/holodeck/scenes/880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c/lagoon-sanctuary-overview.png",
+      "bytes": 3033783,
+      "sha256": "880936b56319103d84f2f1f8d1dcb2d0efaea8ee6667d94291c6dd004751190c"
+    },
+    {
+      "path": "media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival.png",
+      "bytes": 3012073,
+      "sha256": "13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893"
     }
   ]
 }

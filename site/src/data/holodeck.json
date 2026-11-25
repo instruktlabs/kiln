@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "holodeck",
-  "release": "holodeck-20261125-01",
+  "release": "holodeck-20261125-02",
   "base": "https://assets.kilnstudio.tools/",
   "licence": {
     "spdx": "CC0-1.0",
@@ -454,17 +454,17 @@
       "id": "holodeck-lagoon-sanctuary",
       "scene": "lagoon-sanctuary",
       "name": "Lagoon Sanctuary",
-      "description": "A sunlit rainforest cenote around a turquoise lagoon: carved limestone arrival steps beside a sun stele, a curved stone viaduct with a brazier alcove, a stepped temple pavilion, layered tropical foliage, schooling fish and circling swallows, built in Holodeck around the Cove.",
+      "description": "A sunlit rainforest cenote around a turquoise lagoon: carved limestone arrival steps beside a sun stele, a curved stone viaduct with a brazier alcove, a stepped temple pavilion, layered tropical foliage, schooling fish and circling swallows, built in Holodeck around the Cove. Original scene and assets by Gemini 4 Neon (XHigh) in Antigravity.",
       "available": true,
       "status": "Available",
       "assetCount": 39,
       "source": {
         "kind": "holodeck-example",
-        "ref": "be745454d194780b5208f547f6367fecf4396f1c",
-        "commit": "be745454d194780b5208f547f6367fecf4396f1c",
+        "ref": "9d59aede5c7d2accde09e5198b8a9b858dccb249",
+        "commit": "9d59aede5c7d2accde09e5198b8a9b858dccb249",
         "path": "examples/lagoon-sanctuary",
-        "sourceRevision": 19,
-        "worldSha256": "9c10d5a401c3f850abc164cf20a0b27fd4cb6ba4e8ac328655adf63731bfb615"
+        "sourceRevision": 23,
+        "worldSha256": "27b8ab8b38c080d617c21faa81e52778a5515ec8f03d32ed21c37a1a83c0fd81"
       },
       "assets": [
         "cove-structure",
@@ -511,18 +511,18 @@
         {
           "profile": "runtime",
           "label": "Runtime assets",
-          "path": "packs/holodeck/objects/97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913/holodeck-lagoon-sanctuary-runtime.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913/holodeck-lagoon-sanctuary-runtime.zip",
-          "bytes": 38806600,
-          "sha256": "97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913"
+          "path": "packs/holodeck/objects/8571429d43166a19a0874cbae61604d7b17ae5e4b08e8e756e3c72d46c54e97d/holodeck-lagoon-sanctuary-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8571429d43166a19a0874cbae61604d7b17ae5e4b08e8e756e3c72d46c54e97d/holodeck-lagoon-sanctuary-runtime.zip",
+          "bytes": 38824184,
+          "sha256": "8571429d43166a19a0874cbae61604d7b17ae5e4b08e8e756e3c72d46c54e97d"
         },
         {
           "profile": "editable",
           "label": "Full Kiln assets (remixable)",
-          "path": "packs/holodeck/objects/52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef/holodeck-lagoon-sanctuary-editable.zip",
-          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef/holodeck-lagoon-sanctuary-editable.zip",
-          "bytes": 54131970,
-          "sha256": "52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef"
+          "path": "packs/holodeck/objects/aef61fe6f9acb5895e1b8f4826e21cd7f508d9397e88a05f4326e7c5b7dc9994/holodeck-lagoon-sanctuary-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/aef61fe6f9acb5895e1b8f4826e21cd7f508d9397e88a05f4326e7c5b7dc9994/holodeck-lagoon-sanctuary-editable.zip",
+          "bytes": 54149362,
+          "sha256": "aef61fe6f9acb5895e1b8f4826e21cd7f508d9397e88a05f4326e7c5b7dc9994"
         }
       ]
     }
@@ -16040,41 +16040,42 @@
       ],
       "collection": "project",
       "assetId": "a_a89316f416f64cb2a88d7b76df334ba1",
-      "revisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
-      "sourcePath": "packs/holodeck/sources/project/a_a89316f416f64cb2a88d7b76df334ba1/r_cb9fd874ba0f4ec89a4e41d927cd5d9d/source.kiln.js",
-      "sourceSha256": "a6087693ad3c960994b5fd1f8eb71ad40c2b523ee353ce9e50e347a69c6c9738",
+      "revisionId": "r_b74384ca5ac242eaa18b9b4c7586e9f2",
+      "parentRevision": "r_b1117e857673469daba2a085368246ce",
+      "sourcePath": "packs/holodeck/sources/project/a_a89316f416f64cb2a88d7b76df334ba1/r_b74384ca5ac242eaa18b9b4c7586e9f2/source.kiln.js",
+      "sourceSha256": "2a666905fd6b2606388bf1433e433e0e32734dccf9c9a9ceb66f765ff8db6ad5",
       "runtimeModelDownload": {
-        "path": "packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
-        "bytes": 5626216,
-        "sha256": "e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252"
+        "path": "packs/holodeck/objects/dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1/lagoon-curved-viaduct.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1/lagoon-curved-viaduct.glb",
+        "bytes": 5666688,
+        "sha256": "dd2f56b6bf883c1d13c732d8735e0ef1b8bb908ccd69a25c9799d043862c62c1"
       },
       "runtimeDownload": {
-        "path": "packs/holodeck/objects/27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390/lagoon-curved-viaduct-runtime.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390/lagoon-curved-viaduct-runtime.zip",
-        "bytes": 3111285,
-        "sha256": "27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390"
+        "path": "packs/holodeck/objects/d92f5127c7112225237de4f3b7b4574c766f9a3a8372cf1b2b29fc5854b3e699/lagoon-curved-viaduct-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d92f5127c7112225237de4f3b7b4574c766f9a3a8372cf1b2b29fc5854b3e699/lagoon-curved-viaduct-runtime.zip",
+        "bytes": 3128903,
+        "sha256": "d92f5127c7112225237de4f3b7b4574c766f9a3a8372cf1b2b29fc5854b3e699"
       },
       "editableDownload": {
-        "path": "packs/holodeck/objects/268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db/lagoon-curved-viaduct-editable.zip",
-        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db/lagoon-curved-viaduct-editable.zip",
-        "bytes": 3489217,
-        "sha256": "268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db"
+        "path": "packs/holodeck/objects/3863be9e3248edea3839e3064afb816b49837ac08df2c8d75e29f72e0a24de8c/lagoon-curved-viaduct-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3863be9e3248edea3839e3064afb816b49837ac08df2c8d75e29f72e0a24de8c/lagoon-curved-viaduct-editable.zip",
+        "bytes": 3507324,
+        "sha256": "3863be9e3248edea3839e3064afb816b49837ac08df2c8d75e29f72e0a24de8c"
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct.webp",
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct.webp",
         "width": 1024,
         "height": 1024,
         "alt": "A continuous curved masonry arch bridge with fretwork parapets, a cantilevered semicircular brazier alcove and twin entrance pilasters.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct.png",
-        "sourceRevisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-02/lagoon-curved-viaduct.png",
+        "sourceRevisionId": "r_b74384ca5ac242eaa18b9b4c7586e9f2",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       },
       "metrics": {
-        "triangles": 23550,
+        "triangles": 23726,
         "meshes": 4,
         "materials": 4,
         "bounds": [
