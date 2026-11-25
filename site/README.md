@@ -155,7 +155,7 @@ source revision, kit hashes, placement IDs, tree count, seed and media checksums
 To reproduce the film, install the site and scenes dependencies. From `site/`,
 run `bun scripts/stage-seed-town-workflow.mjs HYDRATED_SITE_PUBLIC FACADE_SOURCE`
 with Chrome, FFmpeg and FFprobe available. Supply the public directory containing
-`scene-packs/seed-town/st1/` and the saved
+the Seed Town release pinned in `scenes/packages/seed-town/ASSET-MANIFEST.json` and the saved
 `facade-bay.kiln.js` source. Add `--proof` to review representative
 frames under `.cache/seed-town-film/`. The full capture stages the
 MP4, GIF, poster and editable source under `public/workflow/seed-town/`.

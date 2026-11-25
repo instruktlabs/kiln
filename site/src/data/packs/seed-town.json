@@ -1,7 +1,7 @@
 {
   "id": "seed-town",
   "name": "Seed Town",
-  "release": "st1",
+  "release": "st2",
   "assets": [
     {
       "slug": "facade-bay",
@@ -9,12 +9,9 @@
       "description": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
       "collection": "project",
       "assetId": "a_3558cdf5c628436981d043613749306d",
-      "revisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
-      "parentRevision": null,
-      "attribution": {
-        "model": "claude-fable-5-2",
-        "harness": "claude-code"
-      },
+      "revisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
+      "parentRevision": "r_0f8da88093fc4d498cb45c7b9b704214",
+      "attribution": {},
       "metrics": {
         "triangles": 154,
         "materials": 4,
@@ -25,18 +22,18 @@
         ]
       },
       "savedModel": {
-        "sha256": "2d61e31939097873090d394ba99a1a818532953fceee5e1899d46ada73c4f4f6",
-        "bytes": 154280
+        "sha256": "2600a87879c8e2057de4309a404a23894f80d39d4992ef19fb9a60fdd86a0b6e",
+        "bytes": 155124
       },
       "runtimeModelDownload": {
         "member": "models/facade-bay.glb",
-        "bytes": 231864,
-        "sha256": "ab43c8ebb4fa8ee7947d45245775b885e93324682c10a8ded3075fa5745865d2"
+        "bytes": 233284,
+        "sha256": "731ac2a2454e9793928aa88cb1b81c3ea1a37808101fc13ca05ab504ac312a51"
       },
       "runtimeMetadata": {
         "member": "models/facade-bay.kiln-metadata.json",
         "bytes": 2968,
-        "sha256": "bb258a2a4164856389f42913b6f0bfe1a511b660de3dc49d96d93db4dbac37e5"
+        "sha256": "d66820a7f95bc10c79bf3f4e20175d6f55d48ede05f8234f1c1d127156f7efbb"
       },
       "parameters": {
         "options": [
@@ -137,14 +134,14 @@
         "variants": []
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay.webp",
+        "src": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay.webp",
         "width": 1024,
         "height": 1024,
         "alt": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/facade-bay-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/facade-bay.png",
-        "sourceRevisionId": "r_0f8da88093fc4d498cb45c7b9b704214",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st2/facade-bay.png",
+        "sourceRevisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       }

@@ -8920,6 +8920,41 @@
       "path": "media/holodeck/scenes/13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893/lagoon-sanctuary-arrival.png",
       "bytes": 3012073,
       "sha256": "13c1e2d44bdf5e61fcfbd1ada24d2b10d438972ca9e8c7cb7fd6f1aabe4e6893"
+    },
+    {
+      "path": "packs/seed-town/st2/models/facade-bay.glb",
+      "bytes": 233284,
+      "sha256": "731ac2a2454e9793928aa88cb1b81c3ea1a37808101fc13ca05ab504ac312a51"
+    },
+    {
+      "path": "packs/seed-town/st2/models/facade-bay.kiln-metadata.json",
+      "bytes": 2968,
+      "sha256": "d66820a7f95bc10c79bf3f4e20175d6f55d48ede05f8234f1c1d127156f7efbb"
+    },
+    {
+      "path": "packs/seed-town/st2/editable/facade-bay.zip",
+      "bytes": 221588,
+      "sha256": "fd1f267b1ceb1564dfd64511f94b67b78c942853505c5e55342852bcab429bff"
+    },
+    {
+      "path": "packs/seed-town/st2/seed-town-runtime.zip",
+      "bytes": 728114,
+      "sha256": "7859b5a02adcbe3a978cae39fe0994cfa1fe78a4accc5ddf5b3f399b0b217aea"
+    },
+    {
+      "path": "packs/seed-town/st2/seed-town-editable.zip",
+      "bytes": 1999769,
+      "sha256": "fa8e428202f737dad90750c00ccf0cdb83b85ae0baee32b808c8edf1438a55c2"
+    },
+    {
+      "path": "media/scenes/seed-town/st2/seed-town-scene-town.png",
+      "bytes": 6850860,
+      "sha256": "9aee3a45233e0f912846db22c3598b0cb8869f173cd0dc6157da431976f1d493"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st2/facade-bay.png",
+      "bytes": 1708946,
+      "sha256": "e2fee9801831ffc0c1f690d7ad485cc43dde4cde31d3e16e466ed883d73f4f83"
     }
   ]
 }
