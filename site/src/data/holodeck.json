@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "id": "holodeck",
-  "release": "holodeck-20261113-01",
+  "release": "holodeck-20261125-01",
   "base": "https://assets.kilnstudio.tools/",
   "licence": {
     "spdx": "CC0-1.0",
     "note": "Dedicated to the public domain by the owner, subject to final release approval. Kiln and Holodeck software keep their own licences."
   },
-  "runtimeExporter": "@instruktlabs/kiln@1.7.0",
+  "runtimeExporter": "@instruktlabs/kiln@1.9.0",
   "packs": [
     {
       "id": "holodeck-tidemark",
@@ -449,6 +449,82 @@
           "sha256": "01813671dc2880e109c728a572580cbd73c990d7b3168535b9662a732040db36"
         }
       ]
+    },
+    {
+      "id": "holodeck-lagoon-sanctuary",
+      "scene": "lagoon-sanctuary",
+      "name": "Lagoon Sanctuary",
+      "description": "A sunlit rainforest cenote around a turquoise lagoon: carved limestone arrival steps beside a sun stele, a curved stone viaduct with a brazier alcove, a stepped temple pavilion, layered tropical foliage, schooling fish and circling swallows, built in Holodeck around the Cove.",
+      "available": true,
+      "status": "Available",
+      "assetCount": 39,
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "be745454d194780b5208f547f6367fecf4396f1c",
+        "commit": "be745454d194780b5208f547f6367fecf4396f1c",
+        "path": "examples/lagoon-sanctuary",
+        "sourceRevision": 19,
+        "worldSha256": "9c10d5a401c3f850abc164cf20a0b27fd4cb6ba4e8ac328655adf63731bfb615"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard",
+        "lagoon-sanctuary-portal",
+        "lagoon-sanctuary-wing",
+        "lagoon-sanctuary-grand-stairs",
+        "lagoon-sun-stele-pillar",
+        "lagoon-arrival-stair-terrace",
+        "lagoon-waterside-stone-dock",
+        "lagoon-curved-viaduct",
+        "lagoon-stone-brazier",
+        "lagoon-karst-overhang-ledge",
+        "lagoon-stalactite-cluster",
+        "lagoon-mossy-boulder-hero",
+        "lagoon-mossy-boulder-cluster",
+        "lagoon-gnarled-canopy-bough",
+        "lagoon-foliage-monstera-a",
+        "lagoon-foliage-monstera-b",
+        "lagoon-foliage-bromeliad",
+        "lagoon-foliage-fern-fountain",
+        "lagoon-foliage-fern-low",
+        "lagoon-foliage-waterlily",
+        "lagoon-foliage-palm-island",
+        "lagoon-foliage-palm-lean",
+        "lagoon-foliage-alocasia",
+        "lagoon-foliage-vine-short",
+        "lagoon-foliage-vine-medium",
+        "lagoon-foliage-vine-long",
+        "lagoon-foliage-canopy-umbrella",
+        "lagoon-foliage-canopy-emergent",
+        "lagoon-foliage-cliff-drape",
+        "lagoon-wildlife-swallow",
+        "lagoon-wildlife-fish-gold",
+        "lagoon-wildlife-fish-silver"
+      ],
+      "downloads": [
+        {
+          "profile": "runtime",
+          "label": "Runtime assets",
+          "path": "packs/holodeck/objects/97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913/holodeck-lagoon-sanctuary-runtime.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913/holodeck-lagoon-sanctuary-runtime.zip",
+          "bytes": 38806600,
+          "sha256": "97f80e751fd6edbd586588ce0a7090933bc50b6dbd39ea6586fc0c1d93938913"
+        },
+        {
+          "profile": "editable",
+          "label": "Full Kiln assets (remixable)",
+          "path": "packs/holodeck/objects/52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef/holodeck-lagoon-sanctuary-editable.zip",
+          "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef/holodeck-lagoon-sanctuary-editable.zip",
+          "bytes": 54131970,
+          "sha256": "52061cfca17565a09a17f02b77d358636f3bccfc33c36a17434989c0b36cfaef"
+        }
+      ]
     }
   ],
   "planned": [],
@@ -464,7 +540,8 @@
         "holodeck-tidemark",
         "holodeck-courtyard",
         "holodeck-crescent-cove",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -485,6 +562,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "structure"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "structure"
         }
       ],
@@ -563,7 +644,8 @@
         "holodeck-tidemark",
         "holodeck-courtyard",
         "holodeck-crescent-cove",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -584,6 +666,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "canopy"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "canopy"
         }
       ],
@@ -662,7 +748,8 @@
         "holodeck-tidemark",
         "holodeck-courtyard",
         "holodeck-crescent-cove",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -683,6 +770,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "seating"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "seating"
         }
       ],
@@ -761,7 +852,8 @@
         "holodeck-tidemark",
         "holodeck-courtyard",
         "holodeck-crescent-cove",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -782,6 +874,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "hearth"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "hearth"
         }
       ],
@@ -862,7 +958,8 @@
         "holodeck-tidemark",
         "holodeck-courtyard",
         "holodeck-crescent-cove",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -883,6 +980,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "planting"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "planting"
         }
       ],
@@ -961,7 +1062,8 @@
         "holodeck-tidemark",
         "holodeck-courtyard",
         "holodeck-crescent-cove",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -982,6 +1084,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "rug"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "rug"
         }
       ],
@@ -1060,7 +1166,8 @@
         "holodeck-tidemark",
         "holodeck-courtyard",
         "holodeck-crescent-cove",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -1081,6 +1188,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "lamp"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "lamp"
         }
       ],
@@ -1160,7 +1271,8 @@
         "holodeck-courtyard",
         "holodeck-crescent-cove",
         "holodeck-winter-mountainside-cabin",
-        "holodeck-meridian-sanctuary"
+        "holodeck-meridian-sanctuary",
+        "holodeck-lagoon-sanctuary"
       ],
       "placements": [
         {
@@ -1185,6 +1297,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "moodboard"
         }
       ],
@@ -15428,6 +15544,2427 @@
           4.267435550689697,
           1.9076497554779053,
           6
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-sanctuary-portal",
+      "name": "Sunburst sanctuary pavilion",
+      "description": "A carved weathered limestone temple pavilion with a sunburst medallion pediment, stepped cornice, open interior sanctum, altar plinth and mossy eaves.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sanctuary-portal"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_50b2fc2eef3a490b92fd6582995dea3b",
+      "revisionId": "r_d324dd03b0734a30be89d2e6dd747e44",
+      "sourcePath": "packs/holodeck/sources/project/a_50b2fc2eef3a490b92fd6582995dea3b/r_d324dd03b0734a30be89d2e6dd747e44/source.kiln.js",
+      "sourceSha256": "35a512249eaeaec2d90efefbafea7e56fd643dfc8f185f133f44437e3cc1fd08",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/b2fcc25c33657becf1725fce6e22aabbea5b35932870e817565fcba0b0b9ee13/lagoon-sanctuary-portal.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b2fcc25c33657becf1725fce6e22aabbea5b35932870e817565fcba0b0b9ee13/lagoon-sanctuary-portal.glb",
+        "bytes": 7070712,
+        "sha256": "b2fcc25c33657becf1725fce6e22aabbea5b35932870e817565fcba0b0b9ee13"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/08015a3799cb77d66457d9fcee9e555bf48e1690069ff75b839adbc878c2ba62/lagoon-sanctuary-portal-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/08015a3799cb77d66457d9fcee9e555bf48e1690069ff75b839adbc878c2ba62/lagoon-sanctuary-portal-runtime.zip",
+        "bytes": 3413297,
+        "sha256": "08015a3799cb77d66457d9fcee9e555bf48e1690069ff75b839adbc878c2ba62"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/5aa0756f1e7578f6fb4f1df4711a68eb1a6617e92ab832b4706b259fa575c1a6/lagoon-sanctuary-portal-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5aa0756f1e7578f6fb4f1df4711a68eb1a6617e92ab832b4706b259fa575c1a6/lagoon-sanctuary-portal-editable.zip",
+        "bytes": 4218767,
+        "sha256": "5aa0756f1e7578f6fb4f1df4711a68eb1a6617e92ab832b4706b259fa575c1a6"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A carved weathered limestone temple pavilion with a sunburst medallion pediment, stepped cornice, open interior sanctum, altar plinth and mossy eaves.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal.png",
+        "sourceRevisionId": "r_d324dd03b0734a30be89d2e6dd747e44",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 43548,
+        "meshes": 6,
+        "materials": 4,
+        "bounds": [
+          6.199999809265137,
+          9.200000405311584,
+          6.800000190734863
+        ],
+        "boundsMin": [
+          -3.0999999046325684,
+          -0.6000000238418579,
+          -3.4000000953674316
+        ],
+        "boundsMax": [
+          3.0999999046325684,
+          8.600000381469727,
+          3.4000000953674316
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-sanctuary-wing",
+      "name": "Colonnaded sanctuary wing",
+      "description": "A flanking weathered limestone colonnade wing with carved piers, recessed frieze panels and moss-dressed cornices.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sanctuary-wing"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_165e5d2bf40c4afaa06f6986f6244576",
+      "revisionId": "r_c0b62048da724ce3864fccc7c7db58cd",
+      "sourcePath": "packs/holodeck/sources/project/a_165e5d2bf40c4afaa06f6986f6244576/r_c0b62048da724ce3864fccc7c7db58cd/source.kiln.js",
+      "sourceSha256": "522f0674150eb44045428768ce8f8f98520a6218663d2071f4387122bc87b271",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/671ddd32d97a3ba2a514f9d3746a5f493d2a9793146f58615be3923394a9d675/lagoon-sanctuary-wing.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/671ddd32d97a3ba2a514f9d3746a5f493d2a9793146f58615be3923394a9d675/lagoon-sanctuary-wing.glb",
+        "bytes": 3773696,
+        "sha256": "671ddd32d97a3ba2a514f9d3746a5f493d2a9793146f58615be3923394a9d675"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/3c84960e140dfdc9854bcc55998b4a74273b1be523a2413ae9950d50bf045b5a/lagoon-sanctuary-wing-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3c84960e140dfdc9854bcc55998b4a74273b1be523a2413ae9950d50bf045b5a/lagoon-sanctuary-wing-runtime.zip",
+        "bytes": 2617043,
+        "sha256": "3c84960e140dfdc9854bcc55998b4a74273b1be523a2413ae9950d50bf045b5a"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/e88fa5af6de92bb9380c07c2fd003ea361c99b63a58e4cd42b099345acfd868c/lagoon-sanctuary-wing-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e88fa5af6de92bb9380c07c2fd003ea361c99b63a58e4cd42b099345acfd868c/lagoon-sanctuary-wing-editable.zip",
+        "bytes": 3349415,
+        "sha256": "e88fa5af6de92bb9380c07c2fd003ea361c99b63a58e4cd42b099345acfd868c"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A flanking weathered limestone colonnade wing with carved piers, recessed frieze panels and moss-dressed cornices.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing.png",
+        "sourceRevisionId": "r_c0b62048da724ce3864fccc7c7db58cd",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 13988,
+        "meshes": 5,
+        "materials": 4,
+        "bounds": [
+          4.599999904632568,
+          4.946166157722473,
+          5.800000190734863
+        ],
+        "boundsMin": [
+          -2.299999952316284,
+          -0.6000000238418579,
+          -2.9000000953674316
+        ],
+        "boundsMax": [
+          2.299999952316284,
+          4.346166133880615,
+          2.9000000953674316
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-sanctuary-grand-stairs",
+      "name": "Sanctuary grand staircase",
+      "description": "A broad 14-step carved limestone staircase with mossy cheek walls and relief pedestals rising from the lagoon shallows to the temple portal.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sanctuary-grand-stairs"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_6a59f0b57fe74137bb4f5ac2b12ceb4d",
+      "revisionId": "r_bcfda59cdd174b2b85ad798c9b6c68d4",
+      "sourcePath": "packs/holodeck/sources/project/a_6a59f0b57fe74137bb4f5ac2b12ceb4d/r_bcfda59cdd174b2b85ad798c9b6c68d4/source.kiln.js",
+      "sourceSha256": "7ec9dd9a454d53a5f70a1a236f2a8d5884dac9242ce76162dbb37ccf80b8c6c1",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/92e2ac29067ed1a68dc2d39626af84255fd754249f2191bde51fe3c331d19ab6/lagoon-sanctuary-grand-stairs.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/92e2ac29067ed1a68dc2d39626af84255fd754249f2191bde51fe3c331d19ab6/lagoon-sanctuary-grand-stairs.glb",
+        "bytes": 3542808,
+        "sha256": "92e2ac29067ed1a68dc2d39626af84255fd754249f2191bde51fe3c331d19ab6"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/dc834d3f0ab9dafefde8027c6f61f1e4e4b2c9e7098513bd5155c5248a7d2f85/lagoon-sanctuary-grand-stairs-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/dc834d3f0ab9dafefde8027c6f61f1e4e4b2c9e7098513bd5155c5248a7d2f85/lagoon-sanctuary-grand-stairs-runtime.zip",
+        "bytes": 2547773,
+        "sha256": "dc834d3f0ab9dafefde8027c6f61f1e4e4b2c9e7098513bd5155c5248a7d2f85"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/8466eb8d68409dded97609384b5913cd7c7d05b6acd4c035433c5690c52a4bf7/lagoon-sanctuary-grand-stairs-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8466eb8d68409dded97609384b5913cd7c7d05b6acd4c035433c5690c52a4bf7/lagoon-sanctuary-grand-stairs-editable.zip",
+        "bytes": 3310516,
+        "sha256": "8466eb8d68409dded97609384b5913cd7c7d05b6acd4c035433c5690c52a4bf7"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A broad 14-step carved limestone staircase with mossy cheek walls and relief pedestals rising from the lagoon shallows to the temple portal.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs.png",
+        "sourceRevisionId": "r_bcfda59cdd174b2b85ad798c9b6c68d4",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 11644,
+        "meshes": 5,
+        "materials": 4,
+        "bounds": [
+          6.799999952316284,
+          4.793635129928589,
+          6.199999809265137
+        ],
+        "boundsMin": [
+          -3.200000047683716,
+          -1.2000000476837158,
+          -3.0999999046325684
+        ],
+        "boundsMax": [
+          3.5999999046325684,
+          3.593635082244873,
+          3.0999999046325684
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-sun-stele-pillar",
+      "name": "Carved sun stele pillar",
+      "description": "A tall carved limestone stele featuring a deep sunburst medallion, geometric fretwork bands and damp moss weathering.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sun-stele-pillar"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_deeeacf1fde742b6951952204e83a471",
+      "revisionId": "r_302870e794fd496f9cc618278ec58363",
+      "sourcePath": "packs/holodeck/sources/project/a_deeeacf1fde742b6951952204e83a471/r_302870e794fd496f9cc618278ec58363/source.kiln.js",
+      "sourceSha256": "0dfee3292491fbb013a35876ccb216d723c61006ceb590b9a173adddd7851efe",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/a64efc7aafe271110cde0b7189d372f0d7fb97ce3412be7ec4465040dbfaf41f/lagoon-sun-stele-pillar.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a64efc7aafe271110cde0b7189d372f0d7fb97ce3412be7ec4465040dbfaf41f/lagoon-sun-stele-pillar.glb",
+        "bytes": 3990716,
+        "sha256": "a64efc7aafe271110cde0b7189d372f0d7fb97ce3412be7ec4465040dbfaf41f"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/aee06c4793d5dc95f2f50ae385a7f28561e74d49ec834f05c84a820258271762/lagoon-sun-stele-pillar-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/aee06c4793d5dc95f2f50ae385a7f28561e74d49ec834f05c84a820258271762/lagoon-sun-stele-pillar-runtime.zip",
+        "bytes": 2382520,
+        "sha256": "aee06c4793d5dc95f2f50ae385a7f28561e74d49ec834f05c84a820258271762"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/aa4204cb7c0e5df6f5b9ed55d08d66c15a141b9ca6a07a6048c0059b9c72e20e/lagoon-sun-stele-pillar-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/aa4204cb7c0e5df6f5b9ed55d08d66c15a141b9ca6a07a6048c0059b9c72e20e/lagoon-sun-stele-pillar-editable.zip",
+        "bytes": 2952438,
+        "sha256": "aa4204cb7c0e5df6f5b9ed55d08d66c15a141b9ca6a07a6048c0059b9c72e20e"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A tall carved limestone stele featuring a deep sunburst medallion, geometric fretwork bands and damp moss weathering.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar.png",
+        "sourceRevisionId": "r_302870e794fd496f9cc618278ec58363",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 14552,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          1.2895009517669678,
+          4.3450000286102295,
+          1.2899999618530273
+        ],
+        "boundsMin": [
+          -0.6445009708404541,
+          -0.5,
+          -0.6449999809265137
+        ],
+        "boundsMax": [
+          0.6449999809265137,
+          3.8450000286102295,
+          0.6449999809265137
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-arrival-stair-terrace",
+      "name": "Arrival stair terrace",
+      "description": "A carved limestone arrival landing with descending steps, an open side mouth for the dock stairs and an L-return corner parapet meeting the viaduct.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "arrival-stair-terrace"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_7e55c2b3fa11464797fd441a0c89e223",
+      "revisionId": "r_63bdf21046b54dd883f9433efd00a878",
+      "parentRevision": "r_a2d59b569b6d4e938f333abf576848ef",
+      "sourcePath": "packs/holodeck/sources/project/a_7e55c2b3fa11464797fd441a0c89e223/r_63bdf21046b54dd883f9433efd00a878/source.kiln.js",
+      "sourceSha256": "e9b59c9c6c980a29e28a2a10ef40026f547724ec0e764d0b57cd207638fb346b",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/14358273c8b36c2e723e80a6cef2c4dbd0becf16d3afa05e53641863f0a8a976/lagoon-arrival-stair-terrace.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/14358273c8b36c2e723e80a6cef2c4dbd0becf16d3afa05e53641863f0a8a976/lagoon-arrival-stair-terrace.glb",
+        "bytes": 3642392,
+        "sha256": "14358273c8b36c2e723e80a6cef2c4dbd0becf16d3afa05e53641863f0a8a976"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/2e6e792005231614410f62a646358f3e7f6604b15f02fc067f8d957fff54d87a/lagoon-arrival-stair-terrace-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2e6e792005231614410f62a646358f3e7f6604b15f02fc067f8d957fff54d87a/lagoon-arrival-stair-terrace-runtime.zip",
+        "bytes": 2218090,
+        "sha256": "2e6e792005231614410f62a646358f3e7f6604b15f02fc067f8d957fff54d87a"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/08f49a2c1fd5d4a64b978b3bb94a85f6fea35f027fa026d36a5df6423090493e/lagoon-arrival-stair-terrace-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/08f49a2c1fd5d4a64b978b3bb94a85f6fea35f027fa026d36a5df6423090493e/lagoon-arrival-stair-terrace-editable.zip",
+        "bytes": 2728465,
+        "sha256": "08f49a2c1fd5d4a64b978b3bb94a85f6fea35f027fa026d36a5df6423090493e"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A carved limestone arrival landing with descending steps, an open side mouth for the dock stairs and an L-return corner parapet meeting the viaduct.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace.png",
+        "sourceRevisionId": "r_63bdf21046b54dd883f9433efd00a878",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 12376,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          8.041579723358154,
+          3.1053868532180786,
+          4.729999780654907
+        ],
+        "boundsMin": [
+          -3.2115797996520996,
+          -2.4000000953674316,
+          -2.3999998569488525
+        ],
+        "boundsMax": [
+          4.829999923706055,
+          0.705386757850647,
+          2.3299999237060547
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-waterside-stone-dock",
+      "name": "Waterside stone dock",
+      "description": "Stepped limestone jetty stairs and a low waterside landing with carved bollards overlooking the turquoise shallows.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "waterside-stone-dock"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_bcad6bf71e3e4e1192b98fbf6624c11e",
+      "revisionId": "r_b31b6967a9054632982ddcd92b37f7fc",
+      "sourcePath": "packs/holodeck/sources/project/a_bcad6bf71e3e4e1192b98fbf6624c11e/r_b31b6967a9054632982ddcd92b37f7fc/source.kiln.js",
+      "sourceSha256": "88278cb2c4c3ac2e13ee936c14be30221b6467da045a05c5db3a5b640574deda",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/e766d847c8b2873dc284f0521bfb18a8fbef93e344093a7d55d944f12ece0feb/lagoon-waterside-stone-dock.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e766d847c8b2873dc284f0521bfb18a8fbef93e344093a7d55d944f12ece0feb/lagoon-waterside-stone-dock.glb",
+        "bytes": 2685672,
+        "sha256": "e766d847c8b2873dc284f0521bfb18a8fbef93e344093a7d55d944f12ece0feb"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/d08455b136a09ee33f370285137b1f6efb0be4074971c045f47850a5f2529d77/lagoon-waterside-stone-dock-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d08455b136a09ee33f370285137b1f6efb0be4074971c045f47850a5f2529d77/lagoon-waterside-stone-dock-runtime.zip",
+        "bytes": 1863471,
+        "sha256": "d08455b136a09ee33f370285137b1f6efb0be4074971c045f47850a5f2529d77"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/09166a8f89b7183662c7d321c09a7f96df4eb96667e98d0cb6a4e2b2b519e199/lagoon-waterside-stone-dock-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/09166a8f89b7183662c7d321c09a7f96df4eb96667e98d0cb6a4e2b2b519e199/lagoon-waterside-stone-dock-editable.zip",
+        "bytes": 2550629,
+        "sha256": "09166a8f89b7183662c7d321c09a7f96df4eb96667e98d0cb6a4e2b2b519e199"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Stepped limestone jetty stairs and a low waterside landing with carved bollards overlooking the turquoise shallows.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock.png",
+        "sourceRevisionId": "r_b31b6967a9054632982ddcd92b37f7fc",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 7212,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          5.64300012588501,
+          3.4376755952835083,
+          3.246000051498413
+        ],
+        "boundsMin": [
+          -2.430000066757202,
+          -1.600000023841858,
+          -1.6230000257492065
+        ],
+        "boundsMax": [
+          3.2130000591278076,
+          1.8376755714416504,
+          1.6230000257492065
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-curved-viaduct",
+      "name": "Curved stone viaduct",
+      "description": "A continuous curved masonry arch bridge with fretwork parapets, a cantilevered semicircular brazier alcove and twin entrance pilasters.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "lagoon-curved-viaduct"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_a89316f416f64cb2a88d7b76df334ba1",
+      "revisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
+      "sourcePath": "packs/holodeck/sources/project/a_a89316f416f64cb2a88d7b76df334ba1/r_cb9fd874ba0f4ec89a4e41d927cd5d9d/source.kiln.js",
+      "sourceSha256": "a6087693ad3c960994b5fd1f8eb71ad40c2b523ee353ce9e50e347a69c6c9738",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
+        "bytes": 5626216,
+        "sha256": "e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390/lagoon-curved-viaduct-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390/lagoon-curved-viaduct-runtime.zip",
+        "bytes": 3111285,
+        "sha256": "27be6041c29f6ed18ef2bb4f7666dff2466a20eaf6a228edc7a5523d93af4390"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db/lagoon-curved-viaduct-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db/lagoon-curved-viaduct-editable.zip",
+        "bytes": 3489217,
+        "sha256": "268db5071d6cc963e6c814029d78490396b5d22e6ef2e1a563c1d136dc1f42db"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A continuous curved masonry arch bridge with fretwork parapets, a cantilevered semicircular brazier alcove and twin entrance pilasters.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct.png",
+        "sourceRevisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 23550,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          11.03042459487915,
+          6.752808213233948,
+          32.44505596160889
+        ],
+        "boundsMin": [
+          -13.805259704589844,
+          -5.40280818939209,
+          -43.79303741455078
+        ],
+        "boundsMax": [
+          -2.7748351097106934,
+          1.350000023841858,
+          -11.347981452941895
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-stone-brazier",
+      "name": "Carved stone brazier",
+      "description": "A carved limestone pedestal brazier holding glowing warm embers for lighting viaduct alcoves and sanctuary thresholds.",
+      "category": "Lagoon Sanctuary architecture",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "stone-brazier"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_494aee22f6c6471ea24b59eee84c3095",
+      "revisionId": "r_a6120530e7c94a52a6e9d8ba4632ae3f",
+      "sourcePath": "packs/holodeck/sources/project/a_494aee22f6c6471ea24b59eee84c3095/r_a6120530e7c94a52a6e9d8ba4632ae3f/source.kiln.js",
+      "sourceSha256": "3abc1568e352604b56d3ebef8501107bdd0372ec9b280b2cc4f04777f1f8c7b5",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd/lagoon-stone-brazier.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd/lagoon-stone-brazier.glb",
+        "bytes": 2020752,
+        "sha256": "ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/9320aca7b3d7f6f5ea2b0a6681695fef44aafca54dc3ce20e80ba630c1e04c25/lagoon-stone-brazier-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9320aca7b3d7f6f5ea2b0a6681695fef44aafca54dc3ce20e80ba630c1e04c25/lagoon-stone-brazier-runtime.zip",
+        "bytes": 1542263,
+        "sha256": "9320aca7b3d7f6f5ea2b0a6681695fef44aafca54dc3ce20e80ba630c1e04c25"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/a6215171c3d458113c4e8ffe2c3fad4a12cc2796db6910057b66076479783b43/lagoon-stone-brazier-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a6215171c3d458113c4e8ffe2c3fad4a12cc2796db6910057b66076479783b43/lagoon-stone-brazier-editable.zip",
+        "bytes": 2203754,
+        "sha256": "a6215171c3d458113c4e8ffe2c3fad4a12cc2796db6910057b66076479783b43"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A carved limestone pedestal brazier holding glowing warm embers for lighting viaduct alcoves and sanctuary thresholds.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier.png",
+        "sourceRevisionId": "r_a6120530e7c94a52a6e9d8ba4632ae3f",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 4528,
+        "meshes": 5,
+        "materials": 5,
+        "bounds": [
+          0.777999997138977,
+          1.1979999528825283,
+          0.7760000228881836
+        ],
+        "boundsMin": [
+          -0.38999998569488525,
+          1.3411045607369942e-9,
+          -0.3880000114440918
+        ],
+        "boundsMax": [
+          0.3880000114440918,
+          1.1979999542236328,
+          0.3880000114440918
+        ],
+        "clips": [],
+        "extensions": [
+          "KHR_materials_emissive_strength"
+        ]
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-karst-overhang-ledge",
+      "name": "Karst overhang ledge",
+      "description": "A stratified limestone cenote rim ledge with damp mossy upper shoulders and fractured overhanging rock faces.",
+      "category": "Lagoon Sanctuary karst and boulders",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "karst-overhang-ledge"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_19243519e06b4f01adeb205863c6f924",
+      "revisionId": "r_efa7fcc050604f69863d3d702c0e1452",
+      "sourcePath": "packs/holodeck/sources/project/a_19243519e06b4f01adeb205863c6f924/r_efa7fcc050604f69863d3d702c0e1452/source.kiln.js",
+      "sourceSha256": "8eb0717065e6c7f0d63977cd3617e97596d042d4fcffef21bcdecff037a4b88a",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/cd93d3300972d274d8be9be921a01d38bee0357d8e0cfcb44c3a400868f5b60a/lagoon-karst-overhang-ledge.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cd93d3300972d274d8be9be921a01d38bee0357d8e0cfcb44c3a400868f5b60a/lagoon-karst-overhang-ledge.glb",
+        "bytes": 1691752,
+        "sha256": "cd93d3300972d274d8be9be921a01d38bee0357d8e0cfcb44c3a400868f5b60a"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/92343190c21af21320cdc770695448c173ac5b20e2dac95d62c2a82cf4109566/lagoon-karst-overhang-ledge-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/92343190c21af21320cdc770695448c173ac5b20e2dac95d62c2a82cf4109566/lagoon-karst-overhang-ledge-runtime.zip",
+        "bytes": 1463579,
+        "sha256": "92343190c21af21320cdc770695448c173ac5b20e2dac95d62c2a82cf4109566"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/b1fc9d8da9b99ac3bf21856a31c5a8cf14735984cd9ba7fb1ac8e43bfed70bc6/lagoon-karst-overhang-ledge-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b1fc9d8da9b99ac3bf21856a31c5a8cf14735984cd9ba7fb1ac8e43bfed70bc6/lagoon-karst-overhang-ledge-editable.zip",
+        "bytes": 2190746,
+        "sha256": "b1fc9d8da9b99ac3bf21856a31c5a8cf14735984cd9ba7fb1ac8e43bfed70bc6"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A stratified limestone cenote rim ledge with damp mossy upper shoulders and fractured overhanging rock faces.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge.png",
+        "sourceRevisionId": "r_efa7fcc050604f69863d3d702c0e1452",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 10780,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          8.5,
+          8.5,
+          15
+        ],
+        "boundsMin": [
+          -4.5,
+          -3.5,
+          -7.5
+        ],
+        "boundsMax": [
+          4,
+          5,
+          7.5
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-stalactite-cluster",
+      "name": "Limestone stalactite cluster",
+      "description": "Tapered hanging karst stalactites and damp mineral formations for dressing cenote overhangs and cliff lips.",
+      "category": "Lagoon Sanctuary karst and boulders",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "stalactite-cluster"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_b6370526091742b5b4bc876f9e0951cd",
+      "revisionId": "r_ccdf7a4f562e41b4bad871966b957814",
+      "sourcePath": "packs/holodeck/sources/project/a_b6370526091742b5b4bc876f9e0951cd/r_ccdf7a4f562e41b4bad871966b957814/source.kiln.js",
+      "sourceSha256": "72235a4068c95a0f0f39d97dfb23333b9caaa842f07eb7986ca476b4ffbf1d99",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/e188dd328cc091340ff14d34580958b0ea15ea743e1c3c4fecb58647cc3730b9/lagoon-stalactite-cluster.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e188dd328cc091340ff14d34580958b0ea15ea743e1c3c4fecb58647cc3730b9/lagoon-stalactite-cluster.glb",
+        "bytes": 1186300,
+        "sha256": "e188dd328cc091340ff14d34580958b0ea15ea743e1c3c4fecb58647cc3730b9"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/464556a214452c6cebf7e2c27645390c972c7af774d0cae2c8d917537f905365/lagoon-stalactite-cluster-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/464556a214452c6cebf7e2c27645390c972c7af774d0cae2c8d917537f905365/lagoon-stalactite-cluster-runtime.zip",
+        "bytes": 1062533,
+        "sha256": "464556a214452c6cebf7e2c27645390c972c7af774d0cae2c8d917537f905365"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/52eac7f1bed38dc12817a2d64e5ba0b555285024d2265ca12f2e7916339263b1/lagoon-stalactite-cluster-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/52eac7f1bed38dc12817a2d64e5ba0b555285024d2265ca12f2e7916339263b1/lagoon-stalactite-cluster-editable.zip",
+        "bytes": 1415554,
+        "sha256": "52eac7f1bed38dc12817a2d64e5ba0b555285024d2265ca12f2e7916339263b1"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Tapered hanging karst stalactites and damp mineral formations for dressing cenote overhangs and cliff lips.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster.png",
+        "sourceRevisionId": "r_ccdf7a4f562e41b4bad871966b957814",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 7168,
+        "meshes": 1,
+        "materials": 1,
+        "bounds": [
+          3,
+          7.300000190734863,
+          5.199999809265137
+        ],
+        "boundsMin": [
+          -1.5,
+          -6.800000190734863,
+          -2.5999999046325684
+        ],
+        "boundsMax": [
+          1.5,
+          0.5,
+          2.5999999046325684
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-mossy-boulder-hero",
+      "name": "Mossy lagoon boulder",
+      "description": "A layered limestone boulder with wet dark waterline stone and a thick velvety moss cap for cenote islands and banks.",
+      "category": "Lagoon Sanctuary karst and boulders",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "mossy-boulder-hero"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_eddf145618bb483c863426b4411da8f4",
+      "revisionId": "r_e529e1183560444aa9e7ffcd3d5f8d53",
+      "sourcePath": "packs/holodeck/sources/project/a_eddf145618bb483c863426b4411da8f4/r_e529e1183560444aa9e7ffcd3d5f8d53/source.kiln.js",
+      "sourceSha256": "850efee6a6755c590716e93f24f911d6a7d5105f76061c3e265a616dbcbb77d5",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/ef6a0a3241d4855feed4cee0c4239696aca788528279c6b832288400b1998b27/lagoon-mossy-boulder-hero.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ef6a0a3241d4855feed4cee0c4239696aca788528279c6b832288400b1998b27/lagoon-mossy-boulder-hero.glb",
+        "bytes": 1436216,
+        "sha256": "ef6a0a3241d4855feed4cee0c4239696aca788528279c6b832288400b1998b27"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/7ad83da0b6e0dcf99901277ac6f9996c0e32ea106d7ac42c699de485e40d001e/lagoon-mossy-boulder-hero-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7ad83da0b6e0dcf99901277ac6f9996c0e32ea106d7ac42c699de485e40d001e/lagoon-mossy-boulder-hero-runtime.zip",
+        "bytes": 1305733,
+        "sha256": "7ad83da0b6e0dcf99901277ac6f9996c0e32ea106d7ac42c699de485e40d001e"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/fadf4e094c6688fd3bbdd5482f4de442e9615c52f85a9891a6738107d840ab40/lagoon-mossy-boulder-hero-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/fadf4e094c6688fd3bbdd5482f4de442e9615c52f85a9891a6738107d840ab40/lagoon-mossy-boulder-hero-editable.zip",
+        "bytes": 1915634,
+        "sha256": "fadf4e094c6688fd3bbdd5482f4de442e9615c52f85a9891a6738107d840ab40"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A layered limestone boulder with wet dark waterline stone and a thick velvety moss cap for cenote islands and banks.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero.png",
+        "sourceRevisionId": "r_e529e1183560444aa9e7ffcd3d5f8d53",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 6292,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          3.5999999046325684,
+          1.9999999701976776,
+          2.9000000953674316
+        ],
+        "boundsMin": [
+          -1.7999999523162842,
+          -0.3499999940395355,
+          -1.4500000476837158
+        ],
+        "boundsMax": [
+          1.7999999523162842,
+          1.649999976158142,
+          1.4500000476837158
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-mossy-boulder-cluster",
+      "name": "Mossy shoreline boulder cluster",
+      "description": "A grouped cluster of weathered moss-capped limestone rocks for dressing lagoon banks and shallow outcrops.",
+      "category": "Lagoon Sanctuary karst and boulders",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "mossy-boulder-cluster"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_7839231087ef4ffab3922b7eba126d71",
+      "revisionId": "r_b576523c71a64734843883fbefdfa87a",
+      "sourcePath": "packs/holodeck/sources/project/a_7839231087ef4ffab3922b7eba126d71/r_b576523c71a64734843883fbefdfa87a/source.kiln.js",
+      "sourceSha256": "484c8b4111a6199777eb5799bacb98ed388891cb8422a8e65b0b450e32f8eb61",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/2beeeaa6a924c842af99097bde4af426847d9191719f00aad8dd669b6975ab97/lagoon-mossy-boulder-cluster.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2beeeaa6a924c842af99097bde4af426847d9191719f00aad8dd669b6975ab97/lagoon-mossy-boulder-cluster.glb",
+        "bytes": 1423104,
+        "sha256": "2beeeaa6a924c842af99097bde4af426847d9191719f00aad8dd669b6975ab97"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/0d79bc13fa979783d3b4bf9b164eac674144965a6f6b141b7985713f8b22cdd2/lagoon-mossy-boulder-cluster-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0d79bc13fa979783d3b4bf9b164eac674144965a6f6b141b7985713f8b22cdd2/lagoon-mossy-boulder-cluster-runtime.zip",
+        "bytes": 1283867,
+        "sha256": "0d79bc13fa979783d3b4bf9b164eac674144965a6f6b141b7985713f8b22cdd2"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/01137805bebdf0bec0c0268f13418520bbac34f68451308b043471a637858688/lagoon-mossy-boulder-cluster-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/01137805bebdf0bec0c0268f13418520bbac34f68451308b043471a637858688/lagoon-mossy-boulder-cluster-editable.zip",
+        "bytes": 1887169,
+        "sha256": "01137805bebdf0bec0c0268f13418520bbac34f68451308b043471a637858688"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A grouped cluster of weathered moss-capped limestone rocks for dressing lagoon banks and shallow outcrops.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster.png",
+        "sourceRevisionId": "r_b576523c71a64734843883fbefdfa87a",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 5380,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          2.200000047683716,
+          1.1500000357627869,
+          1.899999976158142
+        ],
+        "boundsMin": [
+          -1.100000023841858,
+          -0.30000001192092896,
+          -0.949999988079071
+        ],
+        "boundsMax": [
+          1.100000023841858,
+          0.8500000238418579,
+          0.949999988079071
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-gnarled-canopy-bough",
+      "name": "Gnarled orchid canopy bough",
+      "description": "A plank-buttress overhanging rainforest bough dressed with mossy bark, drooping canopy foliage and seven racemes of sculpted 3D magenta orchids.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "gnarled-canopy-bough"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_99dcd547802b4d9a928f3b60a6f196f2",
+      "revisionId": "r_cde37c2b08a14de9be5901cd556d0e5c",
+      "sourcePath": "packs/holodeck/sources/project/a_99dcd547802b4d9a928f3b60a6f196f2/r_cde37c2b08a14de9be5901cd556d0e5c/source.kiln.js",
+      "sourceSha256": "2e51792e6fdf26b15a1880eda8d8b7415b0c6e1b89ff498d609b530d53da7f94",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/849569c3211e850053e9c8f4fa9ff758615f75752e0da3379ec0ecb5da8e13dc/lagoon-gnarled-canopy-bough.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/849569c3211e850053e9c8f4fa9ff758615f75752e0da3379ec0ecb5da8e13dc/lagoon-gnarled-canopy-bough.glb",
+        "bytes": 2504256,
+        "sha256": "849569c3211e850053e9c8f4fa9ff758615f75752e0da3379ec0ecb5da8e13dc"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/9d01fca2beb99c38adacb547d01a07d350623cda5843337345c926418b71cae8/lagoon-gnarled-canopy-bough-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9d01fca2beb99c38adacb547d01a07d350623cda5843337345c926418b71cae8/lagoon-gnarled-canopy-bough-runtime.zip",
+        "bytes": 1993057,
+        "sha256": "9d01fca2beb99c38adacb547d01a07d350623cda5843337345c926418b71cae8"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/fa4578eaa529cc41016c017c0f54a431f59e7bde5b4df9fbcd38dbe5831ada40/lagoon-gnarled-canopy-bough-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/fa4578eaa529cc41016c017c0f54a431f59e7bde5b4df9fbcd38dbe5831ada40/lagoon-gnarled-canopy-bough-editable.zip",
+        "bytes": 2475007,
+        "sha256": "fa4578eaa529cc41016c017c0f54a431f59e7bde5b4df9fbcd38dbe5831ada40"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A plank-buttress overhanging rainforest bough dressed with mossy bark, drooping canopy foliage and seven racemes of sculpted 3D magenta orchids.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough.png",
+        "sourceRevisionId": "r_cde37c2b08a14de9be5901cd556d0e5c",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 38220,
+        "meshes": 4,
+        "materials": 4,
+        "bounds": [
+          12.485645294189453,
+          7.661076664924622,
+          6.575736045837402
+        ],
+        "boundsMin": [
+          -2.4091758728027344,
+          -0.5561138391494751,
+          -3.2720119953155518
+        ],
+        "boundsMax": [
+          10.076469421386719,
+          7.1049628257751465,
+          3.3037240505218506
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-monstera-a",
+      "name": "Fenestrated Monstera clump",
+      "description": "Fifteen curved 3D fenestrated Monstera deliciosa leaves with oval perforations, glossy veined surfaces and arched underside petioles. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary understory foliage",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-monstera-a"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_88aef670b80040af8aa8ead2b846df5f",
+      "revisionId": "r_f0542e8bca254d22864d0b772bd3f4ed",
+      "sourcePath": "packs/holodeck/sources/project/a_88aef670b80040af8aa8ead2b846df5f/r_f0542e8bca254d22864d0b772bd3f4ed/source.kiln.js",
+      "sourceSha256": "ced931f18a2084a00012ea195fe3eac5b5e94fe50c525d412af915ee21ff4fe0",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/42bc21750da3b4e7c7ec189b42b1261a20784e7164fadbdb827aa975e8c79658/lagoon-foliage-monstera-a.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/42bc21750da3b4e7c7ec189b42b1261a20784e7164fadbdb827aa975e8c79658/lagoon-foliage-monstera-a.glb",
+        "bytes": 482792,
+        "sha256": "42bc21750da3b4e7c7ec189b42b1261a20784e7164fadbdb827aa975e8c79658"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/74c812c6b375db15a3c45e0f57cff689e828ca61b039f333667bd9b99647c50b/lagoon-foliage-monstera-a-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/74c812c6b375db15a3c45e0f57cff689e828ca61b039f333667bd9b99647c50b/lagoon-foliage-monstera-a-runtime.zip",
+        "bytes": 394796,
+        "sha256": "74c812c6b375db15a3c45e0f57cff689e828ca61b039f333667bd9b99647c50b"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/b23da388b5091aea2d922fc2242faac771d587d453a24506f71773e8b75c7c5c/lagoon-foliage-monstera-a-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b23da388b5091aea2d922fc2242faac771d587d453a24506f71773e8b75c7c5c/lagoon-foliage-monstera-a-editable.zip",
+        "bytes": 803888,
+        "sha256": "b23da388b5091aea2d922fc2242faac771d587d453a24506f71773e8b75c7c5c"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Fifteen curved 3D fenestrated Monstera deliciosa leaves with oval perforations, glossy veined surfaces and arched underside petioles. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a.png",
+        "sourceRevisionId": "r_f0542e8bca254d22864d0b772bd3f4ed",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 7908,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1.6663190722465515,
+          1.3455426692962646,
+          1.7595859169960022
+        ],
+        "boundsMin": [
+          -0.8690215349197388,
+          -0.10690081119537354,
+          -0.9398233890533447
+        ],
+        "boundsMax": [
+          0.7972975373268127,
+          1.2386418581008911,
+          0.8197625279426575
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-monstera-b",
+      "name": "Young Monstera cluster",
+      "description": "A compact tropical Monstera undergrowth cluster of glossy heart and split leaves for shaded banks. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary understory foliage",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-monstera-b"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_b3f59e9aa2374ea6a210f5a23533cded",
+      "revisionId": "r_e2bad590438d4bfebd5a3fbd5df3ae97",
+      "sourcePath": "packs/holodeck/sources/project/a_b3f59e9aa2374ea6a210f5a23533cded/r_e2bad590438d4bfebd5a3fbd5df3ae97/source.kiln.js",
+      "sourceSha256": "c1d88c0f16d8bc6c1b4b5322ce6fb205a43ead66189aea355637d846eca693a6",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8/lagoon-foliage-monstera-b.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8/lagoon-foliage-monstera-b.glb",
+        "bytes": 408812,
+        "sha256": "dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/b1b0d200b319c92c73f0c4f637c8cceeb4b5c722ae7a2bb4ad6b64d065d82ec2/lagoon-foliage-monstera-b-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b1b0d200b319c92c73f0c4f637c8cceeb4b5c722ae7a2bb4ad6b64d065d82ec2/lagoon-foliage-monstera-b-runtime.zip",
+        "bytes": 336388,
+        "sha256": "b1b0d200b319c92c73f0c4f637c8cceeb4b5c722ae7a2bb4ad6b64d065d82ec2"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/31b1850e487163125f0571b6cea96c15886a5175ffde81829467bfc85098e3fb/lagoon-foliage-monstera-b-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/31b1850e487163125f0571b6cea96c15886a5175ffde81829467bfc85098e3fb/lagoon-foliage-monstera-b-editable.zip",
+        "bytes": 700057,
+        "sha256": "31b1850e487163125f0571b6cea96c15886a5175ffde81829467bfc85098e3fb"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A compact tropical Monstera undergrowth cluster of glossy heart and split leaves for shaded banks. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b.png",
+        "sourceRevisionId": "r_e2bad590438d4bfebd5a3fbd5df3ae97",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 6348,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1.2982122302055359,
+          0.9447940960526466,
+          1.374804139137268
+        ],
+        "boundsMin": [
+          -0.6333193182945251,
+          -0.11289218813180923,
+          -0.7101055383682251
+        ],
+        "boundsMax": [
+          0.6648929119110107,
+          0.8319019079208374,
+          0.664698600769043
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-bromeliad",
+      "name": "Scarlet bromeliad rosette",
+      "description": "Channeled 3D strap rosettes transitioning from waxy green outer leaves to scarlet floral bracts and a warm gold centre. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary understory foliage",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-bromeliad"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_5a63b72c7ca944dda67ee59b5cc0d674",
+      "revisionId": "r_ad23f16a18674e3388c302f73f66854d",
+      "sourcePath": "packs/holodeck/sources/project/a_5a63b72c7ca944dda67ee59b5cc0d674/r_ad23f16a18674e3388c302f73f66854d/source.kiln.js",
+      "sourceSha256": "02c6217bf5fda2f77b900a14257b0797bba2141232f35c5a8acf4475f41b90bd",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/7b0c075d329cf8c184b9e5300e0bbaaa90ddb26f3fa0b42397293556f35fd87b/lagoon-foliage-bromeliad.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7b0c075d329cf8c184b9e5300e0bbaaa90ddb26f3fa0b42397293556f35fd87b/lagoon-foliage-bromeliad.glb",
+        "bytes": 270064,
+        "sha256": "7b0c075d329cf8c184b9e5300e0bbaaa90ddb26f3fa0b42397293556f35fd87b"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/ef979a438468231bf9f50aff1a3d551dd72fdb49a56a644642a2c924ca455614/lagoon-foliage-bromeliad-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ef979a438468231bf9f50aff1a3d551dd72fdb49a56a644642a2c924ca455614/lagoon-foliage-bromeliad-runtime.zip",
+        "bytes": 195364,
+        "sha256": "ef979a438468231bf9f50aff1a3d551dd72fdb49a56a644642a2c924ca455614"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/c3cdaaf67a3773752de7a9dc271917b5f55d1c75787e3037e542db82cb3ff865/lagoon-foliage-bromeliad-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c3cdaaf67a3773752de7a9dc271917b5f55d1c75787e3037e542db82cb3ff865/lagoon-foliage-bromeliad-editable.zip",
+        "bytes": 561705,
+        "sha256": "c3cdaaf67a3773752de7a9dc271917b5f55d1c75787e3037e542db82cb3ff865"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Channeled 3D strap rosettes transitioning from waxy green outer leaves to scarlet floral bracts and a warm gold centre. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad.png",
+        "sourceRevisionId": "r_ad23f16a18674e3388c302f73f66854d",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 5210,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1.0047748386859894,
+          0.7545427680015564,
+          1.0433748960494995
+        ],
+        "boundsMin": [
+          -0.5168629884719849,
+          -0.08643442392349243,
+          -0.5344383716583252
+        ],
+        "boundsMax": [
+          0.4879118502140045,
+          0.668108344078064,
+          0.5089365243911743
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-fern-fountain",
+      "name": "Fountain sword fern",
+      "description": "Eighteen arching tropical sword-fern fronds built from shingled 3D V-trough pinnae around a mossy crown with fiddleheads. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary understory foliage",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-fern-fountain"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_4c30edf6f8de47e29d5f119000617785",
+      "revisionId": "r_e2c7472898ca4254bb93276370797058",
+      "sourcePath": "packs/holodeck/sources/project/a_4c30edf6f8de47e29d5f119000617785/r_e2c7472898ca4254bb93276370797058/source.kiln.js",
+      "sourceSha256": "75d4d499530939e4743b2b5b827fbf7f935cf35b87ebe4781e864b3083f7f137",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/2be52f38c22feecf3634fd268f32393a4f9e9c1b11b84bd4eac574c699176fd2/lagoon-foliage-fern-fountain.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2be52f38c22feecf3634fd268f32393a4f9e9c1b11b84bd4eac574c699176fd2/lagoon-foliage-fern-fountain.glb",
+        "bytes": 686892,
+        "sha256": "2be52f38c22feecf3634fd268f32393a4f9e9c1b11b84bd4eac574c699176fd2"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/6f93004fbbbb866b0a7fd383dfdb783acb8dc9adca8755191669725cf54521a7/lagoon-foliage-fern-fountain-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6f93004fbbbb866b0a7fd383dfdb783acb8dc9adca8755191669725cf54521a7/lagoon-foliage-fern-fountain-runtime.zip",
+        "bytes": 537890,
+        "sha256": "6f93004fbbbb866b0a7fd383dfdb783acb8dc9adca8755191669725cf54521a7"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/1c6db000dc338f1c7ca077ce82afd6747039dd66c227e6b12f4c150c9515bbed/lagoon-foliage-fern-fountain-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1c6db000dc338f1c7ca077ce82afd6747039dd66c227e6b12f4c150c9515bbed/lagoon-foliage-fern-fountain-editable.zip",
+        "bytes": 963666,
+        "sha256": "1c6db000dc338f1c7ca077ce82afd6747039dd66c227e6b12f4c150c9515bbed"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Eighteen arching tropical sword-fern fronds built from shingled 3D V-trough pinnae around a mossy crown with fiddleheads. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain.png",
+        "sourceRevisionId": "r_e2c7472898ca4254bb93276370797058",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 9408,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1.854242205619812,
+          1.136844992518425,
+          1.9373648762702942
+        ],
+        "boundsMin": [
+          -0.9054256677627563,
+          1.1920928133513087e-10,
+          -0.9899320602416992
+        ],
+        "boundsMax": [
+          0.9488165378570557,
+          1.1368449926376343,
+          0.947432816028595
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-fern-low",
+      "name": "Low woodland fern clump",
+      "description": "A low spreading tropical fern rosette for mossy stone ledges, stair corners and shaded banks. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary understory foliage",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-fern-low"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_44c00781e40b49eba1d49da51eb8270c",
+      "revisionId": "r_5f55dff76aef4facb096c685df65f76c",
+      "sourcePath": "packs/holodeck/sources/project/a_44c00781e40b49eba1d49da51eb8270c/r_5f55dff76aef4facb096c685df65f76c/source.kiln.js",
+      "sourceSha256": "b81294f8578e3ff0cffa1bc918e93076ec96c71fc37fb025ca0c04377d68db95",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/5ff9f003d8a6cf802634be12f235fa8b5d10ac991a531e4b1fd854ed1a44354e/lagoon-foliage-fern-low.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5ff9f003d8a6cf802634be12f235fa8b5d10ac991a531e4b1fd854ed1a44354e/lagoon-foliage-fern-low.glb",
+        "bytes": 120924,
+        "sha256": "5ff9f003d8a6cf802634be12f235fa8b5d10ac991a531e4b1fd854ed1a44354e"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/9d8038e97c53a02e7a918efdd8130258656590a95a6158d86f85f5554db356d2/lagoon-foliage-fern-low-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9d8038e97c53a02e7a918efdd8130258656590a95a6158d86f85f5554db356d2/lagoon-foliage-fern-low-runtime.zip",
+        "bytes": 89175,
+        "sha256": "9d8038e97c53a02e7a918efdd8130258656590a95a6158d86f85f5554db356d2"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/9a64377b675393769ae1266f03f1108313b0fd412d6a173181f74f5b3e0b0c56/lagoon-foliage-fern-low-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/9a64377b675393769ae1266f03f1108313b0fd412d6a173181f74f5b3e0b0c56/lagoon-foliage-fern-low-editable.zip",
+        "bytes": 349420,
+        "sha256": "9a64377b675393769ae1266f03f1108313b0fd412d6a173181f74f5b3e0b0c56"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A low spreading tropical fern rosette for mossy stone ledges, stair corners and shaded banks. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low.png",
+        "sourceRevisionId": "r_5f55dff76aef4facb096c685df65f76c",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 1456,
+        "meshes": 1,
+        "materials": 1,
+        "bounds": [
+          1.3109557628631592,
+          0.6797666628845036,
+          1.3128640055656433
+        ],
+        "boundsMin": [
+          -0.6491807103157043,
+          0.004000000189989805,
+          -0.6533066034317017
+        ],
+        "boundsMax": [
+          0.6617750525474548,
+          0.6837666630744934,
+          0.6595574021339417
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-waterlily",
+      "name": "White-lotus water lily cluster",
+      "description": "Nine upturned V-notched lily pads, three multi-petal creamy-white lotus blooms with golden stamen crowns and bowed underwater petioles.",
+      "category": "Lagoon Sanctuary understory foliage",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-waterlily"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_fb56f6580c21472295bc97af39093834",
+      "revisionId": "r_c4101c3657444cf1a79bcec56da788da",
+      "sourcePath": "packs/holodeck/sources/project/a_fb56f6580c21472295bc97af39093834/r_c4101c3657444cf1a79bcec56da788da/source.kiln.js",
+      "sourceSha256": "e948404078e56adbf061d79c1d58a56e6b89ea431f1392b3760c5a35f46a0b09",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/e03d2b942df3b02a4f85fd400be9b2cd3d3d8af4c0a8297d20fbcba39e756004/lagoon-foliage-waterlily.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e03d2b942df3b02a4f85fd400be9b2cd3d3d8af4c0a8297d20fbcba39e756004/lagoon-foliage-waterlily.glb",
+        "bytes": 448364,
+        "sha256": "e03d2b942df3b02a4f85fd400be9b2cd3d3d8af4c0a8297d20fbcba39e756004"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/33a3dba335bd2871cccec48673ef980f952ce1436ab304217f07553bde033114/lagoon-foliage-waterlily-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/33a3dba335bd2871cccec48673ef980f952ce1436ab304217f07553bde033114/lagoon-foliage-waterlily-runtime.zip",
+        "bytes": 304000,
+        "sha256": "33a3dba335bd2871cccec48673ef980f952ce1436ab304217f07553bde033114"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/923ee6db8665fe20616d5cce738cef7bfce0d5e5c2da93d3962ee5181a6ddf2b/lagoon-foliage-waterlily-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/923ee6db8665fe20616d5cce738cef7bfce0d5e5c2da93d3962ee5181a6ddf2b/lagoon-foliage-waterlily-editable.zip",
+        "bytes": 482484,
+        "sha256": "923ee6db8665fe20616d5cce738cef7bfce0d5e5c2da93d3962ee5181a6ddf2b"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Nine upturned V-notched lily pads, three multi-petal creamy-white lotus blooms with golden stamen crowns and bowed underwater petioles.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily.png",
+        "sourceRevisionId": "r_c4101c3657444cf1a79bcec56da788da",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 7348,
+        "meshes": 3,
+        "materials": 3,
+        "bounds": [
+          2.285192847251892,
+          0.41522686183452606,
+          2.0106592774391174
+        ],
+        "boundsMin": [
+          -1.1721527576446533,
+          -0.24856454133987427,
+          -1.016782283782959
+        ],
+        "boundsMax": [
+          1.1130400896072388,
+          0.1666623204946518,
+          0.9938769936561584
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-palm-island",
+      "name": "Twin island cenote palms",
+      "description": "Twin S-curved ringed cenote palms with seventeen arched pinnate fronds shaped for backlit lagoon views. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-palm-island"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_e6cb8e1eb9f341d4bc4b6ac22182b0cd",
+      "revisionId": "r_a5890f3919de4a878f9bdca036bda349",
+      "sourcePath": "packs/holodeck/sources/project/a_e6cb8e1eb9f341d4bc4b6ac22182b0cd/r_a5890f3919de4a878f9bdca036bda349/source.kiln.js",
+      "sourceSha256": "93dabe3a9ffceaed3c3b7a8ce90aa6a1c31e6d3efb78ed76abe585cc24e288b0",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/ccd329e7b100753c74f6fd362e3b31f4b4903b7c5d04245190148a9e918ac5e9/lagoon-foliage-palm-island.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/ccd329e7b100753c74f6fd362e3b31f4b4903b7c5d04245190148a9e918ac5e9/lagoon-foliage-palm-island.glb",
+        "bytes": 758520,
+        "sha256": "ccd329e7b100753c74f6fd362e3b31f4b4903b7c5d04245190148a9e918ac5e9"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/6f0e523d4d0b5746fb5b6afc693e8e853845db14dca2d9934ecfdbf1bbe3e0bd/lagoon-foliage-palm-island-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/6f0e523d4d0b5746fb5b6afc693e8e853845db14dca2d9934ecfdbf1bbe3e0bd/lagoon-foliage-palm-island-runtime.zip",
+        "bytes": 637136,
+        "sha256": "6f0e523d4d0b5746fb5b6afc693e8e853845db14dca2d9934ecfdbf1bbe3e0bd"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/d1ac2914278b330503ac0eb010911198d1c78c5d8a29a326827841a2bd452a18/lagoon-foliage-palm-island-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d1ac2914278b330503ac0eb010911198d1c78c5d8a29a326827841a2bd452a18/lagoon-foliage-palm-island-editable.zip",
+        "bytes": 1028304,
+        "sha256": "d1ac2914278b330503ac0eb010911198d1c78c5d8a29a326827841a2bd452a18"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Twin S-curved ringed cenote palms with seventeen arched pinnate fronds shaped for backlit lagoon views. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island.png",
+        "sourceRevisionId": "r_a5890f3919de4a878f9bdca036bda349",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 7914,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          4.670641183853149,
+          5.816478401422501,
+          3.9491567611694336
+        ],
+        "boundsMin": [
+          -2.4190690517425537,
+          -0.3859511911869049,
+          -1.8722214698791504
+        ],
+        "boundsMax": [
+          2.2515721321105957,
+          5.430527210235596,
+          2.076935291290283
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-palm-lean",
+      "name": "Leaning shoreline palm",
+      "description": "A J-curved shoreline palm with mossy flared roots, glossy green coconuts under the crownshaft and arched pinnate fronds. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-palm-lean"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_ba0f6daabc7942a3aee392050f52d274",
+      "revisionId": "r_5c176f96f0b84715adeb3135c6d0b3ba",
+      "sourcePath": "packs/holodeck/sources/project/a_ba0f6daabc7942a3aee392050f52d274/r_5c176f96f0b84715adeb3135c6d0b3ba/source.kiln.js",
+      "sourceSha256": "9a12c251a837524e62c2612ba5ad01e388f486b3ae651a628b1e084ee672beeb",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/c108dbf2f70c58a0b79adca1b946235dd39b220d34723ca34d01f2127971334b/lagoon-foliage-palm-lean.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c108dbf2f70c58a0b79adca1b946235dd39b220d34723ca34d01f2127971334b/lagoon-foliage-palm-lean.glb",
+        "bytes": 657200,
+        "sha256": "c108dbf2f70c58a0b79adca1b946235dd39b220d34723ca34d01f2127971334b"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/5be999c1543f6bae95c021f05efea09b2c11c09ba70d7b15b15ff3b29cf3429d/lagoon-foliage-palm-lean-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5be999c1543f6bae95c021f05efea09b2c11c09ba70d7b15b15ff3b29cf3429d/lagoon-foliage-palm-lean-runtime.zip",
+        "bytes": 545345,
+        "sha256": "5be999c1543f6bae95c021f05efea09b2c11c09ba70d7b15b15ff3b29cf3429d"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/0c59a7f95594c69a39fc09ce9a2ca6bffd59b26abf2c0fe545c5519ba08d97b5/lagoon-foliage-palm-lean-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0c59a7f95594c69a39fc09ce9a2ca6bffd59b26abf2c0fe545c5519ba08d97b5/lagoon-foliage-palm-lean-editable.zip",
+        "bytes": 872294,
+        "sha256": "0c59a7f95594c69a39fc09ce9a2ca6bffd59b26abf2c0fe545c5519ba08d97b5"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A J-curved shoreline palm with mossy flared roots, glossy green coconuts under the crownshaft and arched pinnate fronds. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean.png",
+        "sourceRevisionId": "r_5c176f96f0b84715adeb3135c6d0b3ba",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 7062,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          5.527317702770233,
+          6.560678035020828,
+          4.389429092407227
+        ],
+        "boundsMin": [
+          -0.3295580744743347,
+          -0.4015355408191681,
+          -2.124837875366211
+        ],
+        "boundsMax": [
+          5.197759628295898,
+          6.15914249420166,
+          2.2645912170410156
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-alocasia",
+      "name": "Cupped elephant-ear alocasia",
+      "description": "Sixteen sculptural cupped elephant-ear blades with pale curved ribs, scalloped margins and fleshy arched stems. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary understory foliage",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-alocasia"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_e5e0be2b4bab4aaabd8bd4e1feb4bc32",
+      "revisionId": "r_6587f547da92481db9ee496d8ffc7ec8",
+      "sourcePath": "packs/holodeck/sources/project/a_e5e0be2b4bab4aaabd8bd4e1feb4bc32/r_6587f547da92481db9ee496d8ffc7ec8/source.kiln.js",
+      "sourceSha256": "86ffa7d851d3f94adb011018b096ce13ae0d83463739f9de4e3889c9dec8352f",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/a3a95ed02517583061e5cedcfa4a7624aff1362f70e35d912c2dbf77dd5c0e5d/lagoon-foliage-alocasia.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a3a95ed02517583061e5cedcfa4a7624aff1362f70e35d912c2dbf77dd5c0e5d/lagoon-foliage-alocasia.glb",
+        "bytes": 304572,
+        "sha256": "a3a95ed02517583061e5cedcfa4a7624aff1362f70e35d912c2dbf77dd5c0e5d"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/d7f321b8d7ec4dd3109e94c5f3e48c19037f20f05787817bdc548b52d5ae1188/lagoon-foliage-alocasia-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/d7f321b8d7ec4dd3109e94c5f3e48c19037f20f05787817bdc548b52d5ae1188/lagoon-foliage-alocasia-runtime.zip",
+        "bytes": 247504,
+        "sha256": "d7f321b8d7ec4dd3109e94c5f3e48c19037f20f05787817bdc548b52d5ae1188"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/94dcb663d9c9bdccb7c159187b6e4032d39610568b2bbcc1dcbef53026186930/lagoon-foliage-alocasia-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/94dcb663d9c9bdccb7c159187b6e4032d39610568b2bbcc1dcbef53026186930/lagoon-foliage-alocasia-editable.zip",
+        "bytes": 778074,
+        "sha256": "94dcb663d9c9bdccb7c159187b6e4032d39610568b2bbcc1dcbef53026186930"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Sixteen sculptural cupped elephant-ear blades with pale curved ribs, scalloped margins and fleshy arched stems. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia.png",
+        "sourceRevisionId": "r_6587f547da92481db9ee496d8ffc7ec8",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 4812,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          2.1886708736419678,
+          1.557851504534483,
+          2.024984121322632
+        ],
+        "boundsMin": [
+          -1.1397463083267212,
+          -0.0618937723338604,
+          -1.0112041234970093
+        ],
+        "boundsMax": [
+          1.0489245653152466,
+          1.4959577322006226,
+          1.0137799978256226
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-vine-short",
+      "name": "Short orchid vine cluster",
+      "description": "Close-up 3D heart-leaf hanging vines accented with small magenta orchid sprigs for overhanging branches and ledges. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-vine-short"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_2a08934a390b4c5ebcce6e8d9f7e713a",
+      "revisionId": "r_47618fec249f40508a8cb7856acb2838",
+      "sourcePath": "packs/holodeck/sources/project/a_2a08934a390b4c5ebcce6e8d9f7e713a/r_47618fec249f40508a8cb7856acb2838/source.kiln.js",
+      "sourceSha256": "16519ad56a08b50f07d4da9fecba66c7e3a0294b28edf9d50da8ecf1301214b3",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/b6c9db077cb43be9dc92be1693b727b1d8c6d0646895a41a01a91b7f08683418/lagoon-foliage-vine-short.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b6c9db077cb43be9dc92be1693b727b1d8c6d0646895a41a01a91b7f08683418/lagoon-foliage-vine-short.glb",
+        "bytes": 304452,
+        "sha256": "b6c9db077cb43be9dc92be1693b727b1d8c6d0646895a41a01a91b7f08683418"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/a97beadfec1aa5c58fb8da4f968d165fb1080cf8cce3698bf0941d22f2a89570/lagoon-foliage-vine-short-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/a97beadfec1aa5c58fb8da4f968d165fb1080cf8cce3698bf0941d22f2a89570/lagoon-foliage-vine-short-runtime.zip",
+        "bytes": 243974,
+        "sha256": "a97beadfec1aa5c58fb8da4f968d165fb1080cf8cce3698bf0941d22f2a89570"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/2d3a5365377c5f1ef77c2cdb10be4943dd594878b5d75aed59ba85cfbb34b52c/lagoon-foliage-vine-short-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2d3a5365377c5f1ef77c2cdb10be4943dd594878b5d75aed59ba85cfbb34b52c/lagoon-foliage-vine-short-editable.zip",
+        "bytes": 522386,
+        "sha256": "2d3a5365377c5f1ef77c2cdb10be4943dd594878b5d75aed59ba85cfbb34b52c"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Close-up 3D heart-leaf hanging vines accented with small magenta orchid sprigs for overhanging branches and ledges. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short.png",
+        "sourceRevisionId": "r_47618fec249f40508a8cb7856acb2838",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 3570,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          0.8611307442188263,
+          3.5569683173671365,
+          1.6499063968658447
+        ],
+        "boundsMin": [
+          -0.46848341822624207,
+          -3.5654993057250977,
+          -0.7901070713996887
+        ],
+        "boundsMax": [
+          0.39264732599258423,
+          -0.008530988357961178,
+          0.859799325466156
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-vine-medium",
+      "name": "Medium hanging vine curtain",
+      "description": "Mid-length cascading rainforest vine tendrils for dressing karst overhangs and stone viaduct arches. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-vine-medium"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_308a3af01eae441abb301d60dce0c8a5",
+      "revisionId": "r_f959721ce3054d1f9dddacb563f3b4d2",
+      "sourcePath": "packs/holodeck/sources/project/a_308a3af01eae441abb301d60dce0c8a5/r_f959721ce3054d1f9dddacb563f3b4d2/source.kiln.js",
+      "sourceSha256": "d9ae26f4c775d4dede35dd0a35e772993b515a1e84aa4edd350587b1bd520347",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/2923e15d4311596a8aff58a26af584b3a824ac97d23a25bc4d43034306f94df9/lagoon-foliage-vine-medium.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2923e15d4311596a8aff58a26af584b3a824ac97d23a25bc4d43034306f94df9/lagoon-foliage-vine-medium.glb",
+        "bytes": 334480,
+        "sha256": "2923e15d4311596a8aff58a26af584b3a824ac97d23a25bc4d43034306f94df9"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/45c5aefe7e373adbb057c2c372e39a5709e7eb3069c2bc18a816729c24a1af0b/lagoon-foliage-vine-medium-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/45c5aefe7e373adbb057c2c372e39a5709e7eb3069c2bc18a816729c24a1af0b/lagoon-foliage-vine-medium-runtime.zip",
+        "bytes": 264931,
+        "sha256": "45c5aefe7e373adbb057c2c372e39a5709e7eb3069c2bc18a816729c24a1af0b"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/7d3ed9589f20d6c2b187716a97527ce6e9b66dd171cb5b850e56e13f8b52710b/lagoon-foliage-vine-medium-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/7d3ed9589f20d6c2b187716a97527ce6e9b66dd171cb5b850e56e13f8b52710b/lagoon-foliage-vine-medium-editable.zip",
+        "bytes": 486101,
+        "sha256": "7d3ed9589f20d6c2b187716a97527ce6e9b66dd171cb5b850e56e13f8b52710b"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Mid-length cascading rainforest vine tendrils for dressing karst overhangs and stone viaduct arches. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium.png",
+        "sourceRevisionId": "r_f959721ce3054d1f9dddacb563f3b4d2",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 3428,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1.129796326160431,
+          7.517546320799738,
+          2.7713268995285034
+        ],
+        "boundsMin": [
+          -0.5474159717559814,
+          -7.516481876373291,
+          -1.3863213062286377
+        ],
+        "boundsMax": [
+          0.5823803544044495,
+          0.001064444426447153,
+          1.3850055932998657
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-vine-long",
+      "name": "Long cliffside vine curtain",
+      "description": "Tall hanging vine curtains that drop down cenote walls and frame waterfalls. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-vine-long"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_3940e4eb752c4e208fc2cc05309afc0e",
+      "revisionId": "r_f26da827407341cabe8e2f9294f62369",
+      "sourcePath": "packs/holodeck/sources/project/a_3940e4eb752c4e208fc2cc05309afc0e/r_f26da827407341cabe8e2f9294f62369/source.kiln.js",
+      "sourceSha256": "959f0ddc595d21c6f85ee57bf0b3a71bc1725407e7d7ba5c4a92f1663efac852",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/cf122eec41d5151926f48d13017fca4a7727ed814bb6f86e2bd5f64ef54a8b30/lagoon-foliage-vine-long.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/cf122eec41d5151926f48d13017fca4a7727ed814bb6f86e2bd5f64ef54a8b30/lagoon-foliage-vine-long.glb",
+        "bytes": 352348,
+        "sha256": "cf122eec41d5151926f48d13017fca4a7727ed814bb6f86e2bd5f64ef54a8b30"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/fb47c7d327347ae8ca65a2f72b7866ee2c9c0bd4afdf1b3f4197a9450bf9c473/lagoon-foliage-vine-long-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/fb47c7d327347ae8ca65a2f72b7866ee2c9c0bd4afdf1b3f4197a9450bf9c473/lagoon-foliage-vine-long-runtime.zip",
+        "bytes": 279684,
+        "sha256": "fb47c7d327347ae8ca65a2f72b7866ee2c9c0bd4afdf1b3f4197a9450bf9c473"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/c16d5180669c0fbe716bd8c48c2e50cd2782aa59249de495a2e9fd1a7e274746/lagoon-foliage-vine-long-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c16d5180669c0fbe716bd8c48c2e50cd2782aa59249de495a2e9fd1a7e274746/lagoon-foliage-vine-long-editable.zip",
+        "bytes": 457072,
+        "sha256": "c16d5180669c0fbe716bd8c48c2e50cd2782aa59249de495a2e9fd1a7e274746"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "Tall hanging vine curtains that drop down cenote walls and frame waterfalls. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long.png",
+        "sourceRevisionId": "r_f26da827407341cabe8e2f9294f62369",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 3950,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          1.2992597818374634,
+          13.510381120373495,
+          3.5572381019592285
+        ],
+        "boundsMin": [
+          -0.6032207608222961,
+          -13.5095853805542,
+          -1.7708770036697388
+        ],
+        "boundsMax": [
+          0.6960390210151672,
+          0.0007957398192957044,
+          1.7863610982894897
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-canopy-umbrella",
+      "name": "Umbrella rainforest canopy tree",
+      "description": "A fluted plank-buttress umbrella rainforest tree authored for low-angle underside views from inside a cenote. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-canopy-umbrella"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_dbfacd0794e9461c9612737b4b75115d",
+      "revisionId": "r_40d7fef763864ecdb6b1905965aaca56",
+      "sourcePath": "packs/holodeck/sources/project/a_dbfacd0794e9461c9612737b4b75115d/r_40d7fef763864ecdb6b1905965aaca56/source.kiln.js",
+      "sourceSha256": "359ef630916e3356e2dee1e3e52ade3c1518fe3fbc85183063520868cf0c5f82",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/428567869d553c7cc05a54f681d039ae5c85baa9626f83d65354cf11f03ca314/lagoon-foliage-canopy-umbrella.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/428567869d553c7cc05a54f681d039ae5c85baa9626f83d65354cf11f03ca314/lagoon-foliage-canopy-umbrella.glb",
+        "bytes": 1027468,
+        "sha256": "428567869d553c7cc05a54f681d039ae5c85baa9626f83d65354cf11f03ca314"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/08e460f5ceca5e8cac880c3ac9f0855a97297ae885ccc59e512cf234650f3fa6/lagoon-foliage-canopy-umbrella-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/08e460f5ceca5e8cac880c3ac9f0855a97297ae885ccc59e512cf234650f3fa6/lagoon-foliage-canopy-umbrella-runtime.zip",
+        "bytes": 915337,
+        "sha256": "08e460f5ceca5e8cac880c3ac9f0855a97297ae885ccc59e512cf234650f3fa6"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/f271138964680cba38f2bf1d6e1142725c8460b0289a70719d3c56fce3ffadfd/lagoon-foliage-canopy-umbrella-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f271138964680cba38f2bf1d6e1142725c8460b0289a70719d3c56fce3ffadfd/lagoon-foliage-canopy-umbrella-editable.zip",
+        "bytes": 1432457,
+        "sha256": "f271138964680cba38f2bf1d6e1142725c8460b0289a70719d3c56fce3ffadfd"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A fluted plank-buttress umbrella rainforest tree authored for low-angle underside views from inside a cenote. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella.png",
+        "sourceRevisionId": "r_40d7fef763864ecdb6b1905965aaca56",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 6432,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          13.19103717803955,
+          12.42499190568924,
+          11.600611209869385
+        ],
+        "boundsMin": [
+          -6.419449329376221,
+          -0.8698866963386536,
+          -5.825514316558838
+        ],
+        "boundsMax": [
+          6.77158784866333,
+          11.555105209350586,
+          5.775096893310547
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-canopy-emergent",
+      "name": "Emergent rainforest canopy tree",
+      "description": "A tall emergent rainforest tree with buttressed roots and layered crown pads for framing cenote rims against the sky. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-canopy-emergent"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_2b21510e21474cc8a87d8b27d5de4327",
+      "revisionId": "r_25c09eedc53341b69d7b41b83e31e2d7",
+      "sourcePath": "packs/holodeck/sources/project/a_2b21510e21474cc8a87d8b27d5de4327/r_25c09eedc53341b69d7b41b83e31e2d7/source.kiln.js",
+      "sourceSha256": "90953fa92fe7790bf9707b3e524c07a9133bd1b76edff4f6d7d8dfe6b51a00d0",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/e7e5b0b21c2153ce3b65f1c40f83b97d8eebddd6baf7600619d4bf71aac9727e/lagoon-foliage-canopy-emergent.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e7e5b0b21c2153ce3b65f1c40f83b97d8eebddd6baf7600619d4bf71aac9727e/lagoon-foliage-canopy-emergent.glb",
+        "bytes": 1037300,
+        "sha256": "e7e5b0b21c2153ce3b65f1c40f83b97d8eebddd6baf7600619d4bf71aac9727e"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/3ebc2caaf76980161ca3925a0c2fb16b8aacc4d045439007b68d3d0f3a02444f/lagoon-foliage-canopy-emergent-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/3ebc2caaf76980161ca3925a0c2fb16b8aacc4d045439007b68d3d0f3a02444f/lagoon-foliage-canopy-emergent-runtime.zip",
+        "bytes": 924103,
+        "sha256": "3ebc2caaf76980161ca3925a0c2fb16b8aacc4d045439007b68d3d0f3a02444f"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/2c0a2e49ed1a5751b9beb4a9d23419c00b5ade9990bf6a6d954eef298e526344/lagoon-foliage-canopy-emergent-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/2c0a2e49ed1a5751b9beb4a9d23419c00b5ade9990bf6a6d954eef298e526344/lagoon-foliage-canopy-emergent-editable.zip",
+        "bytes": 1323550,
+        "sha256": "2c0a2e49ed1a5751b9beb4a9d23419c00b5ade9990bf6a6d954eef298e526344"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A tall emergent rainforest tree with buttressed roots and layered crown pads for framing cenote rims against the sky. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent.png",
+        "sourceRevisionId": "r_25c09eedc53341b69d7b41b83e31e2d7",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 6130,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          10.540902137756348,
+          15.838232278823853,
+          9.381321430206299
+        ],
+        "boundsMin": [
+          -5.268105983734131,
+          -0.8793928623199463,
+          -4.647939205169678
+        ],
+        "boundsMax": [
+          5.272796154022217,
+          14.958839416503906,
+          4.733382225036621
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-foliage-cliff-drape",
+      "name": "Mossy cliff-lip foliage drape",
+      "description": "A modular mossy cliff-lip cushion crowned with ferns and cascading vine curtains for dressing karst ledges. Moves in Holodeck’s wind.",
+      "category": "Lagoon Sanctuary canopy and vines",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-cliff-drape"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_54c500e341b948ee9d7082dd32b5c44e",
+      "revisionId": "r_42ef74caef384c5ab7c4104fb675c555",
+      "sourcePath": "packs/holodeck/sources/project/a_54c500e341b948ee9d7082dd32b5c44e/r_42ef74caef384c5ab7c4104fb675c555/source.kiln.js",
+      "sourceSha256": "94d299e912851d10dca6c4a0e1e5c05e047b9de87bbbd5e1f55eaba67e31434b",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/e8edd8636063576f0e87305bbbf89e7cf55aa5b33aa71cce099c71c94a50e79d/lagoon-foliage-cliff-drape.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/e8edd8636063576f0e87305bbbf89e7cf55aa5b33aa71cce099c71c94a50e79d/lagoon-foliage-cliff-drape.glb",
+        "bytes": 782264,
+        "sha256": "e8edd8636063576f0e87305bbbf89e7cf55aa5b33aa71cce099c71c94a50e79d"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/8883db50f35dc86d9ec75715ffdf600f41af74c8b965abd6d2a75d7cc1238056/lagoon-foliage-cliff-drape-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/8883db50f35dc86d9ec75715ffdf600f41af74c8b965abd6d2a75d7cc1238056/lagoon-foliage-cliff-drape-runtime.zip",
+        "bytes": 719683,
+        "sha256": "8883db50f35dc86d9ec75715ffdf600f41af74c8b965abd6d2a75d7cc1238056"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/c0db61c0e8f1d14c616459b34872558457338bbddb54e1fdd53628bb9ea2266f/lagoon-foliage-cliff-drape-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/c0db61c0e8f1d14c616459b34872558457338bbddb54e1fdd53628bb9ea2266f/lagoon-foliage-cliff-drape-editable.zip",
+        "bytes": 1199692,
+        "sha256": "c0db61c0e8f1d14c616459b34872558457338bbddb54e1fdd53628bb9ea2266f"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A modular mossy cliff-lip cushion crowned with ferns and cascading vine curtains for dressing karst ledges. Moves in Holodeck’s wind.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape.png",
+        "sourceRevisionId": "r_42ef74caef384c5ab7c4104fb675c555",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 2636,
+        "meshes": 2,
+        "materials": 2,
+        "bounds": [
+          2.8069119453430176,
+          4.903023719787598,
+          6.5309178829193115
+        ],
+        "boundsMin": [
+          -1.153817892074585,
+          -3.5639214515686035,
+          -3.2171730995178223
+        ],
+        "boundsMax": [
+          1.6530940532684326,
+          1.3391022682189941,
+          3.3137447834014893
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-wildlife-swallow",
+      "name": "Cenote swallow",
+      "description": "A streamlined forked-tail swallow with named wing joints for Holodeck’s boids and procedural gait modules.",
+      "category": "Lagoon Sanctuary wildlife",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "wildlife-swallow"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_27c1c7427d6349c485f671fac428e3fb",
+      "revisionId": "r_8839e3eea15b433fb2c544d2c5388b71",
+      "sourcePath": "packs/holodeck/sources/project/a_27c1c7427d6349c485f671fac428e3fb/r_8839e3eea15b433fb2c544d2c5388b71/source.kiln.js",
+      "sourceSha256": "4e29adb87d73b19a8f0be64fe1b097d792475c55304b821177f953d7c45ed14c",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4/lagoon-wildlife-swallow.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4/lagoon-wildlife-swallow.glb",
+        "bytes": 91924,
+        "sha256": "dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/abbf4119c569d16764e951183b2c0f1e4bf61cb934e8e40a5a9273833fce639b/lagoon-wildlife-swallow-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/abbf4119c569d16764e951183b2c0f1e4bf61cb934e8e40a5a9273833fce639b/lagoon-wildlife-swallow-runtime.zip",
+        "bytes": 74065,
+        "sha256": "abbf4119c569d16764e951183b2c0f1e4bf61cb934e8e40a5a9273833fce639b"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/f6b5da3698e71373c632c155a3df248975e1219d4cc90dc42152f31e9131271a/lagoon-wildlife-swallow-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f6b5da3698e71373c632c155a3df248975e1219d4cc90dc42152f31e9131271a/lagoon-wildlife-swallow-editable.zip",
+        "bytes": 157404,
+        "sha256": "f6b5da3698e71373c632c155a3df248975e1219d4cc90dc42152f31e9131271a"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A streamlined forked-tail swallow with named wing joints for Holodeck’s boids and procedural gait modules.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow.png",
+        "sourceRevisionId": "r_8839e3eea15b433fb2c544d2c5388b71",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 1300,
+        "meshes": 4,
+        "materials": 3,
+        "bounds": [
+          0.2800000011920929,
+          0.05250000115483999,
+          0.5599999892711639
+        ],
+        "boundsMin": [
+          -0.15000000596046448,
+          -0.011500000022351742,
+          -0.27999999463558195
+        ],
+        "boundsMax": [
+          0.12999999523162842,
+          0.04100000113248825,
+          0.27999999463558195
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-wildlife-fish-gold",
+      "name": "Golden lagoon fish",
+      "description": "A warm golden-orange lagoon fish with a named tail joint for Holodeck’s underwater schooling boids and gait modules.",
+      "category": "Lagoon Sanctuary wildlife",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "wildlife-fish-gold"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_9882b7c0204c4357810d3225ef7e779c",
+      "revisionId": "r_4441ce77af2648d3ae4ea5190fad2277",
+      "sourcePath": "packs/holodeck/sources/project/a_9882b7c0204c4357810d3225ef7e779c/r_4441ce77af2648d3ae4ea5190fad2277/source.kiln.js",
+      "sourceSha256": "82318b0a55b6a6db156c7198fa22391eb6605c699672b28f38a002133905871e",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/5788b3f697cac28c216a8fb33e81c12c33b214888e8a21b1a3e8d7dd6bf10a6a/lagoon-wildlife-fish-gold.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/5788b3f697cac28c216a8fb33e81c12c33b214888e8a21b1a3e8d7dd6bf10a6a/lagoon-wildlife-fish-gold.glb",
+        "bytes": 153128,
+        "sha256": "5788b3f697cac28c216a8fb33e81c12c33b214888e8a21b1a3e8d7dd6bf10a6a"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/f7b69fa8495cb27d9f2af3dfc6e6038f1a16d8081230351d922e8f8ca0a65f38/lagoon-wildlife-fish-gold-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/f7b69fa8495cb27d9f2af3dfc6e6038f1a16d8081230351d922e8f8ca0a65f38/lagoon-wildlife-fish-gold-runtime.zip",
+        "bytes": 137872,
+        "sha256": "f7b69fa8495cb27d9f2af3dfc6e6038f1a16d8081230351d922e8f8ca0a65f38"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/1baaa8e49187b0f1984e995f6d936c027d3eb05b415f2b598dbe485beb7cf800/lagoon-wildlife-fish-gold-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/1baaa8e49187b0f1984e995f6d936c027d3eb05b415f2b598dbe485beb7cf800/lagoon-wildlife-fish-gold-editable.zip",
+        "bytes": 471237,
+        "sha256": "1baaa8e49187b0f1984e995f6d936c027d3eb05b415f2b598dbe485beb7cf800"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A warm golden-orange lagoon fish with a named tail joint for Holodeck’s underwater schooling boids and gait modules.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold.png",
+        "sourceRevisionId": "r_4441ce77af2648d3ae4ea5190fad2277",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 1200,
+        "meshes": 4,
+        "materials": 3,
+        "bounds": [
+          0.4199999928474426,
+          0.14000480994582176,
+          0.09000988304615021
+        ],
+        "boundsMin": [
+          -0.20999999940395356,
+          -0.060004811733961105,
+          -0.045004941523075104
+        ],
+        "boundsMax": [
+          0.20999999344348907,
+          0.07999999821186066,
+          0.045004941523075104
+        ],
+        "clips": [],
+        "extensions": []
+      },
+      "review": {
+        "ownerAccepted": true,
+        "status": "accepted"
+      },
+      "historyScope": "selected-only"
+    },
+    {
+      "slug": "lagoon-wildlife-fish-silver",
+      "name": "Silver lagoon fish",
+      "description": "A sleek silver-teal lagoon fish with a named tail joint for Holodeck’s underwater schooling boids and gait modules.",
+      "category": "Lagoon Sanctuary wildlife",
+      "pack": "holodeck-lagoon-sanctuary",
+      "packs": [
+        "holodeck-lagoon-sanctuary"
+      ],
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "wildlife-fish-silver"
+        }
+      ],
+      "collection": "project",
+      "assetId": "a_04d075fa31d64b949eb83060c2e5b320",
+      "revisionId": "r_9583d38840844de4ad8bba0f85e75366",
+      "sourcePath": "packs/holodeck/sources/project/a_04d075fa31d64b949eb83060c2e5b320/r_9583d38840844de4ad8bba0f85e75366/source.kiln.js",
+      "sourceSha256": "27ed968112a75ddce78efb62103da4c1ccc74b524e674f3f3851d329ee959e5a",
+      "runtimeModelDownload": {
+        "path": "packs/holodeck/objects/b0c75284e7a67a157df5d6b919e371b1637acd41261c11449ad0d6455e834f72/lagoon-wildlife-fish-silver.glb",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/b0c75284e7a67a157df5d6b919e371b1637acd41261c11449ad0d6455e834f72/lagoon-wildlife-fish-silver.glb",
+        "bytes": 84080,
+        "sha256": "b0c75284e7a67a157df5d6b919e371b1637acd41261c11449ad0d6455e834f72"
+      },
+      "runtimeDownload": {
+        "path": "packs/holodeck/objects/0d6aa4660e34c9c3bdf4b46fcb011cd211eed8a83bc86b6ce7411cbcc43ec74b/lagoon-wildlife-fish-silver-runtime.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/0d6aa4660e34c9c3bdf4b46fcb011cd211eed8a83bc86b6ce7411cbcc43ec74b/lagoon-wildlife-fish-silver-runtime.zip",
+        "bytes": 68061,
+        "sha256": "0d6aa4660e34c9c3bdf4b46fcb011cd211eed8a83bc86b6ce7411cbcc43ec74b"
+      },
+      "editableDownload": {
+        "path": "packs/holodeck/objects/36d895118c05104984912ce9bfcbfaadb201b28cba863bfa2aef740ccb4d4112/lagoon-wildlife-fish-silver-editable.zip",
+        "url": "https://assets.kilnstudio.tools/packs/holodeck/objects/36d895118c05104984912ce9bfcbfaadb201b28cba863bfa2aef740ccb4d4112/lagoon-wildlife-fish-silver-editable.zip",
+        "bytes": 302364,
+        "sha256": "36d895118c05104984912ce9bfcbfaadb201b28cba863bfa2aef740ccb4d4112"
+      },
+      "poster": {
+        "src": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver.webp",
+        "width": 1024,
+        "height": 1024,
+        "alt": "A sleek silver-teal lagoon fish with a named tail joint for Holodeck’s underwater schooling boids and gait modules.",
+        "srcsetWebp": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-320.webp 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-480.webp 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-672.webp 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-768.webp 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-320.avif 320w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-480.avif 480w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-672.avif 672w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-768.avif 768w, /media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver.png",
+        "sourceRevisionId": "r_9583d38840844de4ad8bba0f85e75366",
+        "exactRevision": true,
+        "rig": "review-neutral-v1"
+      },
+      "metrics": {
+        "triangles": 1176,
+        "meshes": 4,
+        "materials": 3,
+        "bounds": [
+          0.3800000011920929,
+          0.12000710517168045,
+          0.08000171184539795
+        ],
+        "boundsMin": [
+          -0.1900000035762787,
+          -0.052007101476192474,
+          -0.040000855922698975
+        ],
+        "boundsMax": [
+          0.1899999976158142,
+          0.06800000369548798,
+          0.040000855922698975
         ],
         "clips": [],
         "extensions": []

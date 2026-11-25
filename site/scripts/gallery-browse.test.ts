@@ -29,7 +29,7 @@ test('every gallery asset has deliberate shared taxonomy and a catalog introduct
 
 test('curated world and asset selections resolve without dropping any current pack', () => {
   expect(curatedWorlds.map((pack) => pack.id).slice(0, 3)).toEqual([
-    'holodeck-meridian-sanctuary', 'holodeck-crescent-cove', 'holodeck-winter-mountainside-cabin',
+    'holodeck-lagoon-sanctuary', 'holodeck-meridian-sanctuary', 'holodeck-crescent-cove',
   ]);
   expect(new Set(curatedWorlds.map((pack) => pack.id))).toEqual(new Set(holodeckPacks.map((pack) => pack.id)));
   expect(curatedWorlds).toHaveLength(holodeckPacks.length);

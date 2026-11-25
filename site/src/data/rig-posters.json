@@ -867,6 +867,42 @@
             "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
           ]
         }
+      },
+      {
+        "id": "holodeck-2026-11-25-c43246f9",
+        "pack": "holodeck",
+        "renderedOn": "2026-11-25",
+        "engine": {
+          "commit": "0e74139e1413ecb8e843d26dc7daf3ebc8dd4a67",
+          "subject": "Update the H-7 demo to release e3910f57 (#457)",
+          "dirty": true
+        },
+        "service": {
+          "url": "http://127.0.0.1:8123",
+          "protocol": "kiln.render-service.v2",
+          "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+          "backend": "d3d12",
+          "adapter": {
+            "vendor": "nvidia",
+            "architecture": "ampere",
+            "device": "nvidia-geforce-rtx-3070",
+            "description": "D3D12 driver version 32.0.16.1742"
+          },
+          "sourceFingerprint": "sha256:a8592bba54f59fe62af19701a8769a90aba42605d15f22491d957cd11d8e4f98",
+          "buildFingerprint": "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128",
+          "dependencies": {
+            "three": "0.187.0",
+            "webgpu": "0.6.2",
+            "pngjs": "7.0.0"
+          },
+          "captureIdentity": [
+            "kiln.capture-producer.v1",
+            "sha256:173155fc4d02e984f6951805eba7f333693aaf111fb5399fea4da4c58ce86a8c",
+            "49ddbca0-b021-4466-95dd-281378dfe306",
+            "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+            "sha256:3fcc0be83a1f1f9ee296772155fa3a875df55f005e0d26df354b7292aab47128"
+          ]
+        }
       }
     ]
   },
@@ -10852,6 +10888,843 @@
       },
       "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
       "run": "h-7-2026-11-14-f123c501"
+    },
+    "holodeck:lagoon-sanctuary-portal": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-portal.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1984759,
+      "sha256": "1e31a1ed90d0756a3d25baddb6c61243e88baa5e377411a6445b7588c5ff41a6",
+      "assetId": "a_50b2fc2eef3a490b92fd6582995dea3b",
+      "revisionId": "r_d324dd03b0734a30be89d2e6dd747e44",
+      "glb": {
+        "member": "packs/holodeck/objects/b2fcc25c33657becf1725fce6e22aabbea5b35932870e817565fcba0b0b9ee13/lagoon-sanctuary-portal.glb",
+        "bytes": 7070712,
+        "sha256": "b2fcc25c33657becf1725fce6e22aabbea5b35932870e817565fcba0b0b9ee13",
+        "triangles": 43548
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.207804952221775
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-sanctuary-wing": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-wing.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 2307741,
+      "sha256": "e8b7a8e76c7c41e934ac4c738b631279013583f41ce31befa0655d514b46f5b1",
+      "assetId": "a_165e5d2bf40c4afaa06f6986f6244576",
+      "revisionId": "r_c0b62048da724ce3864fccc7c7db58cd",
+      "glb": {
+        "member": "packs/holodeck/objects/671ddd32d97a3ba2a514f9d3746a5f493d2a9793146f58615be3923394a9d675/lagoon-sanctuary-wing.glb",
+        "bytes": 3773696,
+        "sha256": "671ddd32d97a3ba2a514f9d3746a5f493d2a9793146f58615be3923394a9d675",
+        "triangles": 13988
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.509390342263058
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-sanctuary-grand-stairs": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sanctuary-grand-stairs.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 2150789,
+      "sha256": "2074aa39332b75f17c757d1cca0ae8c0c08252e59c81bdbffc2da8bcd46f2bdf",
+      "assetId": "a_6a59f0b57fe74137bb4f5ac2b12ceb4d",
+      "revisionId": "r_bcfda59cdd174b2b85ad798c9b6c68d4",
+      "glb": {
+        "member": "packs/holodeck/objects/92e2ac29067ed1a68dc2d39626af84255fd754249f2191bde51fe3c331d19ab6/lagoon-sanctuary-grand-stairs.glb",
+        "bytes": 3542808,
+        "sha256": "92e2ac29067ed1a68dc2d39626af84255fd754249f2191bde51fe3c331d19ab6",
+        "triangles": 11644
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.362226325655338
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-sun-stele-pillar": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-sun-stele-pillar.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1776701,
+      "sha256": "07d55eaaf33522962d45e3ee8068c73e73e3737ca12d8189fc74f0c968190bb8",
+      "assetId": "a_deeeacf1fde742b6951952204e83a471",
+      "revisionId": "r_302870e794fd496f9cc618278ec58363",
+      "glb": {
+        "member": "packs/holodeck/objects/a64efc7aafe271110cde0b7189d372f0d7fb97ce3412be7ec4465040dbfaf41f/lagoon-sun-stele-pillar.glb",
+        "bytes": 3990716,
+        "sha256": "a64efc7aafe271110cde0b7189d372f0d7fb97ce3412be7ec4465040dbfaf41f",
+        "triangles": 14552
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.742071516348993
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-arrival-stair-terrace": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-arrival-stair-terrace.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1892487,
+      "sha256": "036499a355393298e784a93ae029d7a6537ceb972c0132ccf7532d4d351c9063",
+      "assetId": "a_7e55c2b3fa11464797fd441a0c89e223",
+      "revisionId": "r_63bdf21046b54dd883f9433efd00a878",
+      "glb": {
+        "member": "packs/holodeck/objects/14358273c8b36c2e723e80a6cef2c4dbd0becf16d3afa05e53641863f0a8a976/lagoon-arrival-stair-terrace.glb",
+        "bytes": 3642392,
+        "sha256": "14358273c8b36c2e723e80a6cef2c4dbd0becf16d3afa05e53641863f0a8a976",
+        "triangles": 12376
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.268007776354609
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-waterside-stone-dock": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-waterside-stone-dock.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 2112942,
+      "sha256": "b4fa530807c9eaed0d68ba33a58b1e14f7765f2f41a63f6906f90e5f4dea2b21",
+      "assetId": "a_bcad6bf71e3e4e1192b98fbf6624c11e",
+      "revisionId": "r_b31b6967a9054632982ddcd92b37f7fc",
+      "glb": {
+        "member": "packs/holodeck/objects/e766d847c8b2873dc284f0521bfb18a8fbef93e344093a7d55d944f12ece0feb/lagoon-waterside-stone-dock.glb",
+        "bytes": 2685672,
+        "sha256": "e766d847c8b2873dc284f0521bfb18a8fbef93e344093a7d55d944f12ece0feb",
+        "triangles": 7212
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 3.6665255103144743
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-curved-viaduct": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-curved-viaduct.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1498349,
+      "sha256": "dac10ec86a204b2116b0c26f5dd3cd13dee2c0acd9c881fd73a71fee7567f5f0",
+      "assetId": "a_a89316f416f64cb2a88d7b76df334ba1",
+      "revisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
+      "glb": {
+        "member": "packs/holodeck/objects/e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252/lagoon-curved-viaduct.glb",
+        "bytes": 5626216,
+        "sha256": "e611001dfcd3b648e22d90ce0da203052cf40392fca9d70390972d3f01717252",
+        "triangles": 23550
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 17.932720818154674
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-stone-brazier": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stone-brazier.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1913617,
+      "sha256": "bc759d1f8b52eebb7264c97958006f2b49175a51f0fd560cec78ef966c630fba",
+      "assetId": "a_494aee22f6c6471ea24b59eee84c3095",
+      "revisionId": "r_a6120530e7c94a52a6e9d8ba4632ae3f",
+      "glb": {
+        "member": "packs/holodeck/objects/ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd/lagoon-stone-brazier.glb",
+        "bytes": 2020752,
+        "sha256": "ff91c10c95a312e3d32a7813446ba49c95c64dd1d9103a63529ce50d3c8f08dd",
+        "triangles": 4528
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.9127654278907887
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-karst-overhang-ledge": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-karst-overhang-ledge.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1817292,
+      "sha256": "cf2384ffad9c7e1d04b4481b4abd8aa589981878574932e298f8cfd94bf0f32e",
+      "assetId": "a_19243519e06b4f01adeb205863c6f924",
+      "revisionId": "r_efa7fcc050604f69863d3d702c0e1452",
+      "glb": {
+        "member": "packs/holodeck/objects/cd93d3300972d274d8be9be921a01d38bee0357d8e0cfcb44c3a400868f5b60a/lagoon-karst-overhang-ledge.glb",
+        "bytes": 1691752,
+        "sha256": "cd93d3300972d274d8be9be921a01d38bee0357d8e0cfcb44c3a400868f5b60a",
+        "triangles": 10780
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 9.69325545876559
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-stalactite-cluster": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-stalactite-cluster.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1490994,
+      "sha256": "81bea2cf6d2095f498192fb65a8cef203f17fb757ccc440e4da460b16773bee5",
+      "assetId": "a_b6370526091742b5b4bc876f9e0951cd",
+      "revisionId": "r_ccdf7a4f562e41b4bad871966b957814",
+      "glb": {
+        "member": "packs/holodeck/objects/e188dd328cc091340ff14d34580958b0ea15ea743e1c3c4fecb58647cc3730b9/lagoon-stalactite-cluster.glb",
+        "bytes": 1186300,
+        "sha256": "e188dd328cc091340ff14d34580958b0ea15ea743e1c3c4fecb58647cc3730b9",
+        "triangles": 7168
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.325890873633343
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-mossy-boulder-hero": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-hero.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1675308,
+      "sha256": "433d0965483075c32934e09d653f40436eebfea2850573dfc7377f07b6a54315",
+      "assetId": "a_eddf145618bb483c863426b4411da8f4",
+      "revisionId": "r_e529e1183560444aa9e7ffcd3d5f8d53",
+      "glb": {
+        "member": "packs/holodeck/objects/ef6a0a3241d4855feed4cee0c4239696aca788528279c6b832288400b1998b27/lagoon-mossy-boulder-hero.glb",
+        "bytes": 1436216,
+        "sha256": "ef6a0a3241d4855feed4cee0c4239696aca788528279c6b832288400b1998b27",
+        "triangles": 6292
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.681113211998993
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-mossy-boulder-cluster": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-mossy-boulder-cluster.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1704109,
+      "sha256": "da01b392e5ca840a9ff356b2af52e235c3a1ea69a10669f422d30ecf03e3b690",
+      "assetId": "a_7839231087ef4ffab3922b7eba126d71",
+      "revisionId": "r_b576523c71a64734843883fbefdfa87a",
+      "glb": {
+        "member": "packs/holodeck/objects/2beeeaa6a924c842af99097bde4af426847d9191719f00aad8dd669b6975ab97/lagoon-mossy-boulder-cluster.glb",
+        "bytes": 1423104,
+        "sha256": "2beeeaa6a924c842af99097bde4af426847d9191719f00aad8dd669b6975ab97",
+        "triangles": 5380
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.6911637281720904
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-gnarled-canopy-bough": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-gnarled-canopy-bough.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1520425,
+      "sha256": "b98515a81629c0b33ae26258d2a9c1d7e981afb5342e834347926d49ae9381fb",
+      "assetId": "a_99dcd547802b4d9a928f3b60a6f196f2",
+      "revisionId": "r_cde37c2b08a14de9be5901cd556d0e5c",
+      "glb": {
+        "member": "packs/holodeck/objects/849569c3211e850053e9c8f4fa9ff758615f75752e0da3379ec0ecb5da8e13dc/lagoon-gnarled-canopy-bough.glb",
+        "bytes": 2504256,
+        "sha256": "849569c3211e850053e9c8f4fa9ff758615f75752e0da3379ec0ecb5da8e13dc",
+        "triangles": 38220
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.862418669184162
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-monstera-a": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-a.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1464833,
+      "sha256": "0247e476ee099acd145ff6e4f4d2246f9fe074795972bdd3786142edfadfe60f",
+      "assetId": "a_88aef670b80040af8aa8ead2b846df5f",
+      "revisionId": "r_f0542e8bca254d22864d0b772bd3f4ed",
+      "glb": {
+        "member": "packs/holodeck/objects/42bc21750da3b4e7c7ec189b42b1261a20784e7164fadbdb827aa975e8c79658/lagoon-foliage-monstera-a.glb",
+        "bytes": 482792,
+        "sha256": "42bc21750da3b4e7c7ec189b42b1261a20784e7164fadbdb827aa975e8c79658",
+        "triangles": 7908
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.413113712263304
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-monstera-b": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-monstera-b.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1442045,
+      "sha256": "ce63aa9460bc8f1b807a50f111a3999bce5886bb583d1866a137e0bb9c702124",
+      "assetId": "a_b3f59e9aa2374ea6a210f5a23533cded",
+      "revisionId": "r_e2bad590438d4bfebd5a3fbd5df3ae97",
+      "glb": {
+        "member": "packs/holodeck/objects/dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8/lagoon-foliage-monstera-b.glb",
+        "bytes": 408812,
+        "sha256": "dd48f91485af8d41b30c50ce9897f6d5deda8e703d05370a3428ca66d5fda4c8",
+        "triangles": 6348
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.1025630005745493
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-bromeliad": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-bromeliad.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1407361,
+      "sha256": "cd91918c8dbef00eed94644df274b3dd1eee3ea4e48e5f9c6aeace9bbe28faf9",
+      "assetId": "a_5a63b72c7ca944dda67ee59b5cc0d674",
+      "revisionId": "r_ad23f16a18674e3388c302f73f66854d",
+      "glb": {
+        "member": "packs/holodeck/objects/7b0c075d329cf8c184b9e5300e0bbaaa90ddb26f3fa0b42397293556f35fd87b/lagoon-foliage-bromeliad.glb",
+        "bytes": 270064,
+        "sha256": "7b0c075d329cf8c184b9e5300e0bbaaa90ddb26f3fa0b42397293556f35fd87b",
+        "triangles": 5210
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.8448186636848538
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-fern-fountain": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-fountain.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1462063,
+      "sha256": "e67d230313eed5dd3ffca6bc046de851e4aac707136a2a642e73c7477a9b0e54",
+      "assetId": "a_4c30edf6f8de47e29d5f119000617785",
+      "revisionId": "r_e2c7472898ca4254bb93276370797058",
+      "glb": {
+        "member": "packs/holodeck/objects/2be52f38c22feecf3634fd268f32393a4f9e9c1b11b84bd4eac574c699176fd2/lagoon-foliage-fern-fountain.glb",
+        "bytes": 686892,
+        "sha256": "2be52f38c22feecf3634fd268f32393a4f9e9c1b11b84bd4eac574c699176fd2",
+        "triangles": 9408
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.5639581295330016
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-fern-low": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-fern-low.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1330637,
+      "sha256": "ca0cd878b0acd06437b21a8571a048ee39b0faadd36ec487e7fb62a73eac11d4",
+      "assetId": "a_44c00781e40b49eba1d49da51eb8270c",
+      "revisionId": "r_5f55dff76aef4facb096c685df65f76c",
+      "glb": {
+        "member": "packs/holodeck/objects/5ff9f003d8a6cf802634be12f235fa8b5d10ac991a531e4b1fd854ed1a44354e/lagoon-foliage-fern-low.glb",
+        "bytes": 120924,
+        "sha256": "5ff9f003d8a6cf802634be12f235fa8b5d10ac991a531e4b1fd854ed1a44354e",
+        "triangles": 1456
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.0822704380059385
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-waterlily": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-waterlily.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1355484,
+      "sha256": "8a3f9b5a636afc7899ee120a2b152fe38d5cf3f0ff9e5796f81f399fde40480b",
+      "assetId": "a_fb56f6580c21472295bc97af39093834",
+      "revisionId": "r_c4101c3657444cf1a79bcec56da788da",
+      "glb": {
+        "member": "packs/holodeck/objects/e03d2b942df3b02a4f85fd400be9b2cd3d3d8af4c0a8297d20fbcba39e756004/lagoon-foliage-waterlily.glb",
+        "bytes": 448364,
+        "sha256": "e03d2b942df3b02a4f85fd400be9b2cd3d3d8af4c0a8297d20fbcba39e756004",
+        "triangles": 7348
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.771948598200463
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-palm-island": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-island.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1398509,
+      "sha256": "75b7766ed7e17847fd8bb29df2361aae40c922f157a48d4dc0ab44064a6e24d4",
+      "assetId": "a_e6cb8e1eb9f341d4bc4b6ac22182b0cd",
+      "revisionId": "r_a5890f3919de4a878f9bdca036bda349",
+      "glb": {
+        "member": "packs/holodeck/objects/ccd329e7b100753c74f6fd362e3b31f4b4903b7c5d04245190148a9e918ac5e9/lagoon-foliage-palm-island.glb",
+        "bytes": 758520,
+        "sha256": "ccd329e7b100753c74f6fd362e3b31f4b4903b7c5d04245190148a9e918ac5e9",
+        "triangles": 7914
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.631505009614472
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-palm-lean": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-palm-lean.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1354205,
+      "sha256": "9af908538de07c8a87af1fe6db5039a8a8a322f9e538ab79043b704e8011b388",
+      "assetId": "a_ba0f6daabc7942a3aee392050f52d274",
+      "revisionId": "r_5c176f96f0b84715adeb3135c6d0b3ba",
+      "glb": {
+        "member": "packs/holodeck/objects/c108dbf2f70c58a0b79adca1b946235dd39b220d34723ca34d01f2127971334b/lagoon-foliage-palm-lean.glb",
+        "bytes": 657200,
+        "sha256": "c108dbf2f70c58a0b79adca1b946235dd39b220d34723ca34d01f2127971334b",
+        "triangles": 7062
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 5.26018101281453
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-alocasia": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-alocasia.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1506030,
+      "sha256": "45b68818a6add41fd2796fa73f29b78dc4a55226c5e5453d9dbecba2bf16d1a5",
+      "assetId": "a_e5e0be2b4bab4aaabd8bd4e1feb4bc32",
+      "revisionId": "r_6587f547da92481db9ee496d8ffc7ec8",
+      "glb": {
+        "member": "packs/holodeck/objects/a3a95ed02517583061e5cedcfa4a7624aff1362f70e35d912c2dbf77dd5c0e5d/lagoon-foliage-alocasia.glb",
+        "bytes": 304572,
+        "sha256": "a3a95ed02517583061e5cedcfa4a7624aff1362f70e35d912c2dbf77dd5c0e5d",
+        "triangles": 4812
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 1.738044011970021
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-vine-short": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-short.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1371469,
+      "sha256": "01966f3d7b489385083d029966daa549ba9bbe635ca91a94b0a40ff5fda6bf99",
+      "assetId": "a_2a08934a390b4c5ebcce6e8d9f7e713a",
+      "revisionId": "r_47618fec249f40508a8cb7856acb2838",
+      "glb": {
+        "member": "packs/holodeck/objects/b6c9db077cb43be9dc92be1693b727b1d8c6d0646895a41a01a91b7f08683418/lagoon-foliage-vine-short.glb",
+        "bytes": 304452,
+        "sha256": "b6c9db077cb43be9dc92be1693b727b1d8c6d0646895a41a01a91b7f08683418",
+        "triangles": 3570
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 2.319021622724732
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-vine-medium": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-medium.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1388175,
+      "sha256": "ea1148ab8ffd275e785f34baf9e7d08df2a47f348b7e47e4f6b71d23e76eca2c",
+      "assetId": "a_308a3af01eae441abb301d60dce0c8a5",
+      "revisionId": "r_f959721ce3054d1f9dddacb563f3b4d2",
+      "glb": {
+        "member": "packs/holodeck/objects/2923e15d4311596a8aff58a26af584b3a824ac97d23a25bc4d43034306f94df9/lagoon-foliage-vine-medium.glb",
+        "bytes": 334480,
+        "sha256": "2923e15d4311596a8aff58a26af584b3a824ac97d23a25bc4d43034306f94df9",
+        "triangles": 3428
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.639745906056651
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-vine-long": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-vine-long.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1371313,
+      "sha256": "41f6e4405ca4f7d86ff16fff56defc24c709f6dbd2011282c5e29cd349aa7650",
+      "assetId": "a_3940e4eb752c4e208fc2cc05309afc0e",
+      "revisionId": "r_f26da827407341cabe8e2f9294f62369",
+      "glb": {
+        "member": "packs/holodeck/objects/cf122eec41d5151926f48d13017fca4a7727ed814bb6f86e2bd5f64ef54a8b30/lagoon-foliage-vine-long.glb",
+        "bytes": 352348,
+        "sha256": "cf122eec41d5151926f48d13017fca4a7727ed814bb6f86e2bd5f64ef54a8b30",
+        "triangles": 3950
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 7.937802320361711
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-canopy-umbrella": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-umbrella.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1520111,
+      "sha256": "98beec32d2e8ece1509acb9f7bbbdfd6d0c13df4d99ed553e73138025c89128d",
+      "assetId": "a_dbfacd0794e9461c9612737b4b75115d",
+      "revisionId": "r_40d7fef763864ecdb6b1905965aaca56",
+      "glb": {
+        "member": "packs/holodeck/objects/428567869d553c7cc05a54f681d039ae5c85baa9626f83d65354cf11f03ca314/lagoon-foliage-canopy-umbrella.glb",
+        "bytes": 1027468,
+        "sha256": "428567869d553c7cc05a54f681d039ae5c85baa9626f83d65354cf11f03ca314",
+        "triangles": 6432
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 11.079791650659432
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-canopy-emergent": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-canopy-emergent.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1462945,
+      "sha256": "3f47047dcf3f0c95cafcf6a1ed62efb071f8b44003f21fd9145b1ab8b1e9cf32",
+      "assetId": "a_2b21510e21474cc8a87d8b27d5de4327",
+      "revisionId": "r_25c09eedc53341b69d7b41b83e31e2d7",
+      "glb": {
+        "member": "packs/holodeck/objects/e7e5b0b21c2153ce3b65f1c40f83b97d8eebddd6baf7600619d4bf71aac9727e/lagoon-foliage-canopy-emergent.glb",
+        "bytes": 1037300,
+        "sha256": "e7e5b0b21c2153ce3b65f1c40f83b97d8eebddd6baf7600619d4bf71aac9727e",
+        "triangles": 6130
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 11.951506126921634
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-foliage-cliff-drape": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-foliage-cliff-drape.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1716878,
+      "sha256": "f9e5ec11c8b1587583e7007c20b39093c4ae4591b3c1c1e3a83086ede0d6fd3a",
+      "assetId": "a_54c500e341b948ee9d7082dd32b5c44e",
+      "revisionId": "r_42ef74caef384c5ab7c4104fb675c555",
+      "glb": {
+        "member": "packs/holodeck/objects/e8edd8636063576f0e87305bbbf89e7cf55aa5b33aa71cce099c71c94a50e79d/lagoon-foliage-cliff-drape.glb",
+        "bytes": 782264,
+        "sha256": "e8edd8636063576f0e87305bbbf89e7cf55aa5b33aa71cce099c71c94a50e79d",
+        "triangles": 2636
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 4.289405557961654
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-wildlife-swallow": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-swallow.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1282674,
+      "sha256": "5d65e30a19da1bb310113d6f421f91a20e7087753830944c28feea969b2106de",
+      "assetId": "a_27c1c7427d6349c485f671fac428e3fb",
+      "revisionId": "r_8839e3eea15b433fb2c544d2c5388b71",
+      "glb": {
+        "member": "packs/holodeck/objects/dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4/lagoon-wildlife-swallow.glb",
+        "bytes": 91924,
+        "sha256": "dd08adf07b09b278223cdcc50a1ac62ccd8525c154c95cfe8e24e8b32b3036e4",
+        "triangles": 1300
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.34648231884770236
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-wildlife-fish-gold": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-gold.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1563934,
+      "sha256": "e54b68599249fee930660d36133b768216a95f08cbee502adf6dd1f3df1156c9",
+      "assetId": "a_9882b7c0204c4357810d3225ef7e779c",
+      "revisionId": "r_4441ce77af2648d3ae4ea5190fad2277",
+      "glb": {
+        "member": "packs/holodeck/objects/5788b3f697cac28c216a8fb33e81c12c33b214888e8a21b1a3e8d7dd6bf10a6a/lagoon-wildlife-fish-gold.glb",
+        "bytes": 153128,
+        "sha256": "5788b3f697cac28c216a8fb33e81c12c33b214888e8a21b1a3e8d7dd6bf10a6a",
+        "triangles": 1200
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.21036834100127355
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
+    },
+    "holodeck:lagoon-wildlife-fish-silver": {
+      "path": "media/rig/review-neutral-v1/holodeck/holodeck-20261125-01/lagoon-wildlife-fish-silver.png",
+      "width": 1024,
+      "height": 1024,
+      "bytes": 1479765,
+      "sha256": "97c7e0d80b6fb9493baed82ee0f28e52e5de44d3b4214dc8fd2c174d2101ae90",
+      "assetId": "a_04d075fa31d64b949eb83060c2e5b320",
+      "revisionId": "r_9583d38840844de4ad8bba0f85e75366",
+      "glb": {
+        "member": "packs/holodeck/objects/b0c75284e7a67a157df5d6b919e371b1637acd41261c11449ad0d6455e834f72/lagoon-wildlife-fish-silver.glb",
+        "bytes": 84080,
+        "sha256": "b0c75284e7a67a157df5d6b919e371b1637acd41261c11449ad0d6455e834f72",
+        "triangles": 1176
+      },
+      "view": {
+        "direction": [
+          0.7,
+          0.5,
+          0.7
+        ],
+        "padding": 1.05,
+        "projection": "orthographic",
+        "halfHeight": 0.1897410262103055
+      },
+      "rendererId": "dawn-d3d12:nvidia-geforce-rtx-3070:D3D12 driver version 32.0.16.1742",
+      "run": "holodeck-2026-11-25-c43246f9"
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "release": "holodeck-20261113-01",
+  "release": "holodeck-20261125-01",
   "licence": "CC0-1.0",
   "versions": "final-only",
   "packs": {
@@ -300,6 +300,58 @@
         "meridian-statue-figure",
         "meridian-statue-whale"
       ]
+    },
+    "holodeck-lagoon-sanctuary": {
+      "scene": "lagoon-sanctuary",
+      "source": {
+        "kind": "holodeck-example",
+        "ref": "be745454d194780b5208f547f6367fecf4396f1c",
+        "commit": "be745454d194780b5208f547f6367fecf4396f1c",
+        "path": "examples/lagoon-sanctuary",
+        "sourceRevision": 19,
+        "worldSha256": "9c10d5a401c3f850abc164cf20a0b27fd4cb6ba4e8ac328655adf63731bfb615"
+      },
+      "assets": [
+        "cove-structure",
+        "cove-canopy",
+        "cove-seating",
+        "cove-hearth",
+        "cove-planting",
+        "cove-rug",
+        "cove-lamp",
+        "cove-moodboard",
+        "lagoon-sanctuary-portal",
+        "lagoon-sanctuary-wing",
+        "lagoon-sanctuary-grand-stairs",
+        "lagoon-sun-stele-pillar",
+        "lagoon-arrival-stair-terrace",
+        "lagoon-waterside-stone-dock",
+        "lagoon-curved-viaduct",
+        "lagoon-stone-brazier",
+        "lagoon-karst-overhang-ledge",
+        "lagoon-stalactite-cluster",
+        "lagoon-mossy-boulder-hero",
+        "lagoon-mossy-boulder-cluster",
+        "lagoon-gnarled-canopy-bough",
+        "lagoon-foliage-monstera-a",
+        "lagoon-foliage-monstera-b",
+        "lagoon-foliage-bromeliad",
+        "lagoon-foliage-fern-fountain",
+        "lagoon-foliage-fern-low",
+        "lagoon-foliage-waterlily",
+        "lagoon-foliage-palm-island",
+        "lagoon-foliage-palm-lean",
+        "lagoon-foliage-alocasia",
+        "lagoon-foliage-vine-short",
+        "lagoon-foliage-vine-medium",
+        "lagoon-foliage-vine-long",
+        "lagoon-foliage-canopy-umbrella",
+        "lagoon-foliage-canopy-emergent",
+        "lagoon-foliage-cliff-drape",
+        "lagoon-wildlife-swallow",
+        "lagoon-wildlife-fish-gold",
+        "lagoon-wildlife-fish-silver"
+      ]
     }
   },
   "assets": {
@@ -344,6 +396,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "structure"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "structure"
         }
       ]
@@ -390,6 +446,10 @@
         {
           "pack": "holodeck-meridian-sanctuary",
           "id": "canopy"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "canopy"
         }
       ]
     },
@@ -434,6 +494,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "seating"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "seating"
         }
       ]
@@ -480,6 +544,10 @@
         {
           "pack": "holodeck-meridian-sanctuary",
           "id": "hearth"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "hearth"
         }
       ]
     },
@@ -524,6 +592,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "planting"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "planting"
         }
       ]
@@ -570,6 +642,10 @@
         {
           "pack": "holodeck-meridian-sanctuary",
           "id": "rug"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "rug"
         }
       ]
     },
@@ -614,6 +690,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "lamp"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "lamp"
         }
       ]
@@ -663,6 +743,10 @@
         },
         {
           "pack": "holodeck-meridian-sanctuary",
+          "id": "moodboard"
+        },
+        {
+          "pack": "holodeck-lagoon-sanctuary",
           "id": "moodboard"
         }
       ]
@@ -5890,6 +5974,875 @@
         {
           "pack": "holodeck-meridian-sanctuary",
           "id": "statue-whale"
+        }
+      ]
+    },
+    "lagoon-sanctuary-portal": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_50b2fc2eef3a490b92fd6582995dea3b",
+      "revisionId": "r_d324dd03b0734a30be89d2e6dd747e44",
+      "manifest": {
+        "bytes": 15434,
+        "sha256": "fcb8ba391115dfd424d4c3656338fefd3421fbbf4277fa812fac2b35caaaa575"
+      },
+      "source": {
+        "bytes": 57752,
+        "sha256": "35a512249eaeaec2d90efefbafea7e56fd643dfc8f185f133f44437e3cc1fd08"
+      },
+      "canonical": {
+        "bytes": 7070484,
+        "sha256": "a4a9f37dbc7dcf62da5e294e5b00160f26eca46da928c0e9f15e982d3a7ca836"
+      },
+      "preview": {
+        "bytes": 793659,
+        "sha256": "d08d714683ca8baa134a21e0ac67ce2bfb489fe40c880c235a902bafe54a6efc"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sanctuary-portal"
+        }
+      ]
+    },
+    "lagoon-sanctuary-wing": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_165e5d2bf40c4afaa06f6986f6244576",
+      "revisionId": "r_c0b62048da724ce3864fccc7c7db58cd",
+      "manifest": {
+        "bytes": 16197,
+        "sha256": "29367305e7321e3fa3e633400bf45b5d9c5ff777609bf406bf75ee75cbf04657"
+      },
+      "source": {
+        "bytes": 31993,
+        "sha256": "522f0674150eb44045428768ce8f8f98520a6218663d2071f4387122bc87b271"
+      },
+      "canonical": {
+        "bytes": 3773468,
+        "sha256": "38cb41c8d59809d1d1d718e52c73fd52c0e2eac84623ff452dcd70dfdb546974"
+      },
+      "preview": {
+        "bytes": 726031,
+        "sha256": "3685c2a2a9a193bca3dabb1cf4af1399a7e494b09648549cb582a741c3d7fe8c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sanctuary-wing"
+        }
+      ]
+    },
+    "lagoon-sanctuary-grand-stairs": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_6a59f0b57fe74137bb4f5ac2b12ceb4d",
+      "revisionId": "r_bcfda59cdd174b2b85ad798c9b6c68d4",
+      "manifest": {
+        "bytes": 16351,
+        "sha256": "e52125337152c7d8abc94351f423765b9f2af0bb552ff712b553fa78768979e9"
+      },
+      "source": {
+        "bytes": 39316,
+        "sha256": "7ec9dd9a454d53a5f70a1a236f2a8d5884dac9242ce76162dbb37ccf80b8c6c1"
+      },
+      "canonical": {
+        "bytes": 3542572,
+        "sha256": "b4aa2f28ea44e4feb72179446f9263a022a7621eab20dc716921241cb6701cd2"
+      },
+      "preview": {
+        "bytes": 754650,
+        "sha256": "22dd9e98dfe501d54ae8f72e713feaa5e72a45bd05a3bb9d38c27c524d4aaa6b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sanctuary-grand-stairs"
+        }
+      ]
+    },
+    "lagoon-sun-stele-pillar": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_deeeacf1fde742b6951952204e83a471",
+      "revisionId": "r_302870e794fd496f9cc618278ec58363",
+      "manifest": {
+        "bytes": 15867,
+        "sha256": "ff3959fe95452f1026209c166e541e8fc56658464bdcf2e7cd21a540480294c0"
+      },
+      "source": {
+        "bytes": 43325,
+        "sha256": "0dfee3292491fbb013a35876ccb216d723c61006ceb590b9a173adddd7851efe"
+      },
+      "canonical": {
+        "bytes": 3990484,
+        "sha256": "b966e152044d1f0a0d5c7825cfc7fa917329b6b6eef3f18a1265bbe420dfdd2e"
+      },
+      "preview": {
+        "bytes": 562532,
+        "sha256": "9c9cf34d0b61ff9896d813148c9d4b3e54c5ac1d8275672516082fe73f36081f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "sun-stele-pillar"
+        }
+      ]
+    },
+    "lagoon-arrival-stair-terrace": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_7e55c2b3fa11464797fd441a0c89e223",
+      "revisionId": "r_63bdf21046b54dd883f9433efd00a878",
+      "parentRevision": "r_a2d59b569b6d4e938f333abf576848ef",
+      "manifest": {
+        "bytes": 14257,
+        "sha256": "a83170dccef8b2349c5a3c5e3f43f0a56a5915a2272dde70aa69cd5c6f2e3448"
+      },
+      "source": {
+        "bytes": 47309,
+        "sha256": "e9b59c9c6c980a29e28a2a10ef40026f547724ec0e764d0b57cd207638fb346b"
+      },
+      "canonical": {
+        "bytes": 3642156,
+        "sha256": "4c2eb4ddca6954cef40675468beaa6ba1483f4a6730ef69f3c83f7d8ef234cd8"
+      },
+      "preview": {
+        "bytes": 501556,
+        "sha256": "2ebada74bb7a80ba5ecffcc115a5cb1e0cbcca72b31e04f5612593a5a54deb47"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "arrival-stair-terrace"
+        }
+      ]
+    },
+    "lagoon-waterside-stone-dock": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_bcad6bf71e3e4e1192b98fbf6624c11e",
+      "revisionId": "r_b31b6967a9054632982ddcd92b37f7fc",
+      "manifest": {
+        "bytes": 14941,
+        "sha256": "888d71e6f6723582762fe514fb6d47065e579d0095ec3509eced19510aad3aed"
+      },
+      "source": {
+        "bytes": 31314,
+        "sha256": "88278cb2c4c3ac2e13ee936c14be30221b6467da045a05c5db3a5b640574deda"
+      },
+      "canonical": {
+        "bytes": 2685440,
+        "sha256": "d547e8abb70e73192705d54fe514dc56670e6a7195deb2b2622fabc40d3fe14b"
+      },
+      "preview": {
+        "bytes": 680791,
+        "sha256": "3663f6ce3174ebe439913e94f67aa16256360865de33ee94962cfcf7ce35c613"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "waterside-stone-dock"
+        }
+      ]
+    },
+    "lagoon-curved-viaduct": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_a89316f416f64cb2a88d7b76df334ba1",
+      "revisionId": "r_cb9fd874ba0f4ec89a4e41d927cd5d9d",
+      "manifest": {
+        "bytes": 15052,
+        "sha256": "5f2bac3e20d0e3397db21627241bdd72d0280652de37d994b4c327c0c9819a06"
+      },
+      "source": {
+        "bytes": 64162,
+        "sha256": "a6087693ad3c960994b5fd1f8eb71ad40c2b523ee353ce9e50e347a69c6c9738"
+      },
+      "canonical": {
+        "bytes": 5625988,
+        "sha256": "1b8a43590d31198641c12897bb2873103d1b59462a5733d9f1694ab6531edea8"
+      },
+      "preview": {
+        "bytes": 365259,
+        "sha256": "3047f9140d7c4355638226688773f51540084b8d8903b6b783e833685fa45758"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "lagoon-curved-viaduct"
+        }
+      ]
+    },
+    "lagoon-stone-brazier": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_494aee22f6c6471ea24b59eee84c3095",
+      "revisionId": "r_a6120530e7c94a52a6e9d8ba4632ae3f",
+      "manifest": {
+        "bytes": 15976,
+        "sha256": "96eac61b8b53064613d0aded8a945ed8f70d1f0cc2799934373be0790fb86d9d"
+      },
+      "source": {
+        "bytes": 27653,
+        "sha256": "3abc1568e352604b56d3ebef8501107bdd0372ec9b280b2cc4f04777f1f8c7b5"
+      },
+      "canonical": {
+        "bytes": 2020524,
+        "sha256": "1b7c6ef326d6cf6423817a631e507d033e3ad64cf84fcc149d02d1405084956e"
+      },
+      "preview": {
+        "bytes": 655762,
+        "sha256": "3f4c329158e80df97602781d5c0b5c2ffb832dbc9355d78f7bfe03772461fd3a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "stone-brazier"
+        }
+      ]
+    },
+    "lagoon-karst-overhang-ledge": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_19243519e06b4f01adeb205863c6f924",
+      "revisionId": "r_efa7fcc050604f69863d3d702c0e1452",
+      "manifest": {
+        "bytes": 15420,
+        "sha256": "09749131a5e82465b3623274cc15b49e0471a0c42d3c422e804ea7ac67705c4e"
+      },
+      "source": {
+        "bytes": 27492,
+        "sha256": "8eb0717065e6c7f0d63977cd3617e97596d042d4fcffef21bcdecff037a4b88a"
+      },
+      "canonical": {
+        "bytes": 1691520,
+        "sha256": "fca546a85857d1dcc72ac77ffc2195f1a0898f6fd5d025c937bba479e156a3fa"
+      },
+      "preview": {
+        "bytes": 720364,
+        "sha256": "95b54e1a0703905cc7a67bce47d2fd19987ffa2da8638c0f14720c7a44c77c0b"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "karst-overhang-ledge"
+        }
+      ]
+    },
+    "lagoon-stalactite-cluster": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_b6370526091742b5b4bc876f9e0951cd",
+      "revisionId": "r_ccdf7a4f562e41b4bad871966b957814",
+      "manifest": {
+        "bytes": 12126,
+        "sha256": "f30b6c2641b5ed24461930fc14319e0d677d983b609b25de0c553ebf303b1fe4"
+      },
+      "source": {
+        "bytes": 20505,
+        "sha256": "72235a4068c95a0f0f39d97dfb23333b9caaa842f07eb7986ca476b4ffbf1d99"
+      },
+      "canonical": {
+        "bytes": 1186068,
+        "sha256": "5ea3263bc7a7de4df4fcfb3f7d387848c5cca4e00f88fd671a514900bef6fc54"
+      },
+      "preview": {
+        "bytes": 351420,
+        "sha256": "1ca3a954da0840c78e4eb6b11120e19468ba15dffb092f97e5202a63d89188ab"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "stalactite-cluster"
+        }
+      ]
+    },
+    "lagoon-mossy-boulder-hero": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_eddf145618bb483c863426b4411da8f4",
+      "revisionId": "r_e529e1183560444aa9e7ffcd3d5f8d53",
+      "manifest": {
+        "bytes": 15532,
+        "sha256": "e8a46d2ca9cfc3095bad431665d43f5cc1f2f0fb56b130f8201236c2bf4bba04"
+      },
+      "source": {
+        "bytes": 21772,
+        "sha256": "850efee6a6755c590716e93f24f911d6a7d5105f76061c3e265a616dbcbb77d5"
+      },
+      "canonical": {
+        "bytes": 1435984,
+        "sha256": "781317c5a731699d42ee76d641fec39aedbff69911a5b454fa0fc57b3a26901b"
+      },
+      "preview": {
+        "bytes": 605613,
+        "sha256": "64ffe3ab28b5cfc6be603ba692889ac2f077ec267c9a15a71a02fd1aeede7ec8"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "mossy-boulder-hero"
+        }
+      ]
+    },
+    "lagoon-mossy-boulder-cluster": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_7839231087ef4ffab3922b7eba126d71",
+      "revisionId": "r_b576523c71a64734843883fbefdfa87a",
+      "manifest": {
+        "bytes": 15563,
+        "sha256": "95a5b7a1741b9783b9ff13ef090317d65787396b1bf81d64b4d63f822a7487f4"
+      },
+      "source": {
+        "bytes": 21927,
+        "sha256": "484c8b4111a6199777eb5799bacb98ed388891cb8422a8e65b0b450e32f8eb61"
+      },
+      "canonical": {
+        "bytes": 1422868,
+        "sha256": "6d8330ea08b5e6c554d2b16f2b2a00c0238fb2df20dd75098ad4acd9fcbe8de7"
+      },
+      "preview": {
+        "bytes": 599831,
+        "sha256": "8840606a1e4742eb9964d86bdbfbeb1f302399d5038ed93f20ffc9b5928f044d"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "mossy-boulder-cluster"
+        }
+      ]
+    },
+    "lagoon-gnarled-canopy-bough": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_99dcd547802b4d9a928f3b60a6f196f2",
+      "revisionId": "r_cde37c2b08a14de9be5901cd556d0e5c",
+      "manifest": {
+        "bytes": 18329,
+        "sha256": "55cd494e7560757f9bcf12e075ffdf1ef3eb3cdb0ced32aa00025b2c4eaf5a59"
+      },
+      "source": {
+        "bytes": 65973,
+        "sha256": "2e51792e6fdf26b15a1880eda8d8b7415b0c6e1b89ff498d609b530d53da7f94"
+      },
+      "canonical": {
+        "bytes": 2504024,
+        "sha256": "4382fbcbb5ff90f96452aea85171260e5b7b9832c008410be5ee4b5711e87b4e"
+      },
+      "preview": {
+        "bytes": 466071,
+        "sha256": "e35bd401d7dc5de47fafb50b8533189ecccacdcb86cf49649eb432f2a39bff7e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "gnarled-canopy-bough"
+        }
+      ]
+    },
+    "lagoon-foliage-monstera-a": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_88aef670b80040af8aa8ead2b846df5f",
+      "revisionId": "r_f0542e8bca254d22864d0b772bd3f4ed",
+      "manifest": {
+        "bytes": 13529,
+        "sha256": "e1a7e31bf8f08da5e4dfd4896823ca1849134ae7d0f63717d8869161f5647287"
+      },
+      "source": {
+        "bytes": 25944,
+        "sha256": "ced931f18a2084a00012ea195fe3eac5b5e94fe50c525d412af915ee21ff4fe0"
+      },
+      "canonical": {
+        "bytes": 482560,
+        "sha256": "be6389df2218445bfcc834ad44fb5b767efc33b3831c77d864957c69fe966256"
+      },
+      "preview": {
+        "bytes": 404127,
+        "sha256": "2e0690200eb0532d2001014bc4832015f93d1ee3d7a11496bde34be092c73e63"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-monstera-a"
+        }
+      ]
+    },
+    "lagoon-foliage-monstera-b": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_b3f59e9aa2374ea6a210f5a23533cded",
+      "revisionId": "r_e2bad590438d4bfebd5a3fbd5df3ae97",
+      "manifest": {
+        "bytes": 12844,
+        "sha256": "8f5bc1eff208d5ec9f75e0efab9f6d53904ecd00d1d0b3965907f53e8b3b5a87"
+      },
+      "source": {
+        "bytes": 22096,
+        "sha256": "c1d88c0f16d8bc6c1b4b5322ce6fb205a43ead66189aea355637d846eca693a6"
+      },
+      "canonical": {
+        "bytes": 408580,
+        "sha256": "f96b41442d8ae82ab93eac91347b1c0788e7695c79ce2876f7326442d1f663ef"
+      },
+      "preview": {
+        "bytes": 360433,
+        "sha256": "6f325fbcff1d14ee935147f7131c45cce67110780e8c2e15eb0247a6b9ffde89"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-monstera-b"
+        }
+      ]
+    },
+    "lagoon-foliage-bromeliad": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_5a63b72c7ca944dda67ee59b5cc0d674",
+      "revisionId": "r_ad23f16a18674e3388c302f73f66854d",
+      "manifest": {
+        "bytes": 14287,
+        "sha256": "4757d581c0dfb9cda97f2631dd84cd15b8b959ecc2e5acba796776fb5e6aff4c"
+      },
+      "source": {
+        "bytes": 21222,
+        "sha256": "02c6217bf5fda2f77b900a14257b0797bba2141232f35c5a8acf4475f41b90bd"
+      },
+      "canonical": {
+        "bytes": 269832,
+        "sha256": "f22fb3c9ce8b16b82d1568ac652d96eff7be088e382b8f1044b1cd1a89fe8153"
+      },
+      "preview": {
+        "bytes": 362936,
+        "sha256": "f30724cd33d108f3f5ce9946bf0279433f40f3f73ddf835fd4f1cf078f82f250"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-bromeliad"
+        }
+      ]
+    },
+    "lagoon-foliage-fern-fountain": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_4c30edf6f8de47e29d5f119000617785",
+      "revisionId": "r_e2c7472898ca4254bb93276370797058",
+      "manifest": {
+        "bytes": 13478,
+        "sha256": "9992e5d090dab508801d7f6834ab151b01fcde5f258a1d528f7842b7ca82dc32"
+      },
+      "source": {
+        "bytes": 21930,
+        "sha256": "75d4d499530939e4743b2b5b827fbf7f935cf35b87ebe4781e864b3083f7f137"
+      },
+      "canonical": {
+        "bytes": 686656,
+        "sha256": "b89752d894c161207bd8cb97daeda1a87d837ba34730e1da4b93070d72fdc0f5"
+      },
+      "preview": {
+        "bytes": 423255,
+        "sha256": "fef8ac521baa2e0fe9b69fd9368c9e443e6a74aef8677f9713dd8db741aad28a"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-fern-fountain"
+        }
+      ]
+    },
+    "lagoon-foliage-fern-low": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_44c00781e40b49eba1d49da51eb8270c",
+      "revisionId": "r_5f55dff76aef4facb096c685df65f76c",
+      "manifest": {
+        "bytes": 11846,
+        "sha256": "f0ea66125e11ec5e4185084202b7ed0597d1994b332b2ae90208cba63d953207"
+      },
+      "source": {
+        "bytes": 17997,
+        "sha256": "b81294f8578e3ff0cffa1bc918e93076ec96c71fc37fb025ca0c04377d68db95"
+      },
+      "canonical": {
+        "bytes": 120692,
+        "sha256": "0be971e7f9575c04d9e25f4834aa70b0e16ba3e419b1f78b675a9722f34d37b3"
+      },
+      "preview": {
+        "bytes": 259278,
+        "sha256": "968b03617a858152d4ece8870089260a2033089d52e6ad2f5b51f8da463fb19e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-fern-low"
+        }
+      ]
+    },
+    "lagoon-foliage-waterlily": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_fb56f6580c21472295bc97af39093834",
+      "revisionId": "r_c4101c3657444cf1a79bcec56da788da",
+      "manifest": {
+        "bytes": 20942,
+        "sha256": "4c45876dc1ee4855f46c67ee6e910073c3385ac2dd6f40062b4d0fec49005475"
+      },
+      "source": {
+        "bytes": 31574,
+        "sha256": "e948404078e56adbf061d79c1d58a56e6b89ea431f1392b3760c5a35f46a0b09"
+      },
+      "canonical": {
+        "bytes": 448132,
+        "sha256": "65ffbe1362fdd263c1bc0095f065485a5731de989aab3208267c50d168e9f802"
+      },
+      "preview": {
+        "bytes": 174958,
+        "sha256": "b08a230ac39fb8b667ff1ea113195adf2b5d09aa5772a09267ad8558d18e9a20"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-waterlily"
+        }
+      ]
+    },
+    "lagoon-foliage-palm-island": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_e6cb8e1eb9f341d4bc4b6ac22182b0cd",
+      "revisionId": "r_a5890f3919de4a878f9bdca036bda349",
+      "manifest": {
+        "bytes": 14241,
+        "sha256": "cff63829e023f12f9939eaa7118c2de42e734aa1f451b255845b7f9ea2fad1e7"
+      },
+      "source": {
+        "bytes": 31038,
+        "sha256": "93dabe3a9ffceaed3c3b7a8ce90aa6a1c31e6d3efb78ed76abe585cc24e288b0"
+      },
+      "canonical": {
+        "bytes": 758288,
+        "sha256": "aa09644ad44607ab5902494b17d7d85dc5c85c24e5bea6bfcca4dd09cf0f212a"
+      },
+      "preview": {
+        "bytes": 384704,
+        "sha256": "08afe500e4f1a2299607845668ffb3cd799668810385c6f0ad1728a876035a7d"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-palm-island"
+        }
+      ]
+    },
+    "lagoon-foliage-palm-lean": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_ba0f6daabc7942a3aee392050f52d274",
+      "revisionId": "r_5c176f96f0b84715adeb3135c6d0b3ba",
+      "manifest": {
+        "bytes": 15913,
+        "sha256": "e1e5ac449d88e1be3ece88e9985d9d23bc9ff0801ece4dec12a17e0d1aceaa34"
+      },
+      "source": {
+        "bytes": 30008,
+        "sha256": "9a12c251a837524e62c2612ba5ad01e388f486b3ae651a628b1e084ee672beeb"
+      },
+      "canonical": {
+        "bytes": 656968,
+        "sha256": "41068e086fb83fd315d75d84c38b8f11ae1831038565d42927851d8f3e6906bf"
+      },
+      "preview": {
+        "bytes": 321317,
+        "sha256": "751373a8ba013f746d4e565be26295f2e58adc114a9a6a47361e7851f6b6c029"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-palm-lean"
+        }
+      ]
+    },
+    "lagoon-foliage-alocasia": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_e5e0be2b4bab4aaabd8bd4e1feb4bc32",
+      "revisionId": "r_6587f547da92481db9ee496d8ffc7ec8",
+      "manifest": {
+        "bytes": 14318,
+        "sha256": "434ced6f1b20683e8b5e0c007c7ce46ccccf11f64a405eb2d1e5f63bafcfd474"
+      },
+      "source": {
+        "bytes": 22741,
+        "sha256": "86ffa7d851d3f94adb011018b096ce13ae0d83463739f9de4e3889c9dec8352f"
+      },
+      "canonical": {
+        "bytes": 304344,
+        "sha256": "ed2800b437871b3fadd82078b708b023eee35f8590096181a5df119d0afb62ae"
+      },
+      "preview": {
+        "bytes": 526001,
+        "sha256": "312a9a8f7403bbdf5b3926e13ffd1a0ebe280525f7e4f1acfd369d7658a50756"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-alocasia"
+        }
+      ]
+    },
+    "lagoon-foliage-vine-short": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_2a08934a390b4c5ebcce6e8d9f7e713a",
+      "revisionId": "r_47618fec249f40508a8cb7856acb2838",
+      "manifest": {
+        "bytes": 13632,
+        "sha256": "b710cd74ee5f7bef77f72eb48395c2c3f96b772eb34c5ad7604c7bcdedc2bb1c"
+      },
+      "source": {
+        "bytes": 27188,
+        "sha256": "16519ad56a08b50f07d4da9fecba66c7e3a0294b28edf9d50da8ecf1301214b3"
+      },
+      "canonical": {
+        "bytes": 304220,
+        "sha256": "35bb5c9a366545bfcad1132b5ee8ac812494920aebe2d122fe13ffda6c811379"
+      },
+      "preview": {
+        "bytes": 272961,
+        "sha256": "252700c4e812734d4ef5f9a57a7254f7a846f67c102b4819991d6c1bef95e9e1"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-vine-short"
+        }
+      ]
+    },
+    "lagoon-foliage-vine-medium": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_308a3af01eae441abb301d60dce0c8a5",
+      "revisionId": "r_f959721ce3054d1f9dddacb563f3b4d2",
+      "manifest": {
+        "bytes": 12906,
+        "sha256": "1ad778ef1160bab10d4dfb0c9b06aae4f01129db2f0d7c0a277d74fc9c84ff64"
+      },
+      "source": {
+        "bytes": 24014,
+        "sha256": "d9ae26f4c775d4dede35dd0a35e772993b515a1e84aa4edd350587b1bd520347"
+      },
+      "canonical": {
+        "bytes": 334248,
+        "sha256": "ff5b689a08efe68524e9841878c9f9d762f592deebe8650744aacfda899e39fb"
+      },
+      "preview": {
+        "bytes": 217348,
+        "sha256": "d10dee9a436d99223ed1c3c0e4b982d17ef509df1141be565859c169f78f7356"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-vine-medium"
+        }
+      ]
+    },
+    "lagoon-foliage-vine-long": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_3940e4eb752c4e208fc2cc05309afc0e",
+      "revisionId": "r_f26da827407341cabe8e2f9294f62369",
+      "manifest": {
+        "bytes": 13695,
+        "sha256": "3894bd9526bd527d5faca6ffb7a682cd3ec733352d9f9637760ac4c875d9c524"
+      },
+      "source": {
+        "bytes": 22430,
+        "sha256": "959f0ddc595d21c6f85ee57bf0b3a71bc1725407e7d7ba5c4a92f1663efac852"
+      },
+      "canonical": {
+        "bytes": 352120,
+        "sha256": "d678363ee8a8bab34acb6f554ee8f9653628565f93bbed4cc5e34c4155377ec2"
+      },
+      "preview": {
+        "bytes": 174548,
+        "sha256": "c884adf7ac142f999090fa8d7f4076a8b7c811db7d227f616f2dcac987c5773e"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-vine-long"
+        }
+      ]
+    },
+    "lagoon-foliage-canopy-umbrella": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_dbfacd0794e9461c9612737b4b75115d",
+      "revisionId": "r_40d7fef763864ecdb6b1905965aaca56",
+      "manifest": {
+        "bytes": 14847,
+        "sha256": "2909e092035e1413e11b7c2f9b4d51edbc62bcb2dcf2b31244ec0479ff4280bb"
+      },
+      "source": {
+        "bytes": 24262,
+        "sha256": "359ef630916e3356e2dee1e3e52ade3c1518fe3fbc85183063520868cf0c5f82"
+      },
+      "canonical": {
+        "bytes": 1027228,
+        "sha256": "72939da87512cbba606c7f256966fb301e9fe53b6587a8b9c10b4604f6746c67"
+      },
+      "preview": {
+        "bytes": 511897,
+        "sha256": "d07fc06406a93e53a51937df34a19034d6115c88ac8641e28297c25506757d66"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-canopy-umbrella"
+        }
+      ]
+    },
+    "lagoon-foliage-canopy-emergent": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_2b21510e21474cc8a87d8b27d5de4327",
+      "revisionId": "r_25c09eedc53341b69d7b41b83e31e2d7",
+      "manifest": {
+        "bytes": 14848,
+        "sha256": "1cab2de87a77772ca06a5986df9f741b36fa6544a6c11b99b765025c918f9a79"
+      },
+      "source": {
+        "bytes": 23204,
+        "sha256": "90953fa92fe7790bf9707b3e524c07a9133bd1b76edff4f6d7d8dfe6b51a00d0"
+      },
+      "canonical": {
+        "bytes": 1037060,
+        "sha256": "c52bd394407d515466fe00506e1ed2a44a96e03cead0d9337b21999625e43726"
+      },
+      "preview": {
+        "bytes": 395210,
+        "sha256": "0f1e404597411409820aa50f0e80e6abe28c01da48dd6f2dc44198b58fef7f5c"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-canopy-emergent"
+        }
+      ]
+    },
+    "lagoon-foliage-cliff-drape": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_54c500e341b948ee9d7082dd32b5c44e",
+      "revisionId": "r_42ef74caef384c5ab7c4104fb675c555",
+      "manifest": {
+        "bytes": 14124,
+        "sha256": "a039c6e688762836ec9a9e5d9767dde156d2d01a02ba057cfc5ec2fa7428582a"
+      },
+      "source": {
+        "bytes": 23503,
+        "sha256": "94d299e912851d10dca6c4a0e1e5c05e047b9de87bbbd5e1f55eaba67e31434b"
+      },
+      "canonical": {
+        "bytes": 782032,
+        "sha256": "e00995a5f41061b545d06fccdf26df07ac9a8f803618bf030269c492f632dcd5"
+      },
+      "preview": {
+        "bytes": 475810,
+        "sha256": "b05f55d89a583659d12d405ff7f9abc1cf6d2b4fc41c557d9f033a247967ffcc"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "foliage-cliff-drape"
+        }
+      ]
+    },
+    "lagoon-wildlife-swallow": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_27c1c7427d6349c485f671fac428e3fb",
+      "revisionId": "r_8839e3eea15b433fb2c544d2c5388b71",
+      "manifest": {
+        "bytes": 14525,
+        "sha256": "0462ffe29fd8940f89e5c359d7e94ed36a1feb43a7961d1e4aee37565e71c2a5"
+      },
+      "source": {
+        "bytes": 17532,
+        "sha256": "4e29adb87d73b19a8f0be64fe1b097d792475c55304b821177f953d7c45ed14c"
+      },
+      "canonical": {
+        "bytes": 91692,
+        "sha256": "4155dc124ff0dcccff2c0d83c602cc0e59fecf9906275e0de893f2ef4f5fd3a3"
+      },
+      "preview": {
+        "bytes": 85399,
+        "sha256": "43c2c1ae3b04efa46987757a887e93cdc5a34abc6aaf9f23780ac4d3c109d28f"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "wildlife-swallow"
+        }
+      ]
+    },
+    "lagoon-wildlife-fish-gold": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_9882b7c0204c4357810d3225ef7e779c",
+      "revisionId": "r_4441ce77af2648d3ae4ea5190fad2277",
+      "manifest": {
+        "bytes": 14545,
+        "sha256": "439c18f276e46053bbf4bf470aaccbc5cfd9e1ad1e2ddc6a754d77baff18884b"
+      },
+      "source": {
+        "bytes": 14917,
+        "sha256": "82318b0a55b6a6db156c7198fa22391eb6605c699672b28f38a002133905871e"
+      },
+      "canonical": {
+        "bytes": 152896,
+        "sha256": "dacfd18b764da0053510fa8a1748448c9272cf9fa506912cfc22ea44cdc1c419"
+      },
+      "preview": {
+        "bytes": 334568,
+        "sha256": "47fa84e9e81fcad991b2efa3f3438858666d07ffdbed7bdea776ca128ec09420"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "wildlife-fish-gold"
+        }
+      ]
+    },
+    "lagoon-wildlife-fish-silver": {
+      "store": "lagoon-sanctuary",
+      "collection": "project",
+      "assetId": "a_04d075fa31d64b949eb83060c2e5b320",
+      "revisionId": "r_9583d38840844de4ad8bba0f85e75366",
+      "manifest": {
+        "bytes": 14548,
+        "sha256": "938905121eed12cc2b13330c9496a1c3fbf94115a5f3fa6296cd8f5941b345d7"
+      },
+      "source": {
+        "bytes": 15149,
+        "sha256": "27ed968112a75ddce78efb62103da4c1ccc74b524e674f3f3851d329ee959e5a"
+      },
+      "canonical": {
+        "bytes": 83848,
+        "sha256": "c85ffae0851b36eb25b582a896c5988c51bbbcf87ba1cd3bbd851078836659b9"
+      },
+      "preview": {
+        "bytes": 235508,
+        "sha256": "7c449d098e5fafa5f3292c41f3bd15670d7538d5fdc20b8b3187feca9886ae36"
+      },
+      "placements": [
+        {
+          "pack": "holodeck-lagoon-sanctuary",
+          "id": "wildlife-fish-silver"
         }
       ]
     }
