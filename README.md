@@ -68,9 +68,9 @@ Watch one editable timber wall become part of a cabin kit. The short cut follows
 the saved Kiln models through shell assembly, furnishing and the loft staircase,
 then shows the finished cabin in its snowy Holodeck world.
 
-[![A timber wall and cabin kit assembling, the kitchen and loft being furnished, then the finished snowy Holodeck world](https://raw.githubusercontent.com/instruktlabs/kiln/main/assets/readme/cabin-construction.gif)](https://kilnstudio.tools/#workflow)
+[![A timber wall and cabin kit assembling, the kitchen and loft being furnished, then the finished snowy Holodeck world](https://raw.githubusercontent.com/instruktlabs/kiln/main/assets/readme/cabin-construction.gif)](https://kilnstudio.tools/workflow/winter-cabin/7f7f5f16317afd7d/workflow.mp4)
 
-The [full construction film](https://kilnstudio.tools/#workflow) shows the
+The [full construction film](https://kilnstudio.tools/workflow/winter-cabin/7f7f5f16317afd7d/workflow.mp4) shows the
 WebGPU assembly and the finished world.
 
 ## Used in live games
@@ -80,7 +80,7 @@ to test Kiln-authored assets in real gameplay.
 
 | Sheepdog Sim | OBJEKT 62 | ski sim |
 | --- | --- | --- |
-| [![The sheepdog facing a fenced pen, with the farmhouse, red barn and trees behind it](site/src/assets/live-games/sheepdog-sim.webp)](https://sheepdogsim.com/) | [![The survey rifle overlooking an outpost, with a monument on the distant horizon](site/src/assets/live-games/objekt62.webp)](https://objekt62.com/) | [![A skier grinding sideways beside a lit chalet, with pines, trail lights and a chairlift in the background](site/src/assets/live-games/ski-sim-village.webp)](https://skisim.app/) |
+| [![The sheepdog facing a fenced pen, with the farmhouse, red barn and trees behind it](site/src/assets/live-games/sheepdog-sim.webp)](https://sheepdogsim.com/) | [![A survey rifle in the foreground, VESTNIK at its berth and the Auger rising behind Outpost Dom with both drills visible](site/src/assets/live-games/objekt62.webp)](https://objekt62.com/) | [![A skier grinding sideways beside a lit chalet, with pines, trail lights and a chairlift in the background](site/src/assets/live-games/ski-sim-village.webp)](https://skisim.app/) |
 
 Sheepdog Sim's [source](https://github.com/matthew-kissinger/sds) shows how its
 Kiln-authored buildings, fencing and trees fit into a working game. OBJEKT 62 uses

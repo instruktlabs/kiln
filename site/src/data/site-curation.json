@@ -1,14 +1,17 @@
 {
   "featuredWorlds": ["holodeck-lagoon-sanctuary", "holodeck-meridian-sanctuary", "holodeck-crescent-cove"],
   "otherWorlds": ["holodeck-winter-mountainside-cabin", "holodeck-tidemark", "holodeck-courtyard", "holodeck-cove"],
+  "heroCaptions": {
+    "holodeck-lagoon-sanctuary": "Follow a curved stone viaduct around a turquoise jungle lagoon to a stepped temple beside the waterfall. Built in Holodeck with Kiln assets and Gemini 4 Neon (XHigh)."
+  },
   "featuredAssets": [
-    "/gallery/holodeck/crescent-shelter/",
     "/gallery/text-to-3d/mech/",
-    "/gallery/holodeck/crescent-palm-tall/",
-    "/gallery/holodeck/winter-wmc-sofa-wool/",
-    "/gallery/holodeck/winter-wmc-loft-bed/",
+    "/gallery/holodeck/lagoon-foliage-bromeliad/",
+    "/gallery/holodeck/tree-olive/",
+    "/gallery/cathedral-square/house-timber-gable-shop/",
     "/gallery/holodeck/meridian-statue-whale/",
-    "/gallery/holodeck/winter-wmc-hearth-masonry/",
-    "/gallery/holodeck/winter-wmc-kitchen-run/"
+    "/gallery/holodeck/statue-bronze/",
+    "/gallery/holodeck/lagoon-wildlife-fish-gold/",
+    "/gallery/cathedral-square/cathedral/"
   ]
 }

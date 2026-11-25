@@ -4,15 +4,15 @@ import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import HolodeckShowcase from "../components/HolodeckShowcase.astro";
 import AssetCard from "../components/AssetCard.astro";
-import { featuredWorlds, featuredAssetHrefs, worldCover } from "../lib/site-curation";
+import { featuredWorlds, featuredAssetHrefs, featuredAssetPoster, worldCover, worldHeroCaption } from "../lib/site-curation";
 import { galleryCards } from "../lib/gallery";
 import { holodeckPackHref, holodeckWorldUrl } from "../lib/holodeck";
 import ResponsiveImage from "../components/ResponsiveImage.astro";
 import { Image } from "astro:assets";
 import sheepdogGameShot from "../assets/live-games/sheepdog-sim.webp";
 import objektGameShot from "../assets/live-games/objekt62.webp";
-import skiVillageShot from "../assets/live-games/ski-sim-village.webp";
-import skiCharacterShot from "../assets/live-games/ski-sim-skier.webp";
+import skiQuarterpipeShot from "../assets/live-games/ski-sim-quarterpipe.webp";
+import skiBigAirPoster from "../assets/live-games/ski-sim-big-air-tripod.webp";
 import CodeBlock from "../components/CodeBlock.astro";
 import {
   HARNESSES,
@@ -151,14 +151,14 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
           </a>
           <figcaption class="mt-4">
             <a class="text-title font-semibold text-ink no-underline" href={holodeckWorldUrl(leadWorld.id)}>Walk {leadWorld.name} <span aria-hidden="true">↗</span></a>
-            <p class="mt-2 text-dim">Marble arcades, mirror pools and floating sculpture above a sea of cloud. Built in Holodeck with Kiln assets.</p>
+            <p class="mt-2 text-dim">{worldHeroCaption(leadWorld)}</p>
             <a href={holodeckPackHref(leadWorld)} class="text-link mt-3">Inspect its {leadWorld.assetCount} editable assets</a>
           </figcaption>
         </figure>}
       </div>
     </div>
   </div>
-  {PACKS_ENABLED && <div class="container pb-8"><HolodeckShowcase id="worlds-heading" heading="From coast to mountains." skipLead /></div>}
+  {PACKS_ENABLED && <div class="container pb-8"><HolodeckShowcase id="worlds-heading" heading="More worlds to explore." skipLead /></div>}
   <section id="live-games" class="container section-space" aria-labelledby="live-games-heading">
     <div class="grid gap-6 border-t border-ink pt-8 lg:grid-cols-2 lg:gap-12">
       <div>
@@ -197,10 +197,10 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
           </a>
         </div>
       </article>
-      <article class="border-y border-rule py-6">
+      <article id="objekt-62" class="border-y border-rule py-6">
         <figure>
-          <Image src={objektGameShot} alt="The Kiln-authored survey rifle in the foreground, an outpost and parked aircraft ahead, and a monument on the distant desert horizon in OBJEKT-62." widths={[480, 800, 1280, 1600]} sizes={CARD_SIZES} format="webp" loading="lazy" class="w-full" />
-          <figcaption class="mt-2 font-mono text-code text-dim">Survey rifle and outpost · live 0.21.2.</figcaption>
+          <Image src={objektGameShot} alt="A gloved hand holds a survey rifle. VESTNIK rests on the sand to the left, with Outpost Dom ahead. On the high dune behind the buildings, the Auger faces the player with a drill on either side." widths={[480, 800, 1280, 1600]} sizes={CARD_SIZES} format="webp" loading="lazy" class="w-full" />
+          <figcaption class="mt-2 font-mono text-code text-dim">VESTNIK at its berth outside Outpost Dom. The Auger rises from the dune beyond the rooftops.</figcaption>
         </figure>
         <h3 class="mt-5">OBJEKT-62</h3>
         <p class="mt-3 max-w-reading text-dim">
@@ -213,18 +213,18 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
           Play OBJEKT-62 <span aria-hidden="true">↗</span>
         </a>
       </article>
-      <article class="border-y border-rule py-6 md:col-span-2">
+      <article id="ski-sim" class="border-y border-rule py-6 md:col-span-2">
         <div class="grid gap-8 md:grid-cols-2">
           <figure>
-            <Image src={skiVillageShot} alt="A skier grinding sideways beside a lit chalet, with pines, trail lights and a chairlift in the background." widths={[480, 800, 1280, 1440]} sizes={CARD_SIZES} format="webp" loading="lazy" class="w-full" />
-            <figcaption class="mt-2 font-mono text-code text-dim">Skier, rail, chalet, pines and trail lights. Staged in-game on Village Bend.</figcaption>
+            <Image src={skiQuarterpipeShot} alt="A skier grabs a crossed orange ski in midair above the quarterpipe, with spectators in the floodlit grandstand below." widths={[480, 800, 1280]} sizes={CARD_SIZES} format="webp" loading="lazy" class="w-full" />
+            <figcaption class="mt-2 font-mono text-code text-dim">A left triple cork 1440 with a Seatbelt grab above the Superpipe trail’s final quarterpipe.</figcaption>
           </figure>
           <figure>
-            <video controls loop muted playsinline preload="none" poster={skiCharacterShot.src} width="1200" height="750" class="w-full" aria-label="A skier flips with a mute grab, then crashes into a Jolt ragdoll on Mutex Ridge">
-              <source src="/live-games/ski-sim-flip-grab.mp4" type="video/mp4" />
-              <a href="/live-games/ski-sim-flip-grab.mp4">Watch the ski sim jump</a>
+            <video controls loop muted playsinline preload="none" poster={skiBigAirPoster.src} width={skiBigAirPoster.width} height={skiBigAirPoster.height} class="w-full" aria-label="A rear view follows a skier into a backflip. A fixed camera beside the landing shows the skier coming downhill, crashing and losing both skis.">
+              <source src="/live-games/ski-sim-big-air-tripod.mp4" type="video/mp4" />
+              <a href="/live-games/ski-sim-big-air-tripod.mp4">Watch the Big Air jump</a>
             </video>
-            <figcaption class="mt-2 font-mono text-code text-dim">Flip, mute grab and Jolt crash. In-game menu demonstration, filmed from the landing. <a class="text-link" href="/live-games/ski-sim-flip-grab.gif" download>Download GIF</a></figcaption>
+            <figcaption class="mt-2 font-mono text-code text-dim">The rider holds the grab too long on Big Air’s K3 jump and tumbles down the landing. <a class="text-link" href="/live-games/ski-sim-big-air-tripod.gif" download>Download GIF</a></figcaption>
           </figure>
         </div>
         <h3 class="mt-5">ski sim</h3>
@@ -276,9 +276,9 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
         <CodeBlock
           code={workflow.source.excerpt}
           lang="javascript"
-          label="Timber wall cladding · source excerpt"
+          label={workflow.source.label}
         />
-        <p class="mt-3 text-caption text-dim">The wall’s source builds its cladding from individual boards. <a href={workflow.source.href} class="text-ink underline">Read the complete wall source.</a></p>
+        <p class="mt-3 text-caption text-dim">{workflow.source.caption} <a href={workflow.source.href} class="text-ink underline">Read the complete bay source.</a></p>
       </div>
     </div>
   </section>
@@ -306,9 +306,9 @@ const CARD_SIZES = "(max-width: 767px) calc(100vw - 32px), (max-width: 1279px) c
   </section>
   <section class="container section-space" aria-labelledby="made-heading">
     <h2 id="made-heading" class="max-w-reading">Take a closer look at the assets.</h2>
-    <p class="mt-5 max-w-reading text-dim">Browse vegetation, architecture, interiors and landscapes. Inspect the models, download GLBs or keep their editable source.</p>
+    <p class="mt-5 max-w-reading text-dim">Explore the mech’s moving parts, the olive tree’s twisted trunk or the cathedral’s stained glass. Open a model to inspect it and download its GLB or editable source.</p>
     {PACKS_ENABLED && <div class="mt-8 grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4">
-      {featuredAssets.map((asset) => <AssetCard asset={asset} />)}
+      {featuredAssets.map((asset) => <AssetCard asset={{ ...asset, poster: featuredAssetPoster(asset) }} />)}
     </div>}
     <div class="mt-8 flex flex-wrap gap-6">
       <a class="text-link" href="/gallery/">Browse all assets</a>

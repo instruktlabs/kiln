@@ -15,17 +15,17 @@
     {
       "name": "objekt62",
       "game": "OBJEKT-62",
-      "source": "https://objekt62.com/",
-      "captured": "2026-10-20",
-      "version": "0.21.2",
-      "note": "Fresh native WebGPU in-game browser capture. Survey rifle, outpost and distant monument. Full frame, WebP encoding only.",
+      "source": "OBJEKT-62 local production build, Heron-1 VESTNIK home berth at Outpost Dom.",
+      "captured": "2026-11-25",
+      "note": "Native WebGPU capture at 2560×1440. The first-person camera and survey rifle look from the southwest side of VESTNIK’s home berth toward Outpost Dom. The Auger’s pose is staged on the distant dune above the rooftops. The ship and outpost are at their game positions. Full frame downsampled to 1600×900.",
       "width": 1600,
       "height": 900,
-      "originalSha256": "c6ee6f622e0208a6691487b87670f6e72e4310258f4fd7d05bd6bb10e373e899",
-      "imageSha256": "020d9f05a501832557186a0915dfd8125572e9418e5a9464c10872387cbedbff",
-      "bytes": 88322,
-      "buildSha": "9d82bb927f951389291731e64e0803140e523ae9",
-      "buildGeneratedAt": "2026-10-19T22:36:21.075Z"
+      "originalSha256": "de86fe61e490250714a0142c45b9be891fbef13723c6eed0031cc93c00cf726e",
+      "imageSha256": "28a832aeb8d0b49d249afff56e15be502ca73a21713bc5097aa804e4b2238d05",
+      "bytes": 84002,
+      "buildSha": "05bf3b989801ce5a818c2e41ef2d15f97073b27d",
+      "buildGeneratedAt": "2026-11-25T19:56:42.499Z",
+      "buildId": "05bf3b989801ce5a818c2e41ef2d15f97073b27d-dirty"
     },
     {
       "name": "ski-sim-village",
@@ -54,6 +54,34 @@
       "bytes": 35252,
       "buildSha": "91f1c6c",
       "playUrl": "https://skisim.app/"
+    },
+    {
+      "name": "ski-sim-quarterpipe",
+      "game": "ski sim",
+      "source": "Superpipe finale, capture tick 11259 of the pump-and-pop run (seed 0x5eed), camera looking across the lip toward the grandstand.",
+      "captured": "2026-11-25",
+      "note": "WebGPU Cel gameplay capture at 1600×1000, cropped to 1280×800. Ordinary inputs produced LEFT TRIPLE CORK 1440 + SEATBELT and 30.0M QUARTER PIPE AIR. The selected frame recorded the cork axis and Seatbelt pose 13.",
+      "width": 1280,
+      "height": 800,
+      "originalSha256": "36af75d7f94f70e97cce80ba52342b9c920010982bd7b277d726b382744b930a",
+      "imageSha256": "20a4ca62d79e98438967b6179166e5cd2e50479cada1184de1ecd3bf59987d42",
+      "bytes": 163340,
+      "buildSha": "a26d2ffcae7a0c4d45a0bb41a1f70cbfb5c8b56b",
+      "playUrl": "https://skisim.app/"
+    },
+    {
+      "name": "ski-sim-big-air-tripod",
+      "game": "ski sim",
+      "source": "Big Air K3. Frame 228 (7.60 s) from the locked landing camera in the same gameplay take as the video and GIF.",
+      "captured": "2026-11-25",
+      "note": "WebGPU Cel at 1600×1000. The skier and detached skis tumble past the stationary lift tower after impact. The 1056×660 poster is cropped from (440, 235).",
+      "width": 1056,
+      "height": 660,
+      "originalSha256": "fe631c9dbe5ea699b54e97b0ba9f1a178054f571f1597cb5c5d98b6af743cd6f",
+      "imageSha256": "fe4721d5fe81841e938c7fc2a6f582cfd97526daef2fd8510d0c7d61d66208b2",
+      "bytes": 33518,
+      "buildSha": "a26d2ffcae7a0c4d45a0bb41a1f70cbfb5c8b56b",
+      "playUrl": "https://skisim.app/"
     }
   ],
   "motion": [
@@ -78,6 +106,28 @@
       "buildSha": "91f1c6c",
       "width": 640,
       "height": 400
+    },
+    {
+      "game": "ski sim",
+      "path": "/live-games/ski-sim-big-air-tripod.mp4",
+      "sha256": "59d4ed81a17570690a766e42334f70875ae150fb91b14d573a9e80edfcad1564",
+      "bytes": 2642638,
+      "duration": 8,
+      "source": "One native WebGPU Cel run on Big Air K3. The original rear chase continues through the grab. At frame 142 (4.73 s), the shot cuts to a camera two metres above the snow beside the landing. Position, aim and 17.47-degree vertical field of view are fixed through impact and the skier passing the camera. One backflip with a Truck Driver grab, 6.13 s of airtime and a Jolt ragdoll on impact.",
+      "buildSha": "a26d2ffcae7a0c4d45a0bb41a1f70cbfb5c8b56b",
+      "width": 1200,
+      "height": 750
+    },
+    {
+      "game": "ski sim",
+      "path": "/live-games/ski-sim-big-air-tripod.gif",
+      "sha256": "8e6fc89adcd74625416df27af7cc17639b9eb2bd380b287b43991d21dacb0b5e",
+      "bytes": 4000596,
+      "duration": 8,
+      "source": "One native WebGPU Cel run on Big Air K3. The original rear chase continues through the grab. At frame 142 (4.73 s), the shot cuts to a camera two metres above the snow beside the landing. Position, aim and 17.47-degree vertical field of view are fixed through impact and the skier passing the camera. One backflip with a Truck Driver grab, 6.13 s of airtime and a Jolt ragdoll on impact.",
+      "buildSha": "a26d2ffcae7a0c4d45a0bb41a1f70cbfb5c8b56b",
+      "width": 600,
+      "height": 375
     }
   ]
 }
