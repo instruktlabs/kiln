@@ -26,6 +26,7 @@ import type { Reflection, TownSession, TownState } from './session';
 import { paintReflection } from './sky';
 import { createTownView, KIT_IDS, readKit } from './town';
 import type { Kit, TownView } from './town';
+import { inScene, warmDue, warmHidden } from './warm';
 
 /** The pack's `kits` data file: each kit's defaults and size ranges, from its saved declaration. */
 export function readDeclarations(pack: LoadedPack): Record<string, KitDeclaration> {
@@ -262,6 +263,8 @@ function buildWorld(pack: LoadedPack, session: TownSession): World {
 }
 
 interface Tracked { cache: CachedSunShadow; untrack(): void }
+/** A world's pipelines are compiled once, before it is first shown. */
+interface Warm { world: World; phase: 'waiting' | 'compiling' | 'done'; waited: number }
 
 /** The town for the session's seed and hour. A change of either rewrites instance buffers; nothing is fetched. */
 export function TownWorld({ session }: { session: TownSession }) {
@@ -271,17 +274,33 @@ export function TownWorld({ session }: { session: TownSession }) {
   const state = useSyncExternalStore(session.subscribe, session.getState);
   const tracked = useRef<Tracked | null>(null), stale = useRef(true);
   const renderer = useThree(three => three.gl) as unknown as WebGPURenderer;
+  const camera = useThree(three => three.camera), scene = useThree(three => three.scene);
+  const warm = useRef<Warm | null>(null);
 
   useEffect(() => {
     if (!world) return;
     if (world.stand(state, session)) stale.current = true;
     session.sun?.cache?.invalidate('town');
-    markBuilt(true);
+    // A new world stays hidden until its pipelines are compiled; a later seed or hour is shown at once.
+    if (warm.current?.world !== world) { warm.current = { world, phase: 'waiting', waited: 0 }; world.root.visible = false; }
+    else if (warm.current.phase === 'done') markBuilt(true);
   }, [world, state, session, markBuilt]);
-  useEffect(() => () => { markBuilt(false); }, [world, markBuilt]);
+  useEffect(() => () => { warm.current = null; markBuilt(false); }, [world, markBuilt]);
 
   useSystem('seed-town-shadow-track', SystemOrder.shadows - 1, () => {
     if (!world) return;
+    const warming = warm.current;
+    // Compile against the scene's own lights, so the first frame finds every pipeline it asks for.
+    if (warming?.world === world && warming.phase === 'waiting' && warmDue(renderer.initialized, inScene(session.sun?.light, scene), warming.waited++)) {
+      warming.phase = 'compiling';
+      void warmHidden(renderer, world.root, camera, scene).then(() => {
+        if (warm.current !== warming) return;
+        warming.phase = 'done';
+        world.root.visible = true;
+        session.sun?.cache?.invalidate('town');
+        markBuilt(true);
+      });
+    }
     // The far trees' pictures are taken from the tree kit on the first frame the renderer can draw.
     if (!world.impostors.ready && renderer.initialized) world.impostors.prepare(renderer);
     world.pools.strength(session.pools);

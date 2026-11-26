@@ -40,23 +40,28 @@ test('the meadow is flat grass up to the walls where no street leaves', () => {
   const mesh = meadowGeometry({ halfX: 40, halfZ: 60 }, [], 100);
   facesItsNormals(mesh);
   for (const [x, z] of [[0, -61], [0, 61], [-41, 0], [41, 0], [120, 150], [0, -159]] as const) expect(heightAt(mesh, x, z)).toBeCloseTo(GROUND.y);
-  // Nothing is drawn under the town.
-  expect(heightAt(mesh, 0, 0)).toBeNull();
-  expect(heightAt(mesh, 39, -59)).toBeNull();
+  // Under the town lies dark earth, below every street, so a hairline between two pavings never shows the sky.
+  expect(heightAt(mesh, 0, 0)).toBeCloseTo(GROUND.under);
+  expect(heightAt(mesh, 39, -59)).toBeCloseTo(GROUND.under);
+  expect(GROUND.under).toBeLessThan(-0.3);
+  const under = Array.from({ length: mesh.positions.length / 3 }, (_, i) => i).filter(i => mesh.positions[i * 3 + 1] === Math.fround(GROUND.under));
+  expect(under).toHaveLength(4);
+  for (const i of under) expect(Array.from(mesh.colors.slice(i * 3, i * 3 + 3))).toEqual(Array.from(new Float32Array(GROUND.earth)));
+  expect(Math.max(...GROUND.earth)).toBeLessThan(0.05);
 });
 
 test('where a street leaves, the ground is left open for the road to climb through, with a stone face on each side', () => {
   const thresholds: Threshold[] = [{ x: 5, z: -60, dz: -1, half: 3, drop: 0.14 }, { x: -10, z: 60, dz: 1, half: 3.5, drop: 0.14 }];
   const mesh = meadowGeometry({ halfX: 40, halfZ: 60 }, thresholds, 100);
   facesItsNormals(mesh);
-  // South: no ground across the street's width for the length of the climb, and grass either side.
-  expect(heightAt(mesh, 5, -60.5)).toBeNull();
-  expect(heightAt(mesh, 5, -60 - RAMP + 0.5)).toBeNull();
+  // South: no grass across the street's width for the length of the climb, only the earth under the road, and grass either side.
+  expect(heightAt(mesh, 5, -60.5)).toBeCloseTo(GROUND.under);
+  expect(heightAt(mesh, 5, -60 - RAMP + 0.5)).toBeCloseTo(GROUND.under);
   expect(heightAt(mesh, 9, -61)).toBeCloseTo(GROUND.y);
   expect(heightAt(mesh, 1, -61)).toBeCloseTo(GROUND.y);
   expect(heightAt(mesh, 5, -60 - RAMP - 1)).toBeCloseTo(GROUND.y);
   // North is the mirror of it.
-  expect(heightAt(mesh, -10, 60.5)).toBeNull();
+  expect(heightAt(mesh, -10, 60.5)).toBeCloseTo(GROUND.under);
   expect(heightAt(mesh, -10, 60 + RAMP + 1)).toBeCloseTo(GROUND.y);
   // Two faces a threshold: upright triangles from the carriageway's level to the grass.
   let banks = 0;
@@ -169,4 +174,9 @@ test('no pool of light is laid outside the town', () => {
       expect(pool.x > x0 && pool.x < x1 && pool.z > 0 && pool.z < length).toBe(true);
     }
   }
+});
+
+test('tree shade lies over the crown of a road, so the road never hides it near the eye', () => {
+  expect(GROUND.shadeLift).toBeGreaterThan(GROUND.roadLift + GROUND.camber);
+  expect(GROUND.shadeLift).toBeLessThan(0.15);
 });
