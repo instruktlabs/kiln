@@ -1,7 +1,7 @@
 {
   "id": "seed-town",
   "name": "Seed Town",
-  "release": "st2",
+  "release": "st4",
   "assets": [
     {
       "slug": "facade-bay",
@@ -9,31 +9,34 @@
       "description": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
       "collection": "project",
       "assetId": "a_3558cdf5c628436981d043613749306d",
-      "revisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
-      "parentRevision": "r_0f8da88093fc4d498cb45c7b9b704214",
-      "attribution": {},
+      "revisionId": "r_6615d35c59184a52a9ad7f3a7497d2ca",
+      "parentRevision": "r_1b5ee8882ced4886bc12bdef2d29c26a",
+      "attribution": {
+        "model": "claude-opus-5-5",
+        "harness": "claude-code"
+      },
       "metrics": {
-        "triangles": 154,
+        "triangles": 168,
         "materials": 4,
         "bounds": [
           0.39000001549720764,
-          3,
+          3.0199999809265137,
           1.7999999523162842
         ]
       },
       "savedModel": {
-        "sha256": "2600a87879c8e2057de4309a404a23894f80d39d4992ef19fb9a60fdd86a0b6e",
-        "bytes": 155124
+        "sha256": "a15bc61cb1c209e3a6f67df4d4c6df5fc389753c010242cc7ee43b9628980354",
+        "bytes": 156340
       },
       "runtimeModelDownload": {
         "member": "models/facade-bay.glb",
-        "bytes": 233284,
-        "sha256": "731ac2a2454e9793928aa88cb1b81c3ea1a37808101fc13ca05ab504ac312a51"
+        "bytes": 257112,
+        "sha256": "84cb2b12f83c04af8ce383f16581036dd09a05ad7971ab57d729f37ba80841f1"
       },
       "runtimeMetadata": {
         "member": "models/facade-bay.kiln-metadata.json",
-        "bytes": 2968,
-        "sha256": "d66820a7f95bc10c79bf3f4e20175d6f55d48ede05f8234f1c1d127156f7efbb"
+        "bytes": 3780,
+        "sha256": "549ffb3b834b5cd53df4f4935ea7cb6d228a93c4d6b7444bf3fc9c6c6b1060ca"
       },
       "parameters": {
         "options": [
@@ -112,6 +115,22 @@
             "max": 3.3,
             "unit": "m",
             "describe": "Floor to floor height."
+          },
+          {
+            "name": "startLip",
+            "min": 0,
+            "default": 0,
+            "max": 0.01,
+            "unit": "m",
+            "describe": "How far the street face continues past Z = 0, so a flanked corner meets the return wall."
+          },
+          {
+            "name": "endLip",
+            "min": 0,
+            "default": 0,
+            "max": 0.01,
+            "unit": "m",
+            "describe": "How far the street face continues past the far edge, so a flanked corner meets the return wall."
           }
         ],
         "colours": [
@@ -134,14 +153,14 @@
         "variants": []
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay.webp",
+        "src": "/media/rig/review-neutral-v1/seed-town/st4/facade-bay.webp",
         "width": 1024,
         "height": 1024,
         "alt": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st2/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st2/facade-bay-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/seed-town/st2/facade-bay.png",
-        "sourceRevisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st4/facade-bay.png",
+        "sourceRevisionId": "r_6615d35c59184a52a9ad7f3a7497d2ca",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       }
@@ -152,34 +171,34 @@
       "description": "One ground-floor bay of a street front as a shop window, shop door, passage, house door or house window, with an optional awning and lit interior, a settable bay width, storey height and awning depth, and settable wall, trim, joinery and accent colours.",
       "collection": "project",
       "assetId": "a_dad1cb7ee9e04d10bab7b024289b2ae8",
-      "revisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
-      "parentRevision": null,
+      "revisionId": "r_48bc66f8cdb64f57a03b51babd36f3d4",
+      "parentRevision": "r_d36b010c786e44c2b81e2ba2ef6b4837",
       "attribution": {
-        "model": "claude-fable-5-2",
+        "model": "claude-opus-5-5",
         "harness": "claude-code"
       },
       "metrics": {
-        "triangles": 198,
+        "triangles": 246,
         "materials": 4,
         "bounds": [
           0.26999999582767487,
-          3.4000000953674316,
+          3.4200000762939453,
           1.7999999523162842
         ]
       },
       "savedModel": {
-        "sha256": "d4c08adbd2ffc86aacabb465fc9502cc925b8508a74393e6cd613f6f3e1094c6",
-        "bytes": 140888
+        "sha256": "0f32fd632025596ca03935a06c3f020382ccf50fd866ac83a57aaf35733757fa",
+        "bytes": 149456
       },
       "runtimeModelDownload": {
         "member": "models/ground-bay.glb",
-        "bytes": 276928,
-        "sha256": "c7447227b759a0051fbbd9736bbdb8a4d96d2c2edaeddea10d43ad39537f5ef8"
+        "bytes": 336468,
+        "sha256": "87ad34a7de0efdfd36d2559320f9c237855fed73d2348ed119ff2f75b1c35416"
       },
       "runtimeMetadata": {
         "member": "models/ground-bay.kiln-metadata.json",
-        "bytes": 4527,
-        "sha256": "1244e494d83417729e373a9423da584131f3e3447b2616ea19a1843fd25a79fc"
+        "bytes": 5821,
+        "sha256": "7451bd88ac58532ac396578c542bc70b8760f01f35e9429c6d4e29d4df02c0f0"
       },
       "parameters": {
         "options": [
@@ -233,6 +252,22 @@
             "max": 1.4,
             "unit": "m",
             "describe": "How far the awning reaches over the pavement."
+          },
+          {
+            "name": "startLip",
+            "min": 0,
+            "default": 0,
+            "max": 0.01,
+            "unit": "m",
+            "describe": "How far the street face continues past Z = 0, so a flanked corner meets the return wall."
+          },
+          {
+            "name": "endLip",
+            "min": 0,
+            "default": 0,
+            "max": 0.01,
+            "unit": "m",
+            "describe": "How far the street face continues past the far edge, so a flanked corner meets the return wall."
           }
         ],
         "colours": [
@@ -260,14 +295,14 @@
         "variants": []
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay.webp",
+        "src": "/media/rig/review-neutral-v1/seed-town/st4/ground-bay.webp",
         "width": 1024,
         "height": 1024,
         "alt": "One ground-floor bay of a street front as a shop window, shop door, passage, house door or house window, with an optional awning and lit interior, a settable bay width, storey height and awning depth, and settable wall, trim, joinery and accent colours.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/ground-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/ground-bay-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/ground-bay.png",
-        "sourceRevisionId": "r_34e8abdcbd584be0ac8a6cc19bcecad7",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/ground-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/ground-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st4/ground-bay.png",
+        "sourceRevisionId": "r_48bc66f8cdb64f57a03b51babd36f3d4",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       }
@@ -278,34 +313,34 @@
       "description": "The roof of one building as a side gable, front gable, stepped gable or mansard in stucco or brick, with none, one or two dormers, an optional chimney and lit windows, a settable width, rise and side and back wall heights, and settable roof, wall, trim and joinery colours.",
       "collection": "project",
       "assetId": "a_352bcbee2b6d489fa912c2869751a114",
-      "revisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
-      "parentRevision": null,
+      "revisionId": "r_1e361200a0b348ae8c3158e21533f222",
+      "parentRevision": "r_3d46e7689038471388512c3b9fcd29ea",
       "attribution": {
-        "model": "claude-fable-5-2",
+        "model": "claude-opus-5-5",
         "harness": "claude-code"
       },
       "metrics": {
-        "triangles": 92,
+        "triangles": 126,
         "materials": 8,
         "bounds": [
           8.580000013113022,
-          4.350000098347664,
-          5.400000095367432
+          4.5000001937150955,
+          5.460000075399876
         ]
       },
       "savedModel": {
-        "sha256": "d88f113f1ef40e3ace07d51fdf1bf40403c1d3717bf5fdfa77d2f007260863b5",
-        "bytes": 201688
+        "sha256": "09fdb0c89b76915dfc7f84ce23da74188a259de6809a41c6419cf3140763185e",
+        "bytes": 263316
       },
       "runtimeModelDownload": {
         "member": "models/roof.glb",
-        "bytes": 372408,
-        "sha256": "46c386ff3a993465f29c664f915f3789adbdd23cc6816469a3e26d221b6ba870"
+        "bytes": 617224,
+        "sha256": "d1a3c08840e6d57fcbb792e11b38c0a307b0e4fea5a27802ba42f778203400ac"
       },
       "runtimeMetadata": {
         "member": "models/roof.kiln-metadata.json",
-        "bytes": 10572,
-        "sha256": "0ec69387b7b149841d57faeeb3365312c50d60f0595aa15a7169f450c70c3afb"
+        "bytes": 20113,
+        "sha256": "f41055f315279a79a79f7cd4adc2fe7f31a55d6754f67d759ea9de1480af0a89"
       },
       "parameters": {
         "options": [
@@ -344,9 +379,35 @@
           },
           {
             "name": "chimney",
-            "kind": "toggle",
-            "default": true,
-            "describe": "Brick chimney stack beside the party wall."
+            "kind": "choice",
+            "values": [
+              "none",
+              "left",
+              "right"
+            ],
+            "default": "left",
+            "describe": "The one chimney stack: none, or at the Z = 0 (left) or Z = width (right) end. Front and stepped gables carry it on the back gable for any choice but none."
+          },
+          {
+            "name": "stackAt",
+            "kind": "choice",
+            "values": [
+              "end",
+              "rear"
+            ],
+            "default": "end",
+            "describe": "Where the stack stands at its end (side gable and mansard): on the ridge at the gable end, or through the back slope near it."
+          },
+          {
+            "name": "stackSize",
+            "kind": "choice",
+            "values": [
+              "narrow",
+              "standard",
+              "broad"
+            ],
+            "default": "standard",
+            "describe": "Chimney stack size: a narrow single flue with one pot, a standard stack with two, or a broad stack with three."
           },
           {
             "name": "lit",
@@ -371,6 +432,14 @@
             "max": 3.8,
             "unit": "m",
             "describe": "Height of the ridge above the eaves."
+          },
+          {
+            "name": "stackHeight",
+            "min": 0.7,
+            "default": 0.9,
+            "max": 1.2,
+            "unit": "m",
+            "describe": "Height of the stack top above the ridge, under its cap and pots."
           },
           {
             "name": "skirtLeft",
@@ -422,14 +491,14 @@
         "variants": []
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/seed-town/st1/roof.webp",
+        "src": "/media/rig/review-neutral-v1/seed-town/st4/roof.webp",
         "width": 1024,
         "height": 1024,
         "alt": "The roof of one building as a side gable, front gable, stepped gable or mansard in stucco or brick, with none, one or two dormers, an optional chimney and lit windows, a settable width, rise and side and back wall heights, and settable roof, wall, trim and joinery colours.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/roof-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/roof-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/roof-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/roof-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/roof-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/roof-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/roof-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/roof-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/roof-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/roof-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/roof.png",
-        "sourceRevisionId": "r_c6d3d33650f84eaeb9f9e6d9568e95dd",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/roof-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/roof-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/roof-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/roof-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/roof-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/roof-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/roof-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/roof-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/roof-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/roof-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st4/roof.png",
+        "sourceRevisionId": "r_1e361200a0b348ae8c3158e21533f222",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       }
@@ -878,8 +947,8 @@
       "description": "One piece of street furniture chosen from a bench, planter, bollard, café table, barrel, fountain and market stall, with a settable bench length and settable timber, iron and accent colours.",
       "collection": "project",
       "assetId": "a_0d4254c8e60f43c9a2f3976c4c128bfd",
-      "revisionId": "r_8b73bd49f690462c979085d26534cf65",
-      "parentRevision": null,
+      "revisionId": "r_d9fa0510195748c3a43a36d6b08529f1",
+      "parentRevision": "r_8b73bd49f690462c979085d26534cf65",
       "attribution": {
         "model": "claude-fable-5-2",
         "harness": "claude-code"
@@ -894,18 +963,18 @@
         ]
       },
       "savedModel": {
-        "sha256": "d8b2d1647e3cff9c15a115326400e7a6a38168463830eee5938d9af3d3030373",
-        "bytes": 168304
+        "sha256": "d10cb155259ecbb4c775762caf533db96ffc5a3c21d48350700d21db10ea4b40",
+        "bytes": 182028
       },
       "runtimeModelDownload": {
         "member": "models/street-furniture.glb",
-        "bytes": 182404,
-        "sha256": "b2b3d3a0866c7350db55399153646d691d2d946f03b0237478d21643fbc11dec"
+        "bytes": 196128,
+        "sha256": "a5d94aca9ea8405e865b0ec0b2805b5fecdedb6464bc5820996927f84f8343ab"
       },
       "runtimeMetadata": {
         "member": "models/street-furniture.kiln-metadata.json",
         "bytes": 1221,
-        "sha256": "961f6ff2011f32f54294ad906ccf2ef25116a9f284bc342e8cbcc1aa06d8bebe"
+        "sha256": "9498f79f54bca78be971a3716dfe7ee33fbf4b2a87a389d169cb614bb6773db7"
       },
       "parameters": {
         "options": [
@@ -955,14 +1024,14 @@
         "variants": []
       },
       "poster": {
-        "src": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture.webp",
+        "src": "/media/rig/review-neutral-v1/seed-town/st4/street-furniture.webp",
         "width": 1024,
         "height": 1024,
         "alt": "One piece of street furniture chosen from a bench, planter, bollard, café table, barrel, fountain and market stall, with a settable bench length and settable timber, iron and accent colours.",
-        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-1024.webp 1024w",
-        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st1/street-furniture-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st1/street-furniture-1024.avif 1024w",
-        "inputPath": "media/rig/review-neutral-v1/seed-town/st1/street-furniture.png",
-        "sourceRevisionId": "r_8b73bd49f690462c979085d26534cf65",
+        "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/street-furniture-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-1024.webp 1024w",
+        "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/street-furniture-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-1024.avif 1024w",
+        "inputPath": "media/rig/review-neutral-v1/seed-town/st4/street-furniture.png",
+        "sourceRevisionId": "r_d9fa0510195748c3a43a36d6b08529f1",
         "exactRevision": true,
         "rig": "review-neutral-v1"
       }

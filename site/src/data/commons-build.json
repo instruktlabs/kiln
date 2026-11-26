@@ -5960,6 +5960,63 @@
       "sourceRevisionId": "r_26b01198a78f4b8489154dbeae12c0b8",
       "exactRevision": true,
       "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/scenes/seed-town/st4/seed-town-scene-town.webp",
+      "width": 2560,
+      "height": 1440,
+      "alt": "A small old town of brick and plaster houses round a market square, seen from above, with autumn trees and paved roads leading out across open country.",
+      "srcsetWebp": "/media/scenes/seed-town/st4/seed-town-scene-town-320.webp 320w, /media/scenes/seed-town/st4/seed-town-scene-town-480.webp 480w, /media/scenes/seed-town/st4/seed-town-scene-town-672.webp 672w, /media/scenes/seed-town/st4/seed-town-scene-town-768.webp 768w, /media/scenes/seed-town/st4/seed-town-scene-town-1024.webp 1024w, /media/scenes/seed-town/st4/seed-town-scene-town-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/seed-town/st4/seed-town-scene-town-320.avif 320w, /media/scenes/seed-town/st4/seed-town-scene-town-480.avif 480w, /media/scenes/seed-town/st4/seed-town-scene-town-672.avif 672w, /media/scenes/seed-town/st4/seed-town-scene-town-768.avif 768w, /media/scenes/seed-town/st4/seed-town-scene-town-1024.avif 1024w, /media/scenes/seed-town/st4/seed-town-scene-town-1440.avif 1440w",
+      "inputPath": "media/scenes/seed-town/st4/seed-town-scene-town.png"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st4/facade-bay.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One upper-storey bay of a town house front with a choice of wall finish, window and window head, an optional cornice, shutters, balcony and lit window, a settable bay width and storey height, and settable wall, trim and joinery colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/facade-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/facade-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/facade-bay-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st4/facade-bay.png",
+      "sourceRevisionId": "r_6615d35c59184a52a9ad7f3a7497d2ca",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st4/ground-bay.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One ground-floor bay of a street front as a shop window, shop door, passage, house door or house window, with an optional awning and lit interior, a settable bay width, storey height and awning depth, and settable wall, trim, joinery and accent colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/ground-bay-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/ground-bay-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/ground-bay-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st4/ground-bay.png",
+      "sourceRevisionId": "r_48bc66f8cdb64f57a03b51babd36f3d4",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st4/roof.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "The roof of one building as a side gable, front gable, stepped gable or mansard in stucco or brick, with none, one or two dormers, an optional chimney and lit windows, a settable width, rise and side and back wall heights, and settable roof, wall, trim and joinery colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/roof-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/roof-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/roof-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/roof-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/roof-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/roof-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/roof-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/roof-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/roof-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/roof-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st4/roof.png",
+      "sourceRevisionId": "r_1e361200a0b348ae8c3158e21533f222",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
+    },
+    {
+      "src": "/media/rig/review-neutral-v1/seed-town/st4/street-furniture.webp",
+      "width": 1024,
+      "height": 1024,
+      "alt": "One piece of street furniture chosen from a bench, planter, bollard, café table, barrel, fountain and market stall, with a settable bench length and settable timber, iron and accent colours.",
+      "srcsetWebp": "/media/rig/review-neutral-v1/seed-town/st4/street-furniture-320.webp 320w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-480.webp 480w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-672.webp 672w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-768.webp 768w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-1024.webp 1024w",
+      "srcsetAvif": "/media/rig/review-neutral-v1/seed-town/st4/street-furniture-320.avif 320w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-480.avif 480w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-672.avif 672w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-768.avif 768w, /media/rig/review-neutral-v1/seed-town/st4/street-furniture-1024.avif 1024w",
+      "inputPath": "media/rig/review-neutral-v1/seed-town/st4/street-furniture.png",
+      "sourceRevisionId": "r_d9fa0510195748c3a43a36d6b08529f1",
+      "exactRevision": true,
+      "rig": "review-neutral-v1"
     }
   ],
   "archives": [

@@ -9,6 +9,7 @@ import { random, REACH, PALETTE, lotsFor, designBuilding, closingLots, closable 
 
 const DEPTH = 80;                 // building depth, tenths
 const FLANK_PROUD = 0.005;        // a flank's bays stand 5 mm proud of the roof's side wall, so the two never share a plane
+const CORNER_LIP = 0.008;         // the street face wraps past that flank, so the corner is a lap and not a 5 mm slot
 const m = t => t / 10;
 
 /** How many lots suit a block of this length (tenths): the count whose mean lot is nearest 5.7 m, or 0. */
@@ -33,6 +34,49 @@ function designFlank(L, lot, parent) {
     ...parent, ...lot, type: 'flank', trade: 'flank', fronts, blind, door: -1, passage: -1, awning: false, sign: null, balcony: 'none', blindBay: -1,
     floors: parent.floors.map(f => ({ ...f, cornice: false, shutters: false })),
   };
+}
+
+// ---- chimneys: one stack per building, where an old terrace's fireplaces would put it: on the ridge at a
+// gable end, or through the back slope near it. Footprints are the roof kit's (roof-local X back from the
+// eaves, Z along the row). Rules: no stack within STACK_CLEAR of another building's stack, measured in plan
+// in the town; no end stack against a taller neighbour's gable. The houses that have a chimney stay those
+// the seed gave one; a house left with no sound place has none. ----
+const STACK_CLEAR = 1.5;
+const STACK = { narrow: { len: 0.45, half: 0.25 }, standard: { len: 0.6, half: 0.4 }, broad: { len: 1.0, half: 0.55 } };
+function stackFootprint(end, at, size, W) {
+  const { len, half } = STACK[size];
+  if (end === 'back') return [-8.11, -7.51, W / 2 - half, W / 2 + half];
+  const [x0, x1, inset] = at === 'end' ? [-4.4, -3.6, 0.01] : [-6.4, -5.8, 0.6];
+  return end === 'left' ? [x0, x1, inset, inset + len] : [x0, x1, W - inset - len, W - inset];
+}
+function planRect(roof, [x0, x1, z0, z1]) {
+  const world = frameWorld({ origin: roof.pos, yaw: roof.yaw });
+  const a = world(x0, 0, z0), c = world(x1, 0, z1);
+  return [Math.min(a[0], c[0]), Math.max(a[0], c[0]), Math.min(a[2], c[2]), Math.max(a[2], c[2])];
+}
+const rectGap = (a, b) => Math.hypot(Math.max(0, a[0] - b[1], b[0] - a[1]), Math.max(0, a[2] - b[3], b[2] - a[3]));
+function chooseChimney(ctx, d, roof, before, next, lot) {
+  const S = ctx.R.fork(`chimney-${roof.id}`), W = m(d.bays * d.bw);
+  const tall = d.storeys >= 3 && S.chance(0.5);
+  const stackSize = W < 4.6 ? 'narrow' : W >= 7.2 || tall ? 'broad' : 'standard';
+  const stackHeight = Math.round((0.7 + 0.05 * S.int(0, 10)) * 100) / 100;
+  const none = { chimney: 'none', stackAt: 'end', stackSize, stackHeight };
+  if (!d.chimney) return none;
+  const clear = rect => (ctx.stacks ??= []).every(o => rectGap(o, rect) >= STACK_CLEAR);
+  const claim = (end, at) => { const rect = planRect(roof, stackFootprint(end, at, stackSize, W)); if (!clear(rect)) return false; ctx.stacks.push(rect); return true; };
+  if (d.form === 'frontGable' || d.form === 'stepped') return claim('back', 'end') ? { ...none, chimney: 'left' } : none;
+  // A neighbour's top at the shared wall: a ridge gable for side gable and mansard, the eaves for a street gable.
+  const topOf = n => m(n.height) + (n.form === 'frontGable' || n.form === 'stepped' ? 0.3 : m(n.rise));
+  const ridge = m(d.height + d.rise);
+  const side = (n, open) => (open || !n ? { end: true, score: 2 } : topOf(n) > ridge + 0.3 ? { end: false, score: 0 } : { end: true, score: topOf(n) < ridge - 0.3 ? 1 : 0.5 });
+  const ends = { left: side(before, lot.cornerStart || lot.endStart), right: side(next, lot.cornerEnd || lot.endEnd) };
+  const kinds = S.chance(0.75) ? ['end', 'rear'] : ['rear', 'end'];
+  const sides = ends.left.score === ends.right.score ? (S.chance(0.5) ? ['left', 'right'] : ['right', 'left']) : ends.left.score > ends.right.score ? ['left', 'right'] : ['right', 'left'];
+  for (const at of kinds) for (const end of sides) {
+    if (at === 'end' && !ends[end].end) continue;
+    if (claim(end, at)) return { chimney: end, stackAt: at, stackSize, stackHeight };
+  }
+  return none;
 }
 
 /**
@@ -67,12 +111,14 @@ function layRow(ctx, name, frame, lots, mode) {
 
     for (let i = 0; i < d.bays; i++) {
       const z = z0 + i * bw, front = d.fronts[i];
-      put(`${name}${b}-ground-${i}`, 'ground-bay', { bayWidth: bw, shopHeight: m(d.shop), front, awning: d.awning && front === 'shopWindow', awningDepth: m(d.awningDepth), accent: d.accent, lit: lit(0.75), ...colours }, world(out, 0, z), yaw0);
+      const startLip = i === 0 && (lot.cornerStart || lot.endStart || lot.lipStart) ? CORNER_LIP : 0;
+      const endLip = i === d.bays - 1 && (lot.cornerEnd || lot.endEnd || lot.lipEnd) ? CORNER_LIP : 0;
+      put(`${name}${b}-ground-${i}`, 'ground-bay', { bayWidth: bw, shopHeight: m(d.shop), front, awning: d.awning && front === 'shopWindow', awningDepth: m(d.awningDepth), accent: d.accent, lit: lit(0.75), startLip, endLip, ...colours }, world(out, 0, z), yaw0);
       for (let s = 0; s < d.storeys; s++) {
         const f = d.floors[s], blind = (s === d.storeys - 1 && i === d.blindBay) || d.blind?.[s]?.includes(i);
         put(`${name}${b}-floor${s + 1}-${i}`, 'facade-bay', {
           bayWidth: bw, storeyHeight: m(d.storey), finish: d.finish, window: blind ? 'blind' : f.window, head: f.head,
-          cornice: f.cornice, shutters: f.shutters, balcony: s === 0 && (d.balcony === 'all' || (d.balcony === 'centre' && i === (d.bays - 1) / 2)), lit: lit(0.55), ...colours,
+          cornice: f.cornice, shutters: f.shutters, balcony: s === 0 && (d.balcony === 'all' || (d.balcony === 'centre' && i === (d.bays - 1) / 2)), lit: lit(0.55), startLip, endLip, ...colours,
         }, world(out, m(d.shop + s * d.storey), z), yaw0);
       }
       if (street) {
@@ -113,7 +159,9 @@ function layRow(ctx, name, frame, lots, mode) {
     const left = lot.cornerStart || lot.endStart ? 2 : before ? Math.max(2, d.height - before.height) : d.height;
     const right = lot.cornerEnd || lot.endEnd ? 2 : next ? Math.max(2, d.height - next.height) : d.height;
     const D = R.fork(`lot-${name}-${b}`).fork('roof-dusk');
-    placements.find(p => p.id === `${name}${b}-roof`).values = { width: m(d.bays * d.bw), rise: m(d.rise), form: d.form, finish: d.finish === 'brick' ? 'brick' : 'stucco', dormers: d.dormers, chimney: d.chimney, skirtLeft: m(left), skirtRight: m(right), skirtBack: m(lot.backed ? 2 : d.height), lit: dusk && D.chance(0.4), roof: d.roofColour, wall: d.wall, trim: d.trim, joinery: d.joinery };
+    const roofAt = placements.find(p => p.id === `${name}${b}-roof`);
+    const stack = chooseChimney(ctx, d, roofAt, before, next, lot);
+    roofAt.values = { width: m(d.bays * d.bw), rise: m(d.rise), form: d.form, finish: d.finish === 'brick' ? 'brick' : 'stucco', dormers: d.dormers, ...stack, skirtLeft: m(left), skirtRight: m(right), skirtBack: m(lot.backed ? 2 : d.height), lit: dusk && D.chance(0.4), roof: d.roofColour, wall: d.wall, trim: d.trim, joinery: d.joinery };
   }
   const side = { name, mode, frame: { origin: frame.origin, yaw: yaw0, pavement: m(pavement), road: m(frame.road) }, buildings, ...(frame.touch ? { touch: frame.touch } : {}) };
   ctx.sides.push(side);
@@ -137,7 +185,8 @@ function dressOutside(ctx, name, frame, lots, side) {
   const backs = [];
   for (let b = lots.length - 1; b >= 0; b--) {
     const lot = lots[b], d = side.buildings[b]; if (!lot.backed) continue;
-    backs.push({ bays: d.bays, bw: d.bw, start: span - (lot.start + d.bays * d.bw), flankOf: d, fronts: d.fronts.map(f => (f === 'passage' ? 'passage' : 'houseWindow')).reverse() });
+    // The back row runs the other way, so a row end's flank meets the back front at the far end of its lot.
+    backs.push({ bays: d.bays, bw: d.bw, start: span - (lot.start + d.bays * d.bw), flankOf: d, fronts: d.fronts.map(f => (f === 'passage' ? 'passage' : 'houseWindow')).reverse(), lipStart: !!lot.endEnd, lipEnd: !!lot.endStart });
   }
   if (backs.length) layRow(ctx, `${name}b`, { origin: world(-m(DEPTH), 0, m(span)), yaw: (frame.yaw + 180) % 360, ...widths, touch: [world(-m(DEPTH), 0, m(span)), world(-m(DEPTH), 0, m(lots[0].start))] }, backs, 'bare');
 }

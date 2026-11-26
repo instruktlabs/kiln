@@ -35,11 +35,11 @@
     },
     {
       "id": "seed-town",
-      "release": "st2",
-      "path": "scene-inputs/seed-town/st2/seed-town.zip",
-      "bytes": 719194,
-      "sha256": "38dca9f4a57cf3476d5e1dddb9c3c7af5df2eb4fd2a1c7da549988fc6e53b3c5",
-      "packJsonSha256": "86f2a6d18b6acb3d3fe63aea68896c1b4098e87b6d48d5f88138086eb4b3c8c9"
+      "release": "st4",
+      "path": "scene-inputs/seed-town/st4/seed-town.zip",
+      "bytes": 737035,
+      "sha256": "0e3dfebf4f53fe51bfb1c0b7e2c84a8876322ab0603bde5ac2f3d3f7c5c016a4",
+      "packJsonSha256": "b460046652388708ccdf08d579bf0b98340d9ce4d50090c5930973489f3b38a6"
     }
   ]
 }

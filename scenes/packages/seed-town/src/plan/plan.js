@@ -230,7 +230,7 @@ export function planStreet(seed, { dusk = false, buildingsPerSide = 7, length = 
       const d = buildings[b], next = buildings[b + 1], before = buildings[b - 1];
       const left = before ? Math.max(2, d.height - before.height) : d.height, right = next ? Math.max(2, d.height - next.height) : d.height;
       const D = R.fork(`lot-${name}-${b}`).fork('roof-dusk');
-      placements.find(p => p.id === `${name}${b}-roof`).values = { width: m(d.bays * d.bw), rise: m(d.rise), form: d.form, finish: d.finish === 'brick' ? 'brick' : 'stucco', dormers: d.dormers, chimney: d.chimney, skirtLeft: m(left), skirtRight: m(right), skirtBack: m(d.height), lit: dusk && D.chance(0.4), roof: d.roofColour, wall: d.wall, trim: d.trim, joinery: d.joinery };
+      placements.find(p => p.id === `${name}${b}-roof`).values = { width: m(d.bays * d.bw), rise: m(d.rise), form: d.form, finish: d.finish === 'brick' ? 'brick' : 'stucco', dormers: d.dormers, chimney: d.chimney ? 'left' : 'none', stackAt: 'end', stackSize: 'standard', stackHeight: 0.9, skirtLeft: m(left), skirtRight: m(right), skirtBack: m(d.height), lit: dusk && D.chance(0.4), roof: d.roofColour, wall: d.wall, trim: d.trim, joinery: d.joinery };
     }
     sides.push({ name, frame: { origin: frame.origin, yaw: yaw0 }, buildings });
   }

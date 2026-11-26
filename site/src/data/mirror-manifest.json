@@ -8955,6 +8955,101 @@
       "path": "media/rig/review-neutral-v1/seed-town/st2/facade-bay.png",
       "bytes": 1708946,
       "sha256": "e2fee9801831ffc0c1f690d7ad485cc43dde4cde31d3e16e466ed883d73f4f83"
+    },
+    {
+      "path": "packs/seed-town/st4/models/facade-bay.glb",
+      "bytes": 257112,
+      "sha256": "84cb2b12f83c04af8ce383f16581036dd09a05ad7971ab57d729f37ba80841f1"
+    },
+    {
+      "path": "packs/seed-town/st4/models/facade-bay.kiln-metadata.json",
+      "bytes": 3780,
+      "sha256": "549ffb3b834b5cd53df4f4935ea7cb6d228a93c4d6b7444bf3fc9c6c6b1060ca"
+    },
+    {
+      "path": "packs/seed-town/st4/editable/facade-bay.zip",
+      "bytes": 222172,
+      "sha256": "31e7bdfcd5c4dee6288abe200f689dfa15d2d81559d255b83dc7bdcff4d9fe61"
+    },
+    {
+      "path": "packs/seed-town/st4/models/ground-bay.glb",
+      "bytes": 336468,
+      "sha256": "87ad34a7de0efdfd36d2559320f9c237855fed73d2348ed119ff2f75b1c35416"
+    },
+    {
+      "path": "packs/seed-town/st4/models/ground-bay.kiln-metadata.json",
+      "bytes": 5821,
+      "sha256": "7451bd88ac58532ac396578c542bc70b8760f01f35e9429c6d4e29d4df02c0f0"
+    },
+    {
+      "path": "packs/seed-town/st4/editable/ground-bay.zip",
+      "bytes": 83294,
+      "sha256": "0bdb7297a021063913061e6477041b4ee7b445e98e60bc2c670bbb2d52ed038c"
+    },
+    {
+      "path": "packs/seed-town/st4/models/roof.glb",
+      "bytes": 617224,
+      "sha256": "d1a3c08840e6d57fcbb792e11b38c0a307b0e4fea5a27802ba42f778203400ac"
+    },
+    {
+      "path": "packs/seed-town/st4/models/roof.kiln-metadata.json",
+      "bytes": 20113,
+      "sha256": "f41055f315279a79a79f7cd4adc2fe7f31a55d6754f67d759ea9de1480af0a89"
+    },
+    {
+      "path": "packs/seed-town/st4/editable/roof.zip",
+      "bytes": 460410,
+      "sha256": "b40f9be5e0aaccc8fc4cbda14d30100d3b6d1482285ba5cf388bd2f7a30a3a33"
+    },
+    {
+      "path": "packs/seed-town/st4/models/street-furniture.glb",
+      "bytes": 196128,
+      "sha256": "a5d94aca9ea8405e865b0ec0b2805b5fecdedb6464bc5820996927f84f8343ab"
+    },
+    {
+      "path": "packs/seed-town/st4/models/street-furniture.kiln-metadata.json",
+      "bytes": 1221,
+      "sha256": "9498f79f54bca78be971a3716dfe7ee33fbf4b2a87a389d169cb614bb6773db7"
+    },
+    {
+      "path": "packs/seed-town/st4/editable/street-furniture.zip",
+      "bytes": 51769,
+      "sha256": "0beed71958705665ee7d0ff065005cd8e9095b9d6e971703b0b393612fff7e01"
+    },
+    {
+      "path": "packs/seed-town/st4/seed-town-runtime.zip",
+      "bytes": 747018,
+      "sha256": "63a8ddb876f83285fd52eabb6451e59bface61dc6226a1788fbc66bf69ff9ce7"
+    },
+    {
+      "path": "packs/seed-town/st4/seed-town-editable.zip",
+      "bytes": 1989599,
+      "sha256": "9a31fd34f9032a5dd0361c718a27385a5bd5cfccafe0f0b8a9d553c54a9b0503"
+    },
+    {
+      "path": "media/scenes/seed-town/st4/seed-town-scene-town.png",
+      "bytes": 6905147,
+      "sha256": "576bd0224340c2bbf23bdf97c64200f649a9adc1e23c862db64f53a1718a5b57"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st4/facade-bay.png",
+      "bytes": 1704390,
+      "sha256": "9e6c1c8f5818aaf7ddfb6f5422cc79f071e99b1bc2227d0eb5c909d5e5baa9d9"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st4/ground-bay.png",
+      "bytes": 1523015,
+      "sha256": "6ca4bc2c173af8c317da4b26aa14760ab3942e6d16a08462eb95d3752cd06a1c"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st4/roof.png",
+      "bytes": 1753010,
+      "sha256": "5a228fd3edb6da915b0405096f2973e44846196087b1b3c61e3123f6bd52dc00"
+    },
+    {
+      "path": "media/rig/review-neutral-v1/seed-town/st4/street-furniture.png",
+      "bytes": 1516982,
+      "sha256": "edfb8cb07d26452b8515824e7c94399f3ad454600447f43a9463f3c984eee02f"
     }
   ]
 }

@@ -457,28 +457,28 @@
   },
   "seed-town": {
     "poster": {
-      "src": "/media/scenes/seed-town/st2/seed-town-scene-town.webp",
+      "src": "/media/scenes/seed-town/st4/seed-town-scene-town.webp",
       "width": 2560,
       "height": 1440,
       "alt": "A small old town of brick and plaster houses round a market square, seen from above, with autumn trees and paved roads leading out across open country.",
-      "srcsetWebp": "/media/scenes/seed-town/st2/seed-town-scene-town-320.webp 320w, /media/scenes/seed-town/st2/seed-town-scene-town-480.webp 480w, /media/scenes/seed-town/st2/seed-town-scene-town-672.webp 672w, /media/scenes/seed-town/st2/seed-town-scene-town-768.webp 768w, /media/scenes/seed-town/st2/seed-town-scene-town-1024.webp 1024w, /media/scenes/seed-town/st2/seed-town-scene-town-1440.webp 1440w",
-      "srcsetAvif": "/media/scenes/seed-town/st2/seed-town-scene-town-320.avif 320w, /media/scenes/seed-town/st2/seed-town-scene-town-480.avif 480w, /media/scenes/seed-town/st2/seed-town-scene-town-672.avif 672w, /media/scenes/seed-town/st2/seed-town-scene-town-768.avif 768w, /media/scenes/seed-town/st2/seed-town-scene-town-1024.avif 1024w, /media/scenes/seed-town/st2/seed-town-scene-town-1440.avif 1440w",
-      "inputPath": "media/scenes/seed-town/st2/seed-town-scene-town.png"
+      "srcsetWebp": "/media/scenes/seed-town/st4/seed-town-scene-town-320.webp 320w, /media/scenes/seed-town/st4/seed-town-scene-town-480.webp 480w, /media/scenes/seed-town/st4/seed-town-scene-town-672.webp 672w, /media/scenes/seed-town/st4/seed-town-scene-town-768.webp 768w, /media/scenes/seed-town/st4/seed-town-scene-town-1024.webp 1024w, /media/scenes/seed-town/st4/seed-town-scene-town-1440.webp 1440w",
+      "srcsetAvif": "/media/scenes/seed-town/st4/seed-town-scene-town-320.avif 320w, /media/scenes/seed-town/st4/seed-town-scene-town-480.avif 480w, /media/scenes/seed-town/st4/seed-town-scene-town-672.avif 672w, /media/scenes/seed-town/st4/seed-town-scene-town-768.avif 768w, /media/scenes/seed-town/st4/seed-town-scene-town-1024.avif 1024w, /media/scenes/seed-town/st4/seed-town-scene-town-1440.avif 1440w",
+      "inputPath": "media/scenes/seed-town/st4/seed-town-scene-town.png"
     },
     "capture": {
       "tool": "scenes/packages/seed-town/scripts/capture.mjs",
       "view": "town",
       "seed": "2026",
       "hour": "day",
-      "release": "st2",
+      "release": "st4",
       "size": [
         2560,
         1440
       ],
-      "source": "The scene's canvas read back at 3840 by 2160 pixels and scaled down; nothing composited or retouched.",
-      "packJsonSha256": "86f2a6d18b6acb3d3fe63aea68896c1b4098e87b6d48d5f88138086eb4b3c8c9",
-      "pngBytes": 6850860,
-      "pngSha256": "9aee3a45233e0f912846db22c3598b0cb8869f173cd0dc6157da431976f1d493"
+      "source": "The scene's canvas read back at 3200 by 1800 pixels and scaled down; nothing composited or retouched.",
+      "packJsonSha256": "b460046652388708ccdf08d579bf0b98340d9ce4d50090c5930973489f3b38a6",
+      "pngBytes": 6905147,
+      "pngSha256": "576bd0224340c2bbf23bdf97c64200f649a9adc1e23c862db64f53a1718a5b57"
     }
   }
 }
