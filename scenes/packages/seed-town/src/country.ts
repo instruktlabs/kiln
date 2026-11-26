@@ -53,7 +53,7 @@ function discGeometry(rings: number, segments: number): BufferGeometry {
 }
 
 /** How dark a tree's shade is at noon, and the least the sun's height counts for when it is low. */
-const SHADE = { depth: 0.46, lift: 0.04, lowSun: 0.16, reach: 2.4 };
+const SHADE = { depth: 0.46, lowSun: 0.16, reach: 2.4 };
 /** Fallen leaves lie a little over the grass and under the shade. */
 const LITTER = { lift: 0.022, cover: 0.7, tile: 6, earth: '#5e4a2c' };
 /** Open ground sees the whole sky, which a street between walls does not: at dusk it is lit this much more. */
@@ -155,7 +155,7 @@ export function createCountry(parent: Group, paving: { sett: Texture | null; sto
     turn.setFromAxisAngle(up, Math.atan2(-gz, gx));
     standing.forEach((tree, i) => {
       const out = Math.min(tree.height * 0.62 * run, tree.height * SHADE.reach), long = tree.width / 2 + Math.min(tree.height * 0.3 * run, tree.height * SHADE.reach * 0.6);
-      position.set(tree.x + gx * out, SHADE.lift, tree.z + gz * out);
+      position.set(tree.x + gx * out, GROUND.shadeLift, tree.z + gz * out);
       scale.set(long, 1, tree.width / 2 * 1.1);
       shade!.setMatrixAt(i, matrix.compose(position, turn, scale));
     });

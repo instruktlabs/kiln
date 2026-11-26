@@ -51,7 +51,7 @@ test('the scene selector includes Cathedral and packs-off fallback keeps the sta
   expect(sceneInMode('cathedral-square', false).fallback.href).toBe('/packs/cathedral-square/');
   expect(sceneInMode('cathedral-square', true).fallback.href).toBe('/packs/cathedral-square/');
   const selector = await readFile(new URL('../src/components/SceneSelector.astro', import.meta.url), 'utf8');
-  expect(selector).toContain('sceneBrowseGroups(PACKS_ENABLED)');
+  expect(selector).toContain('sceneSelectorGroups(PACKS_ENABLED)');
   expect(selector).toContain('<select');
   const shell = await readFile(new URL('../src/components/SceneShell.astro', import.meta.url), 'utf8');
   const listing = await readFile(new URL('../src/pages/scenes/index.astro', import.meta.url), 'utf8');

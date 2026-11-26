@@ -33,6 +33,11 @@ export const GROUND = {
   tuckDrop: 0.012,
   /** How wide a road's shoulder fades into the grass, metres. */
   edge: 0.9,
+  /** Dark earth lies this far under the town and under each road's climb: a hairline between two pavings shows it, not the sky. */
+  under: -0.6,
+  earth: [0.02, 0.018, 0.016] as const,
+  /** Tree shade is drawn this high, over the crown of a road (roadLift + camber): lower, the crown hides the shade near the eye. */
+  shadeLift: 0.11,
 };
 
 function collect(itemSize: number) {
@@ -66,14 +71,15 @@ const UP = [0, 1, 0] as const;
  * Four strips of ground that meet the town's outer walls and run `far` metres out. Where a street
  * leaves the town its carriageway is lower than the ground, so the strip is left open there for
  * RAMP metres, with a stone face on each side; the road itself climbs through the opening.
+ * Under the town and under each opening lies dark earth, well below the streets.
  */
 export function meadowGeometry(frame: { halfX: number; halfZ: number }, thresholds: readonly Threshold[], far: number): GroundMesh {
   const X = frame.halfX, Z = frame.halfZ, mesh = collect(3);
   // Counter-clockwise seen from above, so the ground faces up.
-  const flat = (minX: number, maxX: number, minZ: number, maxZ: number) => {
+  const flat = (minX: number, maxX: number, minZ: number, maxZ: number, y: number = GROUND.y, colour: readonly number[] = GROUND.grass) => {
     if (maxX - minX < 1e-6 || maxZ - minZ < 1e-6) return;
     const base = mesh.count;
-    for (const [x, z] of [[minX, maxZ], [maxX, maxZ], [maxX, minZ], [minX, minZ]] as const) mesh.vertex(x, GROUND.y, z, UP, GROUND.grass);
+    for (const [x, z] of [[minX, maxZ], [maxX, maxZ], [maxX, minZ], [minX, minZ]] as const) mesh.vertex(x, y, z, UP, colour);
     mesh.face(base, base + 1, base + 2, base + 3);
   };
   for (const dz of [-1, 1] as const) {
@@ -85,6 +91,7 @@ export function meadowGeometry(frame: { halfX: number; halfZ: number }, threshol
     for (const gap of gaps) {
       flat(from, gap.x - gap.half, Math.min(edge, lip), Math.max(edge, lip));
       from = gap.x + gap.half;
+      flat(gap.x - gap.half, gap.x + gap.half, Math.min(edge, lip), Math.max(edge, lip), GROUND.under, GROUND.earth);
       const low = -gap.drop, a = gap.x - gap.half, b = gap.x + gap.half;
       // A stone face on each side closes the wedge between the climbing road and the grass.
       for (const [x, side] of [[a, 1], [b, -1]] as const) {
@@ -99,6 +106,7 @@ export function meadowGeometry(frame: { halfX: number; halfZ: number }, threshol
   }
   flat(-X - far, -X, -Z, Z);
   flat(X, X + far, -Z, Z);
+  flat(-X, X, -Z, Z, GROUND.under, GROUND.earth);
   return mesh.done();
 }
 

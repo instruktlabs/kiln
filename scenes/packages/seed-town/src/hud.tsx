@@ -4,10 +4,13 @@ import { CameraButtons, CreditsPanel, HelpOverlay, HudButton, HudHideButton, Hud
 import { freshSeed, MAX_SEED_LENGTH } from './session';
 import type { TownInfo, TownSession } from './session';
 
-/** The seed panel sits top left, the toolbar top right; both fold under each other in a narrow embed. */
+/**
+ * The seed panel sits top left, the toolbar top right. In a narrow embed the panel folds behind a Seed button in
+ * the top left corner and opens under the toolbar; wrapped rows pack against the top edge.
+ */
 export const TOWN_HUD_CSS = `
 .ks-hud>.st-hud{pointer-events:none}
-.st-hud{position:absolute;inset:0;pointer-events:none;container:st-hud/size;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:8px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
+.st-hud{position:absolute;inset:0;pointer-events:none;container:st-hud/size;box-sizing:border-box;display:flex;flex-wrap:wrap;align-items:flex-start;align-content:flex-start;justify-content:space-between;gap:8px;padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) 0 max(12px,env(safe-area-inset-left))}
 .st-hud>*{pointer-events:auto}.st-hud>style{display:none}.st-hud>.ks-status{pointer-events:none}
 .st-hud .ks-toolbar{position:static;justify-content:flex-end;max-width:100%;gap:6px;margin-left:auto}
 .st-hud .ks-toolbar .ks-button{padding:8px}
@@ -17,6 +20,8 @@ export const TOWN_HUD_CSS = `
 .st-hud .st-seed input{min-height:44px;min-width:0;width:100%;box-sizing:border-box;border:1px solid #879593;border-radius:9px;background:#0d1917;color:#fff;padding:8px 10px;font:inherit}
 .st-hud .st-seed input:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .st-hud .st-seed .ks-button{padding:8px 12px}
+.st-hud .st-seed-toggle{display:none}
+.st-hud .st-seed-toggle[aria-expanded=true]{background:#29433d}
 .st-hud .st-facts{margin:0;font-size:12px;line-height:1.4;opacity:.92;font-variant-numeric:tabular-nums}
 .st-hud :is(.ks-help,.ks-credits,.st-camera){position:fixed;z-index:3;top:max(70px,calc(env(safe-area-inset-top) + 58px));right:max(12px,env(safe-area-inset-right));max-height:calc(100% - max(70px,calc(env(safe-area-inset-top) + 58px)) - max(12px,env(safe-area-inset-bottom)));overflow:auto;overscroll-behavior:contain}
 .st-hud .st-camera{max-width:min(440px,calc(100% - 24px))}
@@ -26,7 +31,14 @@ export const TOWN_HUD_CSS = `
 .st-hud.st-walk.st-touch .ks-status{left:auto;right:max(12px,env(safe-area-inset-right));transform:none;max-width:min(400px,calc(100% - 180px))}
 @container st-hud (max-width:560px){
   .st-hud :is(.ks-help,.ks-credits,.st-camera){left:max(12px,env(safe-area-inset-left));max-width:none}
-  .st-hud .st-seed{max-width:none;width:100%;order:2}
+  .st-hud .st-seed-toggle{display:inline-block;padding:8px}
+  .st-hud .st-seed{max-width:100%;order:2}
+  .st-hud .st-seed:not([data-open]){display:none}
+  .st-hud .st-facts{width:0;min-width:100%}
+  .st-hud .st-long{display:none}
+}
+@container st-hud (max-width:330px){
+  .st-hud .ks-toolbar{gap:4px}
 }
 @container st-hud (max-height:360px){
   .st-hud .ks-status{font-size:12px;padding:6px 10px}
@@ -60,21 +72,29 @@ export function TownHud({ session }: { session: TownSession }) {
   const state = useSyncExternalStore(session.subscribe, session.getState, session.getState);
   const info = useSyncExternalStore(session.subscribe, session.getInfo, session.getInfo);
   const [draft, setDraft] = useState(state.seed);
-  const [panel, setPanel] = useState<'camera' | 'help' | 'credits' | null>(null);
+  const [panel, setPanel] = useState<'seed' | 'camera' | 'help' | 'credits' | null>(null);
   const cameraId = `st-camera-${useId()}`, seedId = `st-seed-${useId()}`, cameraTrigger = useRef<HTMLButtonElement>(null);
+  // Only a narrow embed shows the Seed button; a wide one keeps the panel open whatever `panel` says.
+  const seedPanelId = `st-seed-panel-${useId()}`, seedTrigger = useRef<HTMLButtonElement>(null);
+  usePanelEscape(panel === 'seed', seedPanelId, seedTrigger, () => setPanel(null));
   usePanelEscape(panel === 'camera' && !playing && !touch, cameraId, cameraTrigger, () => setPanel(null));
   useEffect(() => { setPanel(null); }, [playing, touch]);
   useEffect(() => { setDraft(state.seed); }, [state.seed]);
   const views = session.frame?.views ?? [];
   const toggle = () => { setPanel(null); setPlaying(!playing); root.current?.focus({ preventScroll: true }); };
-  const submit = (event: FormEvent) => { event.preventDefault(); session.set({ seed: draft }); };
+  const submit = (event: FormEvent) => {
+    event.preventDefault(); session.set({ seed: draft });
+    // A panel opened from the Seed button closes on Build, so the new town is in view.
+    if (panel === 'seed') { setPanel(null); root.current?.focus({ preventScroll: true }); }
+  };
   const closeCamera = () => {
     setPanel(null);
     cameraTrigger.current?.closest('.ks-menu')?.querySelector<HTMLButtonElement>('.ks-menu-trigger')?.focus({ preventScroll: true });
   };
   return <div className={`st-hud ${playing ? 'st-walk' : 'st-orbit'} ${touch ? 'st-touch' : 'st-desktop'}`}>
     <style>{TOWN_HUD_CSS}</style>
-    <HudPanel className="st-seed" aria-label="Town seed">
+    <HudButton ref={seedTrigger} aria-expanded={panel === 'seed'} aria-controls={seedPanelId} className="st-seed-toggle" onClick={() => setPanel(panel === 'seed' ? null : 'seed')}>Seed</HudButton>
+    <HudPanel id={seedPanelId} aria-label="Town seed" className="st-seed" data-open={panel === 'seed' ? '' : undefined}>
       <form onSubmit={submit}>
         <label htmlFor={seedId}>Seed
           <input id={seedId} type="text" value={draft} maxLength={MAX_SEED_LENGTH} autoComplete="off" autoCapitalize="off" spellCheck={false}
@@ -88,7 +108,7 @@ export function TownHud({ session }: { session: TownSession }) {
       {info && <p className="st-facts">{townFacts(info)}</p>}
     </HudPanel>
     <HudToolbar>
-      <HudButton onClick={toggle}>{playing ? 'Back to the view' : 'Walk the town'}</HudButton>
+      <HudButton onClick={toggle} aria-label={playing ? undefined : 'Walk the town'}>{playing ? 'Back to the view' : <>Walk<span className="st-long"> the town</span></>}</HudButton>
       {!playing && <HudMenu label="View">
         <select className="ks-select st-views" aria-label="Town viewpoint" value="" onChange={event => {
           const view = views.find(item => item.id === event.target.value);

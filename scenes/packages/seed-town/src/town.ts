@@ -1,14 +1,17 @@
 /**
  * The town as instances of the kit parts. Each drawn part of each kit is one InstancedMesh for the
  * whole town; a placement contributes an instance to every part its options show. The instance
- * carries the placement's matrix, its morph weights (the sizes) and its colour. A new seed rewrites
- * those buffers and nothing else: the kit geometry, materials and textures are loaded once.
+ * carries the placement's matrix, its size weights and its colour. A new seed rewrites those buffers
+ * and nothing else: the kit geometry, materials and textures are loaded once. The sizes are applied
+ * by one shader node for every part (morph.ts), not by three's morph targets.
  */
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { Box3, Color, DataTexture, FloatType, Group, InstancedMesh, Matrix4, MeshStandardNodeMaterial, Quaternion, RedFormat, Vector3 } from 'three/webgpu';
-import type { BufferGeometry, Material, Mesh, MeshStandardMaterial, Texture } from 'three/webgpu';
+import { Box3, BoxGeometry, BufferGeometry, Color, Group, InstancedMesh, Matrix4, MeshBasicMaterial, MeshStandardNodeMaterial, Quaternion, Vector3, Vector4 } from 'three/webgpu';
+import type { Material, Mesh, MeshStandardMaterial, Texture } from 'three/webgpu';
 import { abs, normalWorld, positionWorld, select, texture, vec2 } from 'three/tsl';
 import { kitSpec, shows, valueOf, weights } from './kit-spec';
+import { bindMorph, deltaTexture, MORPH, packDeltas, weightRows, weightTexture, withMorph } from './morph';
+import type { MorphTextures, PartMorph } from './morph';
 import type { KitDeclaration, KitGltf, KitMeshSpec, ParamValues } from './kit-spec';
 import type { TownPlacement, TownPlan } from './plan/town-plan.js';
 
@@ -16,9 +19,9 @@ export interface KitPart {
   spec: KitMeshSpec;
   geometry: BufferGeometry;
   material: MeshStandardMaterial;
-  /** Glass and glow neither cast nor receive a sun shadow. */
+  /** Glass and glow receive no sun shadow. */
   shadows: boolean;
-  /** Whether it casts into the sun's shadow map; when absent, the same as `shadows`. */
+  /** Whether it casts into the sun's shadow map; when absent, the same as `shadows`. Window panes cast: see castsSun. */
   casts?: boolean;
 }
 export interface Kit { id: string; declaration: KitDeclaration; parts: KitPart[] }
@@ -68,6 +71,35 @@ export function readKit(id: string, gltf: GLTF, declaration: KitDeclaration): Ki
   return kit;
 }
 
+const CLEAR = /glass|glow|water/i, PANE = /glass|glow/i;
+
+/**
+ * Whether a part of a kit casts into the sun's shadow map. A window pane does, though it takes no shadow: the walls are
+ * single faces and the shadow pass draws only those turned from the sun, so a ray entering by a building's back would
+ * otherwise leave by its windows and light the pavement in the building's own shade. Trees stand outside the shadow map,
+ * which is kept tight on the streets; their shade is drawn on the ground.
+ */
+export function castsSun(kit: string, material: string, transparent: boolean): boolean {
+  if (kit === 'tree') return false;
+  return PANE.test(material) || !(transparent || CLEAR.test(material));
+}
+
+/** How far behind a bay's front plane its backing stands (a wall is 0.3 m deep) and how thick it is, metres. */
+export const BACKING = { back: 0.34, thick: 0.04, colour: 0x0a0d0e };
+
+/**
+ * The dark slab behind a bay, as tall and wide as the bay. The buildings are hollow and their walls show one face, so
+ * without it a hairline between a pane and its frame, seen from the side or from below, shows the sky through the
+ * building. A passage has its own tunnel and takes none.
+ */
+export function backingOf(place: TownPlacement, declaration: KitDeclaration): { height: number; width: number } | null {
+  if (place.kit !== 'facade-bay' && place.kit !== 'ground-bay') return null;
+  const value = (name: string) => valueOf(declaration, place.values as ParamValues, name);
+  if (value('front') === 'passage') return null;
+  const height = Number(value(place.kit === 'ground-bay' ? 'shopHeight' : 'storeyHeight')), width = Number(value('bayWidth'));
+  return height > 0 && width > 0 ? { height, width } : null;
+}
+
 function readKitParts(id: string, gltf: GLTF, declaration: KitDeclaration): Kit {
   const spec = kitSpec(id, gltf.parser.json as KitGltf);
   const byNode = new Map<number, Mesh>();
@@ -84,14 +116,29 @@ function readKitParts(id: string, gltf: GLTF, declaration: KitDeclaration): Kit 
     const count = mesh.geometry.morphAttributes.position?.length ?? 0;
     if (count !== part.targets.length) throw new Error(`Kit ${id}: part ${part.name} loaded ${count} morph targets, expected ${part.targets.length}`);
     if (part.colour) material.color.setRGB(1, 1, 1);
-    const clear = material.transparent === true || /glass|glow|water/i.test(material.name);
-    // Trees stand outside the sun's shadow map, which is kept tight on the streets; their shade is drawn on the ground.
-    return { spec: part, geometry: mesh.geometry, material, shadows: !clear, casts: !clear && id !== 'tree' };
+    const clear = material.transparent === true || CLEAR.test(material.name);
+    return { spec: part, geometry: mesh.geometry, material, shadows: !clear, casts: castsSun(id, material.name, material.transparent === true) };
   });
   return { id, declaration, parts };
 }
 
-interface Slot { kit: Kit; part: KitPart; mesh: InstancedMesh | null; capacity: number; used: number }
+interface Slot {
+  kit: Kit; part: KitPart; mesh: InstancedMesh | null; capacity: number; used: number;
+  /** The part's geometry as it is drawn: the kit's own attributes and index, without its morph targets. */
+  geometry: BufferGeometry;
+  morph: PartMorph;
+}
+
+/** A geometry that shares `source`'s vertex buffers and index and carries none of its morph targets. */
+function drawnGeometry(source: BufferGeometry): BufferGeometry {
+  const drawn = new BufferGeometry();
+  drawn.name = source.name;
+  for (const [name, attribute] of Object.entries(source.attributes)) drawn.setAttribute(name, attribute);
+  drawn.setIndex(source.index);
+  for (const group of source.groups) drawn.addGroup(group.start, group.count, group.materialIndex);
+  drawn.setDrawRange(source.drawRange.start, source.drawRange.count);
+  return drawn;
+}
 
 export interface TownStats { placements: number; instances: number; draws: number; triangles: number; parts: number }
 export interface TownView {
@@ -103,7 +150,7 @@ export interface TownView {
 }
 
 const position = new Vector3(), scale = new Vector3(1, 1, 1), rotation = new Quaternion(), up = new Vector3(0, 1, 0);
-const matrix = new Matrix4(), none = new Matrix4().makeScale(0, 0, 0), tint = new Color();
+const matrix = new Matrix4(), tint = new Color();
 
 /** The world matrix of a placement: its position, turned about Y by its yaw in degrees. */
 export function placementMatrix(place: TownPlacement, target: Matrix4): Matrix4 {
@@ -123,36 +170,89 @@ function byKit(plan: TownPlan): Map<string, TownPlacement[]> {
 
 function createMesh(slot: Slot, capacity: number): InstancedMesh {
   const { part, kit } = slot;
-  const mesh = new InstancedMesh(part.geometry, part.material, capacity);
+  const mesh = new InstancedMesh(slot.geometry, withMorph(part.material), capacity);
+  bindMorph(mesh, slot.morph);
   mesh.name = `${kit.id}:${part.spec.name}`;
   mesh.castShadow = part.casts ?? part.shadows;
   mesh.receiveShadow = part.shadows;
   // One mesh spans the whole town, and its sizes move vertices beyond the geometry's own bounds.
   mesh.frustumCulled = false;
-  const targets = part.spec.targets.length;
-  if (targets) mesh.morphTexture = new DataTexture(new Float32Array((targets + 1) * capacity), targets + 1, capacity, RedFormat, FloatType);
   return mesh;
 }
 
 export function createTownView(kits: ReadonlyMap<string, Kit>): TownView {
   const root = new Group();
   root.name = 'Seed town';
+  const sources: KitPart[] = [];
+  for (const kit of kits.values()) for (const part of kit.parts) {
+    const count = part.geometry.morphAttributes.position?.length ?? 0;
+    if (count !== part.spec.targets.length) throw new Error(`Kit ${kit.id}: part ${part.spec.name} has ${count} morph targets, its spec ${part.spec.targets.length}`);
+    sources.push(part);
+  }
+  // Every part's size deltas in one texture, every instance's turn and weights in another: see morph.ts.
+  const atlas = packDeltas(sources.map(part => part.geometry));
+  const shared: MorphTextures = { deltas: deltaTexture(atlas), weights: weightTexture(0) };
   const slots: Slot[] = [];
-  for (const kit of kits.values()) for (const part of kit.parts) slots.push({ kit, part, mesh: null, capacity: 0, used: 0 });
+  let next = 0;
+  for (const kit of kits.values()) for (const part of kit.parts) {
+    const block = atlas.blocks[next++]!;
+    slots.push({ kit, part, mesh: null, capacity: 0, used: 0, geometry: drawnGeometry(part.geometry), morph: { shared, info: new Vector4(block.row, block.targets, block.vertices, 0) } });
+  }
   const stats: TownStats = { placements: 0, instances: 0, draws: 0, triangles: 0, parts: slots.length };
   const influence: number[] = [];
   let disposed = false;
+  // One more draw for the whole town: the slab behind every bay.
+  const slab = new BoxGeometry(1, 1, 1), dark = new MeshBasicMaterial({ color: BACKING.colour });
+  dark.name = 'bay-backing';
+  let backing: InstancedMesh | null = null, backingCapacity = 0;
+  const local = new Matrix4(), centre = new Vector3(), size = new Vector3(), level = new Quaternion();
+
+  /** Returns true when the backing mesh was replaced. */
+  function back(plan: TownPlan): boolean {
+    const slabs: { place: TownPlacement; height: number; width: number }[] = [];
+    for (const place of plan.placements) {
+      const kit = kits.get(place.kit), fit = kit && backingOf(place, kit.declaration);
+      if (fit) slabs.push({ place, ...fit });
+    }
+    let replaced = false;
+    if (slabs.length > backingCapacity) {
+      if (backing) { root.remove(backing); backing.dispose(); }
+      backingCapacity = Math.ceil(slabs.length * 1.3);
+      backing = new InstancedMesh(slab, dark, backingCapacity);
+      backing.name = 'Bay backing';
+      backing.castShadow = true;
+      backing.frustumCulled = false;
+      root.add(backing);
+      replaced = true;
+    }
+    if (!backing) return false;
+    const mesh = backing;
+    slabs.forEach(({ place, height, width }, i) => {
+      // The kit's -X runs into the building; a bay stands on its placement and runs along +Z.
+      local.compose(centre.set(-BACKING.back - BACKING.thick / 2, height / 2, width / 2), level, size.set(BACKING.thick, height, width));
+      mesh.setMatrixAt(i, placementMatrix(place, matrix).multiply(local));
+    });
+    mesh.count = slabs.length;
+    mesh.visible = slabs.length > 0;
+    mesh.instanceMatrix.needsUpdate = true;
+    return replaced;
+  }
 
   function apply(plan: TownPlan): boolean {
     if (disposed) throw new Error('Seed town view is disposed');
     const lists = byKit(plan);
     for (const kit of lists.keys()) if (!kits.has(kit)) throw new Error(`Seed town plan names an unknown kit: ${kit}`);
     let replaced = false, instances = 0, draws = 0, triangles = 0;
-    for (const slot of slots) {
-      const { kit, part } = slot, places = lists.get(kit.id) ?? [];
-      const shown = places.filter(place => shows(part.spec, kit.declaration, place.values as ParamValues));
-      // Two instances at least: three reads per-instance morph weights only when a mesh has more than one.
-      const count = Math.max(2, shown.length);
+    const lineup = slots.map(slot => (lists.get(slot.kit.id) ?? []).filter(place => shows(slot.part.spec, slot.kit.declaration, place.values as ParamValues)));
+    const rows = weightRows(slots.map((slot, i) => ({ count: lineup[i]!.length, targets: slot.part.spec.targets.length })));
+    if (rows.texels > shared.weights.image.data!.length) {
+      // Every mesh reads the weights through `shared`, so the larger texture reaches them all at once.
+      shared.weights.dispose();
+      shared.weights = weightTexture(rows.texels, Math.ceil(rows.texels / MORPH.width * 1.5));
+    }
+    const morph = shared.weights.image.data as Float32Array;
+    slots.forEach((slot, order) => {
+      const { kit, part } = slot, shown = lineup[order]!, count = shown.length;
       if (!slot.mesh || count > slot.capacity) {
         if (slot.mesh) { root.remove(slot.mesh); slot.mesh.dispose(); }
         slot.capacity = Math.max(4, Math.ceil(count * 1.3));
@@ -160,23 +260,18 @@ export function createTownView(kits: ReadonlyMap<string, Kit>): TownView {
         root.add(slot.mesh);
         replaced = true;
       }
-      const mesh = slot.mesh, targets = part.spec.targets.length;
-      const morph = targets ? (mesh.morphTexture!.image.data as Float32Array) : null;
+      const mesh = slot.mesh, targets = part.spec.targets.length, base = rows.bases[order]!, stride = MORPH.head + targets;
+      slot.morph.info.w = base;
       influence.length = targets;
       for (let i = 0; i < count; i++) {
-        const place = shown[i];
-        if (!place) {
-          mesh.setMatrixAt(i, none);
-          if (morph) morph.fill(0, i * (targets + 1), (i + 1) * (targets + 1));
-          if (part.spec.colour) mesh.setColorAt(i, tint.setRGB(1, 1, 1));
-          continue;
-        }
+        const place = shown[i]!, at = base + i * stride, turn = place.yaw * Math.PI / 180;
         mesh.setMatrixAt(i, placementMatrix(place, matrix));
-        if (morph) {
+        // The node turns a size delta as the placement turns the part: see placementMatrix.
+        morph[at] = Math.cos(turn);
+        morph[at + 1] = Math.sin(turn);
+        if (targets) {
           weights(kit.id, part.spec, kit.declaration, place.values as ParamValues, influence);
-          // Column 0 is the base influence, 1 for relative targets; the targets follow.
-          morph[i * (targets + 1)] = 1;
-          for (let t = 0; t < targets; t++) morph[i * (targets + 1) + 1 + t] = influence[t]!;
+          for (let t = 0; t < targets; t++) morph[at + MORPH.head + t] = influence[t]!;
         }
         if (part.spec.colour) {
           const colour = valueOf(kit.declaration, place.values as ParamValues, part.spec.colour);
@@ -188,7 +283,6 @@ export function createTownView(kits: ReadonlyMap<string, Kit>): TownView {
       mesh.visible = shown.length > 0;
       mesh.instanceMatrix.needsUpdate = true;
       if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-      if (mesh.morphTexture) mesh.morphTexture.needsUpdate = true;
       slot.used = shown.length;
       if (shown.length) {
         draws += 1;
@@ -196,7 +290,10 @@ export function createTownView(kits: ReadonlyMap<string, Kit>): TownView {
         const geometry = part.geometry;
         triangles += (geometry.index ? geometry.index.count : geometry.getAttribute('position').count) / 3 * shown.length;
       }
-    }
+    });
+    shared.weights.needsUpdate = true;
+    if (back(plan)) replaced = true;
+    if (backing?.visible) { draws += 1; triangles += 12 * backing.count; }
     Object.assign(stats, { placements: plan.placements.length, instances, draws, triangles: Math.round(triangles) });
     return replaced;
   }
@@ -208,7 +305,11 @@ export function createTownView(kits: ReadonlyMap<string, Kit>): TownView {
       disposed = true;
       root.removeFromParent();
       // The pack owns the kit geometry, materials and textures; only the instance buffers are ours.
-      for (const slot of slots) { slot.mesh?.dispose(); slot.mesh = null; }
+      // The drawn geometries and the two morph textures are ours as well; the vertex buffers they point at are the pack's.
+      for (const slot of slots) { slot.mesh?.dispose(); slot.mesh = null; slot.geometry.dispose(); }
+      shared.deltas.dispose(); shared.weights.dispose();
+      backing?.dispose(); backing = null;
+      slab.dispose(); dark.dispose();
       root.clear();
     },
   };

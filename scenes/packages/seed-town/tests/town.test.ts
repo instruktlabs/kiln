@@ -3,7 +3,7 @@ import type { KitDeclaration, KitMeshSpec } from '../src/kit-spec';
 import type { TownPlacement, TownPlan } from '../src/plan/town-plan.js';
 await import('three');
 const { Box3, BufferAttribute, BufferGeometry, Color, Matrix4, MeshStandardMaterial, Vector3 } = await import('three/webgpu');
-const { bakeKits, bakePart, createTownView, placementBox, placementMatrix } = await import('../src/town');
+const { backingOf, BACKING, bakeKits, bakePart, castsSun, createTownView, placementBox, placementMatrix } = await import('../src/town');
 type Kit = import('../src/town').Kit;
 
 /** One triangle with a width target that moves its second corner 1 m along +Z, and a second, optional triangle. */
@@ -53,11 +53,8 @@ test('each shown part gets one instance per placement, with its matrix, size and
   expect(replaced).toBe(true);
   const [wall, door] = view.root.children as import('three/webgpu').InstancedMesh[];
   expect([wall!.name, wall!.count, wall!.visible]).toEqual(['bay:Mesh_Wall', 3, true]);
-  // One door, padded to two instances so three reads per-instance data; the pad draws nothing.
-  expect([door!.name, door!.count, door!.visible]).toEqual(['bay:Mesh_Door', 2, true]);
+  expect([door!.name, door!.count, door!.visible]).toEqual(['bay:Mesh_Door', 1, true]);
   const matrix = new Matrix4();
-  door!.getMatrixAt(1, matrix);
-  expect(new Vector3(3, 4, 5).applyMatrix4(matrix).toArray()).toEqual([0, 0, 0]);
   wall!.getMatrixAt(0, matrix);
   expect(new Vector3().setFromMatrixPosition(matrix).toArray()).toEqual([10, 0, 0]);
   // A quarter turn about Y carries the kit's +Z onto +X.
@@ -65,9 +62,8 @@ test('each shown part gets one instance per placement, with its matrix, size and
   const turned = new Vector3(0, 0, 1).applyMatrix4(matrix);
   expect(turned.x).toBeCloseTo(1, 6);
   expect(turned.z).toBeCloseTo(5, 6);
-  const morph = wall!.morphTexture!.image.data as Float32Array;
-  expect(wall!.morphTexture!.image.width).toBe(3);
-  expect(Array.from(morph.slice(0, 9))).toEqual([1, 0, 1, 1, 0.5, 0, 1, 0, 0]);
+  // The sizes ride in the view's own textures (morph.test.ts), not in three's per-mesh morph texture.
+  expect(wall!.morphTexture).toBeNull();
   const colour = new Color();
   wall!.getColorAt(0, colour);
   expect(colour.getHexString()).toBe('ff0000');
@@ -85,7 +81,7 @@ test('a new plan rewrites the same meshes, and only outgrowing them replaces one
   expect(view.apply(plan([place('a', { width: 2 }, [5, 0, 0])]))).toBe(false);
   expect(view.root.children).toEqual(first);
   const wall = first[0] as import('three/webgpu').InstancedMesh;
-  expect([wall.count, wall.visible]).toEqual([2, true]);
+  expect([wall.count, wall.visible]).toEqual([1, true]);
   // No door anywhere: the mesh stays, hidden, and counts as no draw.
   expect((first[1] as import('three/webgpu').InstancedMesh).visible).toBe(false);
   expect(view.stats.draws).toBe(1);
@@ -119,4 +115,54 @@ test('a placement turns about Y by its yaw in degrees', () => {
   expect(point.x).toBeCloseTo(0, 6);
   expect(point.y).toBeCloseTo(2, 6);
   expect(point.z).toBeCloseTo(2, 6);
+});
+
+test('window glass casts into the sun shadow though it takes none: no sun crosses a building through its windows', () => {
+  expect(castsSun('facade-bay', 'glass', false)).toBe(true);
+  expect(castsSun('ground-bay', 'glow', false)).toBe(true);
+  expect(castsSun('roof', 'wall', false)).toBe(true);
+  expect(castsSun('street-furniture', 'water', true)).toBe(false);
+  // Trees stand outside the shadow map; their shade is drawn on the ground.
+  expect(castsSun('tree', 'bark', false)).toBe(false);
+});
+
+/** A bay kit with one triangle, enough for the view to stand a backing behind it. */
+function bayKit(id: string, defaults: KitDeclaration['defaults']): Kit {
+  const geometry = new BufferGeometry();
+  geometry.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 1, 0, 1, 0]), 3));
+  const spec: KitMeshSpec = { node: 1, name: 'Mesh_Wall', mesh: 0, material: 0, conditions: [], colour: null, targets: [] };
+  return { id, declaration: { defaults, sizes: {} }, parts: [{ spec, geometry, material: new MeshStandardMaterial(), shadows: true }] };
+}
+
+test('every bay but a passage stands in front of a dark slab that casts, so a gap in a front shows a dark room and not the sky', () => {
+  const facade = bayKit('facade-bay', { bayWidth: 1.8, storeyHeight: 3 }), ground = bayKit('ground-bay', { bayWidth: 1.8, shopHeight: 3.5, front: 'shopWindow' });
+  const at = (id: string, kit: string, values: TownPlacement['values'], pos: [number, number, number], yaw = 0): TownPlacement => ({ id, kit, values, pos, yaw });
+  expect(backingOf(at('a', 'facade-bay', { bayWidth: 2 }, [0, 0, 0]), facade.declaration)).toEqual({ height: 3, width: 2 });
+  expect(backingOf(at('b', 'ground-bay', {}, [0, 0, 0]), ground.declaration)).toEqual({ height: 3.5, width: 1.8 });
+  expect(backingOf(at('c', 'ground-bay', { front: 'passage' }, [0, 0, 0]), ground.declaration)).toBeNull();
+  expect(backingOf(at('d', 'roof', {}, [0, 0, 0]), facade.declaration)).toBeNull();
+
+  const view = createTownView(new Map([['facade-bay', facade], ['ground-bay', ground]]));
+  expect(view.apply(plan([
+    at('a', 'facade-bay', { bayWidth: 2 }, [10, 3.5, 0]),
+    at('b', 'ground-bay', {}, [0, 0, 5], 90),
+    at('c', 'ground-bay', { front: 'passage' }, [0, 0, 9]),
+  ]))).toBe(true);
+  const backing = view.root.children.find(child => child.name === 'Bay backing') as import('three/webgpu').InstancedMesh;
+  expect([backing.count, backing.visible, backing.castShadow, backing.receiveShadow]).toEqual([2, true, true, false]);
+  const matrix = new Matrix4(), centre = new Vector3(), size = new Vector3();
+  backing.getMatrixAt(0, matrix);
+  // Behind the wall's own depth, as wide and tall as the bay.
+  expect(centre.setFromMatrixPosition(matrix).toArray().map(v => +v.toFixed(4))).toEqual([10 - BACKING.back - BACKING.thick / 2, 5, 1]);
+  expect(size.setFromMatrixScale(matrix).toArray().map(v => +v.toFixed(4))).toEqual([BACKING.thick, 3, 2]);
+  expect(BACKING.back).toBeGreaterThan(0.3);
+  // A quarter turn carries the kit's -X (into the building) onto +Z.
+  backing.getMatrixAt(1, matrix);
+  expect(centre.setFromMatrixPosition(matrix).toArray().map(v => +v.toFixed(4))).toEqual([0.9, 1.75, +(5 + BACKING.back + BACKING.thick / 2).toFixed(4)]);
+  // Three kit draws and the backing.
+  expect(view.stats.draws).toBe(3);
+  // Fewer bays reuse the mesh.
+  expect(view.apply(plan([at('a', 'facade-bay', {}, [0, 0, 0])]))).toBe(false);
+  expect(backing.count).toBe(1);
+  view.dispose();
 });
