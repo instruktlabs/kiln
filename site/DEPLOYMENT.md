@@ -101,10 +101,23 @@ objects, use **Caching → Configuration → Custom Purge → Hostname** with on
 confirmed canonical Farm ZIP and Bridge GLB exact hashes, public CORS, second-GET
 `HIT`, Range preflight 204, and missing-object 404 `BYPASS` without stale headers.
 
+The zone also has one active compression rule, **Compress 3D models and scene data
+(glb, bin)**, added 26 November 2026. Cloudflare compresses by content type and
+leaves `model/gltf-binary` and `application/octet-stream` alone by default, so
+scene models went out at full size. The rule matches
+`(http.host in {"kilnstudio.tools" "holodeck.kilnstudio.tools"} and http.request.uri.path.extension in {"glb" "bin"})`
+with **Enable Zstandard (Zstd) Compression**, which falls back to Brotli, Gzip or
+plain bytes by the request's `Accept-Encoding`. It does not cover
+`assets.kilnstudio.tools`. A compressed response has a weak `ETag` and no
+`Content-Length`; a request without `Accept-Encoding` still gets the exact file
+with its length. Scene loaders check the decoded bytes against the pack record, so
+the rule changes transfer size only. Measured on the day: the six scene packs'
+models and binary files went from 160.7 MB to 46.0 MB on the wire.
+
 Run the build and deploy contract below from clean committed `main` after required
 CI checks. The full production build must enable packs, consume the exact Troy
 release pinned in `src/data/troy-delivery.json`, and pass static/assets/upload-set checks. `finalize-site.mjs` appends
-immutable Pages rules only for individually verified sealed Troy resources;
+immutable Pages rules only for the files of each verified scene pack release;
 HTML and unsealed files retain revalidation. After deployment, match the public
 `build-info.json` commit and artifact-manifest digest to the candidate, then check
 the real gallery, both download choices and each scene over HTTPS. Record the

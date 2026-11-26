@@ -5,7 +5,7 @@ import { HtmlValidate } from 'html-validate';
 import sharp from 'sharp';
 import { engineNoteErrors, isAssetPageRoute, readGlbFacts } from './engine-note.mjs';
 import { ARCHIVE_INDEX_ROUTE, archiveIndexingErrors, copyErrors, DESCRIPTION_WARNING_LENGTH, discoveryErrors, embeddedDocumentErrors, foundryFloorErrors, headersErrors, headersFor, inspectHtml, isArchiveItemRoute, isEmbeddedDocument, isSceneSourceDocument, ORIGIN, parseHeaderRules, parseRedirectRules, redirectsErrors, resolveInternalLink, retiredNameErrors, routeForFile, scriptHashSource, socialMetadataErrors } from './static-validation-core.mjs';
-import {sealedTroyCache} from './sealed-cache.mjs';
+import {sealedPackCache} from './sealed-cache.mjs';
 import {viewerModelInput} from './viewer-model-input.mjs';
 import { glbJsonText } from './private-data.mjs';
 import {validatePublicText} from './validate-public-text.mjs';
@@ -218,7 +218,7 @@ const distFiles = files.map((file) => relative(root, file).replaceAll('\\', '/')
 let headersText = '';
 try { headersText = await readFile(resolve(root, '_headers'), 'utf8'); } catch { add('/_headers', 'headers', 'dist/_headers is missing (site/public/_headers)'); }
 let sealedFiles=[];
-try {sealedFiles=(await sealedTroyCache(root)).files;} catch(error) {add('/scene-packs/troy/','headers',error.message);}
+try {sealedFiles=(await sealedPackCache(root)).files;} catch(error) {add('/scene-packs/','headers',error.message);}
 const headerProblems = headersText ? headersErrors({ text: headersText, inlineScripts, files: distFiles, sealedFiles, sitemapPaths: sitemapUrls.map((url) => new URL(url).pathname) }) : [];
 for (const message of headerProblems) add('/_headers', 'headers', message);
 const headerRules = headersText ? parseHeaderRules(headersText) : [];
