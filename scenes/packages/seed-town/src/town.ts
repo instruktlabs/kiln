@@ -5,8 +5,9 @@
  * those buffers and nothing else: the kit geometry, materials and textures are loaded once.
  */
 import type { GLTF } from 'three/addons/loaders/GLTFLoader.js';
-import { Box3, Color, DataTexture, FloatType, Group, InstancedMesh, Matrix4, Quaternion, RedFormat, Vector3 } from 'three/webgpu';
-import type { BufferGeometry, Material, Mesh, MeshStandardMaterial } from 'three/webgpu';
+import { Box3, Color, DataTexture, FloatType, Group, InstancedMesh, Matrix4, MeshStandardNodeMaterial, Quaternion, RedFormat, Vector3 } from 'three/webgpu';
+import type { BufferGeometry, Material, Mesh, MeshStandardMaterial, Texture } from 'three/webgpu';
+import { abs, normalWorld, positionWorld, select, texture, vec2 } from 'three/tsl';
 import { kitSpec, shows, valueOf, weights } from './kit-spec';
 import type { KitDeclaration, KitGltf, KitMeshSpec, ParamValues } from './kit-spec';
 import type { TownPlacement, TownPlan } from './plan/town-plan.js';
@@ -25,8 +26,49 @@ export interface Kit { id: string; declaration: KitDeclaration; parts: KitPart[]
 export const KIT_IDS = ['facade-bay', 'ground-bay', 'roof', 'paving', 'junction', 'street-lamp', 'signage', 'street-furniture', 'tree'] as const;
 export type KitId = typeof KIT_IDS[number];
 
+/**
+ * The roof kit's walls, drawn with their texture laid in world space. Their sizes are morph targets, so
+ * coordinates fixed in the file would stretch: the side walls below the eaves (up to 16 m tall) carry a
+ * plain tone in the file for that reason. Here the gables, side and back walls all take the render or the
+ * brickwork at its own scale, so one wall reads as one surface at any height. Tile sizes are the roof
+ * kit's own (its TEX table): render 2.4 m, brick 0.9 m. A vertical face takes the plane it faces, as the
+ * kit's own coordinates do.
+ */
+const ROOF_WALLS: Record<string, { texture: 'wall' | 'wall-brick'; tile: number }> = {
+  wall: { texture: 'wall', tile: 2.4 },
+  'wall-side': { texture: 'wall', tile: 2.4 },
+  'wall-brick': { texture: 'wall-brick', tile: 0.9 },
+  'wall-brick-side': { texture: 'wall-brick', tile: 0.9 },
+};
+const worldWalls = new WeakMap<MeshStandardMaterial, MeshStandardMaterial>();
+
+function worldWall(source: MeshStandardMaterial, map: Texture, tile: number): MeshStandardMaterial {
+  const known = worldWalls.get(source);
+  if (known) return known;
+  const material = new MeshStandardNodeMaterial({
+    name: source.name, color: source.color, roughness: source.roughness, metalness: source.metalness, side: source.side, map,
+  });
+  const across = select(abs(normalWorld.x).greaterThanEqual(abs(normalWorld.z)), positionWorld.z, positionWorld.x);
+  material.colorNode = texture(map, vec2(across, positionWorld.y).div(tile));
+  const made = material as unknown as MeshStandardMaterial;
+  worldWalls.set(source, made);
+  return made;
+}
+
 /** Pair a loaded kit file with its declaration. Colour-driven materials turn white: each instance brings its own colour. */
 export function readKit(id: string, gltf: GLTF, declaration: KitDeclaration): Kit {
+  const kit = readKitParts(id, gltf, declaration);
+  if (id !== 'roof') return kit;
+  const maps = new Map<string, Texture>();
+  for (const part of kit.parts) if (part.material.map && (part.material.name === 'wall' || part.material.name === 'wall-brick')) maps.set(part.material.name, part.material.map);
+  for (const part of kit.parts) {
+    const wall = ROOF_WALLS[part.material.name], map = wall && maps.get(wall.texture);
+    if (wall && map) part.material = worldWall(part.material, map, wall.tile);
+  }
+  return kit;
+}
+
+function readKitParts(id: string, gltf: GLTF, declaration: KitDeclaration): Kit {
   const spec = kitSpec(id, gltf.parser.json as KitGltf);
   const byNode = new Map<number, Mesh>();
   gltf.scene.traverse(object => {

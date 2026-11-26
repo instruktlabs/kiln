@@ -1,8 +1,8 @@
 {
   "schema": "kiln.seed-town-site-build/1",
   "scene": "seed-town",
-  "release": "st2",
-  "packJsonSha256": "86f2a6d18b6acb3d3fe63aea68896c1b4098e87b6d48d5f88138086eb4b3c8c9",
+  "release": "st4",
+  "packJsonSha256": "b460046652388708ccdf08d579bf0b98340d9ce4d50090c5930973489f3b38a6",
   "firstPassingBuild": {
     "file": "seed-town-CWseRIUV.js",
     "bytes": 1468997,
